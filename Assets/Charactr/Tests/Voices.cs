@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Charactr.VoiceSDK.Model;
+using Charactr.VoiceSDK.SDK;
 using NUnit.Framework;
 
 namespace Charactr.VoiceSDK.Tests
@@ -11,7 +12,7 @@ namespace Charactr.VoiceSDK.Tests
         [Test]
         public async Task GetVoices_Returns_OK()
         {
-            var voices = await Http.GetAsync<VoicesResponse>(API + ENDPOINT);
+            var voices = await Http.GetAsync<VoicesResponse>(Configuration.API + ENDPOINT);
             Assert.NotNull(voices);
             Assert.IsNotEmpty(voices);
         }

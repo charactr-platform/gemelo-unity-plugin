@@ -1,11 +1,10 @@
 using System;
 using System.Collections;
 using System.Threading.Tasks;
-using Charactr.VoiceSDK.Model;
+using Charactr.VoiceSDK.SDK;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using UnityEngine.Windows;
 
 namespace Charactr.VoiceSDK.Tests
 {
@@ -16,28 +15,30 @@ namespace Charactr.VoiceSDK.Tests
 		[Test]
 		public async Task GetConversion_Returns_WAV()
 		{
-			var wavBytes = await Http.PostAsync(API + ENDPOINT, CreateRequest().ToJson());
+			var wavBytes = await Http.PostAsync(Configuration.API + ENDPOINT, CreateRequest().ToJson());
+			
 			Assert.NotNull(wavBytes);
 			Assert.IsNotEmpty(wavBytes);
-			File.WriteAllBytes(Application.streamingAssetsPath + "/sample.wav", wavBytes);
 		}
 
 		[Test]
 		public async Task PlayConversion_ConvertToWav_Returns_OK()
 		{
-			var wavBytes = await Http.PostAsync(API + ENDPOINT, CreateRequest().ToJson());
+			var wavBytes = await Http.PostAsync(Configuration.API + ENDPOINT, CreateRequest().ToJson());
+			
 			Assert.NotNull(wavBytes);
 			Assert.IsNotEmpty(wavBytes);
 			
 			var audioClip = WavUtility.ToAudioClip(wavBytes);
-			var audioPlayer = CreatePlayerObject();
 			
 			Assert.AreEqual(130560, audioClip.samples);
 			Assert.AreEqual(32000, audioClip.frequency);
 			Assert.AreEqual(4.08f, audioClip.length);
 			
+			var audioPlayer = CreatePlayerObject();
 			audioPlayer.PlayOneShot(audioClip);
-			await Task.Delay(4000);
+			
+			await Task.Delay((int)audioClip.length * 1000);
 		}
 
 		[UnityTest]
@@ -47,7 +48,7 @@ namespace Charactr.VoiceSDK.Tests
 
 			var audioPlayer = CreatePlayerObject();
 			
-			yield return Http.GetAudioClipRoutine(API + ENDPOINT, CreateRequest().ToJson(), clip =>
+			yield return Http.GetAudioClipRoutine(Configuration.API + ENDPOINT, CreateRequest().ToJson(), clip =>
 			{
 				audioClip = clip;
 				audioPlayer.PlayOneShot(clip);

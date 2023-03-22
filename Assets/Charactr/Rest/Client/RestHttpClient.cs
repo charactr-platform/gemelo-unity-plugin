@@ -16,8 +16,8 @@ namespace Charactr.VoiceSDK.Rest
 {
 	public class RestHttpClient
 	{
-		private const string API_CLIENT = "X-Client-Key";
-		private const string API_KEY = "X-Api-Key";
+		public const string API_CLIENT = "X-Client-Key";
+		public const string API_KEY = "X-Api-Key";
 		private readonly HttpClient _client;
 		private Action<FrameworkErrorMessage> OnError { get;}
 		private string _clientKey;

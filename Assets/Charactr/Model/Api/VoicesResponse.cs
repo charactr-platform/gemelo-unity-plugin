@@ -3,10 +3,7 @@ using Newtonsoft.Json;
 
 namespace Charactr.VoiceSDK.Model
 {
-	public class VoicesResponse : List<VoiceDescription>, IAPIResponse
-	{
-		
-	}
+	public class VoicesResponse : List<VoiceDescription>, IAPIResponse { }
 	
 	public class LabelDescription
 	{
