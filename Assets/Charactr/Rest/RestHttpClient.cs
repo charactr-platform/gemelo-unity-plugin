@@ -6,14 +6,15 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Charactr.VoiceSDK.Model;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Charactr.Api.Rest
+namespace Charactr.VoiceSDK.Rest
 {
-	public class EditorHttpClient
+	public class RestHttpClient
 	{
 		private const string API_CLIENT = "X-Client-Key";
 		private const string API_KEY = "X-Api-Key";
@@ -21,7 +22,7 @@ namespace Charactr.Api.Rest
 		private Action<FrameworkErrorMessage> OnError { get;}
 		private string _clientKey;
 		private string _apiKey;
-		public EditorHttpClient(string apiClient, string apiKey, Action<FrameworkErrorMessage> onError)
+		public RestHttpClient(string apiClient, string apiKey, Action<FrameworkErrorMessage> onError)
 		{
 			_clientKey = apiClient;
 			_apiKey = apiKey;

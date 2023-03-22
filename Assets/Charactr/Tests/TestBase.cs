@@ -1,8 +1,8 @@
-using Charactr.Api.Rest;
+using Charactr.VoiceSDK.Rest;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace Charactr.Tests
+namespace Charactr.VoiceSDK.Tests
 {
 	public class TestBase
 	{
@@ -11,12 +11,12 @@ namespace Charactr.Tests
         
 		protected const string API = "https://api.charactr.com/v1/tts/";
         
-		protected EditorHttpClient Http;
+		protected RestHttpClient Http;
         
 		[SetUp]
 		public void Setup()
 		{
-			Http = new EditorHttpClient(CLIENT_KEY, API_KEY, (error) => Debug.LogError(error.Message));
+			Http = new RestHttpClient(CLIENT_KEY, API_KEY, (error) => Debug.LogError(error.Message));
 		}
 	}
 }

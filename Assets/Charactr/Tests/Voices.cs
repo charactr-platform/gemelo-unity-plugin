@@ -1,10 +1,8 @@
 using System.Threading.Tasks;
-using Charactr.Api.Rest;
+using Charactr.VoiceSDK.Model;
 using NUnit.Framework;
-using UnityEngine.TestTools;
 
-
-namespace Charactr.Tests
+namespace Charactr.VoiceSDK.Tests
 {
     public class Voices: TestBase
     {

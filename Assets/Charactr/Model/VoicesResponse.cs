@@ -1,31 +1,8 @@
-using System.Collections.Generic;
-using Charactr.Api.Rest;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Charactr.Api.Rest
+namespace Charactr.VoiceSDK.Model
 {
-	public interface IAPIResponse
-	{
-		
-	}
-
-	public class RequestBase
-	{
-		public string ToJson() => 
-			JsonConvert.SerializeObject(this);
-
-		public override string ToString() => ToJson();
-	}
-
-	public class ConvertRequest: RequestBase
-	{
-		[JsonProperty("voiceId")]
-		public int VoiceId { get; set; }
-
-		[JsonProperty("text")]
-		public string Text { get; set; }
-	}
-	
 	public class VoicesResponse : List<VoiceDescription>, IAPIResponse
 	{
 		

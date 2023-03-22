@@ -1,13 +1,13 @@
 using System;
 using System.Collections;
 using System.Threading.Tasks;
-using Charactr.Api.Rest;
+using Charactr.VoiceSDK.Model;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.Windows;
 
-namespace Charactr.Tests
+namespace Charactr.VoiceSDK.Tests
 {
 	public class Convert : TestBase
 	{

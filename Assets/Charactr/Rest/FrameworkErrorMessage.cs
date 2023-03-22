@@ -1,4 +1,4 @@
-namespace Charactr.Api.Rest
+namespace Charactr.VoiceSDK.Rest
 {
 	public class FrameworkErrorMessage
 	{
