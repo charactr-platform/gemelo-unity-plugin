@@ -12,30 +12,42 @@ namespace Charactr.VoiceSDK.Tests
 	public class Convert : TestBase
 	{
 		private const string ENDPOINT = "convert";
-		
-		private ConvertRequest CreateRequest() => new ConvertRequest()
-		{
-			Text = "This is sample text to convert using Charactr API",
-			VoiceId = 151 //Liam voice
-		};
-		
+
 		[Test]
 		public async Task GetConversion_Returns_WAV()
 		{
-			var wav = await Http.PostAsync(API + ENDPOINT, CreateRequest().ToJson());
-			Assert.NotNull(wav);
-			Assert.IsNotEmpty(wav);
-			File.WriteAllBytes(Application.streamingAssetsPath + "/sample.wav", wav);
+			var wavBytes = await Http.PostAsync(API + ENDPOINT, CreateRequest().ToJson());
+			Assert.NotNull(wavBytes);
+			Assert.IsNotEmpty(wavBytes);
+			File.WriteAllBytes(Application.streamingAssetsPath + "/sample.wav", wavBytes);
+		}
+
+		[Test]
+		public async Task PlayConversion_ConvertToWav_Returns_OK()
+		{
+			var wavBytes = await Http.PostAsync(API + ENDPOINT, CreateRequest().ToJson());
+			Assert.NotNull(wavBytes);
+			Assert.IsNotEmpty(wavBytes);
+			
+			var audioClip = WavUtility.ToAudioClip(wavBytes);
+			var audioPlayer = CreatePlayerObject();
+			
+			Assert.AreEqual(130560, audioClip.samples);
+			Assert.AreEqual(32000, audioClip.frequency);
+			Assert.AreEqual(4.08f, audioClip.length);
+			
+			audioPlayer.PlayOneShot(audioClip);
+			await Task.Delay(4000);
 		}
 
 		[UnityTest]
-		public IEnumerator PlayConversion_Returns_OK()
+		public IEnumerator PlayConversion_Coroutine_Returns_OK()
 		{
 			AudioClip audioClip = null;
-			var audioPlayer = new GameObject("_player").AddComponent<AudioSource>();
-			audioPlayer.gameObject.AddComponent<AudioListener>();
+
+			var audioPlayer = CreatePlayerObject();
 			
-			yield return Http.GetAudio(API + ENDPOINT, CreateRequest().ToJson(), clip =>
+			yield return Http.GetAudioClipRoutine(API + ENDPOINT, CreateRequest().ToJson(), clip =>
 			{
 				audioClip = clip;
 				audioPlayer.PlayOneShot(clip);

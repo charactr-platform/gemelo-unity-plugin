@@ -66,7 +66,7 @@ namespace Charactr.VoiceSDK.Rest
 			return content;
 		}
 
-		public IEnumerator GetAudio(string url, string jsonPayload, Action<AudioClip> onDownloaded, AudioType audioType = AudioType.WAV)
+		public IEnumerator GetAudioClipRoutine(string url, string jsonPayload, Action<AudioClip> onDownloaded, AudioType audioType = AudioType.WAV)
 		{
 			var handler = new DownloadHandlerAudioClip(url, audioType);
 
