@@ -1,7 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
+using Charactr.SDK.Library;
 using Charactr.VoiceSDK.Model;
 using Charactr.VoiceSDK.Rest;
+using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace Charactr.VoiceSDK.SDK
@@ -9,22 +13,25 @@ namespace Charactr.VoiceSDK.SDK
 	/// <summary>
 	/// Base class to utilize Charactr API
 	/// </summary>
-	public class Convert: IConvert
+	public class Convert: IConvert, IDisposable
 	{
-		private RestHttpClient _client;
-		private Configuration _configuration;
+		public Configuration Configuration { get; }
+		private readonly RestHttpClient _client;
+		
 		public Convert()
 		{
-			_configuration = Configuration.Load();
+			var configuration = Configuration.Load();
 			
-			if (_configuration == null)
+			if (configuration == null)
 			{
 				//TODO: Show new configuration wizard
 				Debug.LogError("Can't find configuration");
 				return;
 			}
 
-			_client = new RestHttpClient(_configuration.ApiClient, _configuration.ApiKey, OnRestError);
+			Configuration = configuration;
+			
+			_client = new RestHttpClient(configuration.ApiClient, configuration.ApiKey, OnRestError);
 		}
 
 		private void OnRestError(FrameworkErrorMessage errorMessage)
@@ -42,12 +49,23 @@ namespace Charactr.VoiceSDK.SDK
 		/// <exception cref="Exception">Throws exception when data can't be downloaded, ie. network error</exception>
 		public async Task<AudioClip> ConvertToAudioClip(ConvertRequest convertRequest)
 		{
+			if (string.IsNullOrEmpty(convertRequest.Text))
+				throw new Exception("Text can't be empty");
+
+			if (convertRequest.VoiceId <= 0)
+				throw new Exception("Please set proper voice Id");
+				
 			var wavData = await _client.PostAsync(Configuration.API + "convert", convertRequest.ToJson());
 			
 			if (wavData.Length == 0)
 				throw new Exception("Can't download requested WAV data");
 			
 			return WavUtility.ToAudioClip(wavData);
+		}
+		
+		public void Dispose()
+		{
+			_client?.Dispose();
 		}
 	}
 }

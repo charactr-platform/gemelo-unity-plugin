@@ -8,8 +8,10 @@ namespace Charactr.VoiceSDK.Tests
 {
 	public class TestBase
 	{
-		private const string CLIENT_KEY = "87Pgd9jP4BoFeblC8xstxSHGVdnhZl1B";
-		private const string API_KEY = "qynCJRdjOc3hNvAAmDZUMFgTqi1hOXTC";
+		public const int VOICE_ID = 151; //Liam voice
+		
+		public const string CLIENT_KEY = "87Pgd9jP4BoFeblC8xstxSHGVdnhZl1B";
+		public const string API_KEY = "qynCJRdjOc3hNvAAmDZUMFgTqi1hOXTC";
 		
 		protected RestHttpClient Http;
 		protected Configuration Configuration;
@@ -27,7 +29,7 @@ namespace Charactr.VoiceSDK.Tests
 		protected ConvertRequest CreateRequest() => new ConvertRequest()
 		{
 			Text = "This is sample text to convert using Charactr API",
-			VoiceId = 151 //Liam voice
+			VoiceId = VOICE_ID
 		};
 
 		protected AudioSource CreatePlayerObject()

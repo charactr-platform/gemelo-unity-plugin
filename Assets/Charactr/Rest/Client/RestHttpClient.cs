@@ -14,7 +14,7 @@ using UnityEngine.Networking;
 
 namespace Charactr.VoiceSDK.Rest
 {
-	public class RestHttpClient
+	public class RestHttpClient: IDisposable
 	{
 		public const string API_CLIENT = "X-Client-Key";
 		public const string API_KEY = "X-Api-Key";
@@ -113,6 +113,11 @@ namespace Charactr.VoiceSDK.Rest
 			request.Content = new StringContent(jsonPayload, Encoding.UTF8,"application/json" );
 			var response = await _client.SendAsync(request);
 			return response.StatusCode;
+		}
+
+		public void Dispose()
+		{
+			_client?.Dispose();
 		}
 	}
 }
