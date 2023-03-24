@@ -35,7 +35,7 @@ namespace Charactr.SDK.Library
         [SerializeField] private string text;
         [SerializeField] private int voiceId;
         [SerializeField] private AudioClip audioClip;
-
+        
         public bool IsValid() => !string.IsNullOrEmpty(Text) && VoiceId > 0 && voiceId < 999;
         public ConvertRequest GetRequest()
         {

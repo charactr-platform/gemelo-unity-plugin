@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:Button text="Create library" display-tooltip-when-elided="true" name="createButton" />
+    <ui:Button text="Load library" display-tooltip-when-elided="true" name="loadButton" />
+    <ui:ScrollView scroll-deceleration-rate="0,135" elasticity="0,1" mode="VerticalAndHorizontal" style="flex-basis: auto; width: 100%;">
+        <uie:PropertyField binding-path="items" label="VoiceItems" style="margin-left: 25px; margin-right: 25px; margin-top: auto; margin-bottom: auto; flex-wrap: wrap; flex-basis: auto; width: auto; height: auto;" />
+    </ui:ScrollView>
+    <ui:Button text="Update library clips" display-tooltip-when-elided="true" name="updateButton" />
+</ui:UXML>
