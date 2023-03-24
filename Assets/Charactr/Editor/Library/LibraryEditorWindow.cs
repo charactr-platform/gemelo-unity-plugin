@@ -6,7 +6,7 @@ using UnityEditor.UIElements;
 
 public class LibraryEditor : EditorWindow
 {
-    [MenuItem("Window/UI Toolkit/LibraryEditor")]
+    [MenuItem("Charactr/LibraryEditor")]
     public static void ShowExample()
     {
         LibraryEditor wnd = GetWindow<LibraryEditor>();
@@ -23,13 +23,13 @@ public class LibraryEditor : EditorWindow
         root.Add(label);
 
         // Import UXML
-        var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Charactr/Editor/LibraryEditor.uxml");
+        var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Charactr/Editor/Library/LibraryEditorWindow.uxml");
         VisualElement labelFromUXML = visualTree.Instantiate();
         root.Add(labelFromUXML);
 
         // A stylesheet can be added to a VisualElement.
         // The style will be applied to the VisualElement and all of its children.
-        var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Charactr/Editor/LibraryEditor.uss");
+        var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Charactr/Editor/Library/LibraryEditorWindow.uss");
         VisualElement labelWithStyle = new Label("Hello World! With Style");
         labelWithStyle.styleSheets.Add(styleSheet);
         root.Add(labelWithStyle);
