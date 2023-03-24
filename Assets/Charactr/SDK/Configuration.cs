@@ -7,7 +7,7 @@ namespace Charactr.VoiceSDK.SDK
 	{
 		public const string API = "https://api.charactr.com/v1/tts/";
 		private const string FILENAME = "Configuration";
-		private const string SAVE_PATH = "Assets/Charactr/SDK/Resources/"+FILENAME+".asset";
+		public const string SAVE_PATH = "Assets/Charactr/SDK/Resources/"+FILENAME+".asset";
 		
 		public string ApiClient
 		{

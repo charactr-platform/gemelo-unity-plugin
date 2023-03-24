@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Charactr.SDK.Editor;
 using Charactr.SDK.Library;
 using Charactr.VoiceSDK.Model;
 using Charactr.VoiceSDK.Rest;
@@ -24,8 +25,7 @@ namespace Charactr.VoiceSDK.SDK
 			
 			if (configuration == null)
 			{
-				//TODO: Show new configuration wizard
-				Debug.LogError("Can't find configuration");
+				ApiConfigurationWindow.ShowWindow();
 				return;
 			}
 
@@ -49,6 +49,9 @@ namespace Charactr.VoiceSDK.SDK
 		/// <exception cref="Exception">Throws exception when data can't be downloaded, ie. network error</exception>
 		public async Task<AudioClip> ConvertToAudioClip(ConvertRequest convertRequest)
 		{
+			if (_client == null)
+				throw new Exception("Can't connect to API, please provide configuration details first!");
+			
 			if (string.IsNullOrEmpty(convertRequest.Text))
 				throw new Exception("Text can't be empty");
 
