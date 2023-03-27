@@ -5,7 +5,6 @@ using Charactr.VoiceSDK.Model;
 using Charactr.VoiceSDK.SDK;
 using UnityEditor;
 using UnityEngine;
-using Convert = Charactr.VoiceSDK.SDK.Convert;
 
 namespace Charactr.SDK.Library
 {
@@ -56,7 +55,7 @@ namespace Charactr.SDK.Library
             using (var convert = new Convert())
             {
                 audioClip = await convert.ConvertToAudioClip(GetRequest());
-                SaveInProject(convert.Configuration);
+                SaveInProject(convert);
             }
 
             Debug.Log($"Updated audio clip for voiceItem = {Id}");
@@ -64,19 +63,25 @@ namespace Charactr.SDK.Library
         }
         
     
-        public void SaveInProject(Configuration configuration)
+        public void SaveInProject(Convert convert)
         {
 #if UNITY_EDITOR
             if (audioClip == null)
                 throw new Exception($"VoiceItem ({Id}) don't contains generated AudioClip");
 
+            if (convert.Data == null || convert.Data.Length == 0)
+                throw new Exception("Can't save file, data is empty");
+            
+            var configuration = convert.Configuration;
+            var data = convert.Data;
+            
             var di = new DirectoryInfo(configuration.AudioSavePath);
 			
             if (!di.Exists)
                 di.Create();
 
             var filePath = $"{configuration.AudioSavePath}/{Id}.wav";
-            File.WriteAllBytes(filePath, WavUtility.FromAudioClip(AudioClip));
+            File.WriteAllBytes(filePath, data);
             AssetDatabase.ImportAsset(filePath);
             Debug.Log($"Saved asset at: {filePath}");
             AudioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(filePath);
