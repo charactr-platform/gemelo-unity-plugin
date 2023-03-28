@@ -1,15 +1,13 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 using Charactr.SDK.Editor;
-using Charactr.SDK.Library;
+using Charactr.SDK.Wav;
 using Charactr.VoiceSDK.Model;
 using Charactr.VoiceSDK.Rest;
-using NUnit.Framework;
-using UnityEditor;
+using Charactr.VoiceSDK.SDK;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.SDK
+namespace Charactr.SDK
 {
 	/// <summary>
 	/// Base class to utilize Charactr API
@@ -17,6 +15,8 @@ namespace Charactr.VoiceSDK.SDK
 	public class Convert: IConvert, IDisposable
 	{
 		public Configuration Configuration { get; }
+		public byte[] Data { get; private set; }
+		
 		private readonly RestHttpClient _client;
 		
 		public Convert()
@@ -63,7 +63,9 @@ namespace Charactr.VoiceSDK.SDK
 			if (wavData.Length == 0)
 				throw new Exception("Can't download requested WAV data");
 			
-			return WavUtility.ToAudioClip(wavData);
+			Data = wavData;
+			
+			return new WavBuilder(wavData).CreateAudioClip();
 		}
 		
 		public void Dispose()
