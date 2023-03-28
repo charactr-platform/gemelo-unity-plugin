@@ -9,5 +9,6 @@ namespace Charactr.VoiceSDK.Model
 
 		[JsonProperty("text")]
 		public string Text { get; set; }
+		
 	}
 }
