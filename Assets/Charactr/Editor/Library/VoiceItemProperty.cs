@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Charactr.SDK.Library;
@@ -5,6 +6,7 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Object = UnityEngine.Object;
 using VoiceItem = Charactr.SDK.Library.VoiceItem;
 
 namespace Charactr.Editor.Library
@@ -59,7 +61,9 @@ namespace Charactr.Editor.Library
             if (objectReferenceValue is AudioClip audioclip)
             {
                 Debug.Log($"Playing : {audioclip.name}");
+                EditorAudioPlayer.PlayClip(audioclip);
             }
         }
+        
     }
 }
