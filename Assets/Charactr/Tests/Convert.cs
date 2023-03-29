@@ -1,6 +1,7 @@
 using System.Collections;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using Charactr.Editor.Library;
 using Charactr.SDK;
 using Charactr.SDK.Wav;
 using Charactr.VoiceSDK.SDK;
@@ -48,8 +49,7 @@ namespace Charactr.VoiceSDK.Tests
 			Assert.AreEqual(32000, clip.frequency);
 			Assert.AreEqual(4.08f, clip.length);
 			
-			var player = CreatePlayerObject();
-			player.PlayOneShot(clip);
+			EditorAudioPlayer.PlayClip(clip);
 			await Task.Delay((int)clip.length * 1000);
 		}
 		
@@ -57,26 +57,18 @@ namespace Charactr.VoiceSDK.Tests
 		public IEnumerator PlayConversion_Coroutine_Returns_OK()
 		{
 			AudioClip audioClip = null;
-
-			var audioPlayer = CreatePlayerObject();
 			
 			yield return Http.GetAudioClipRoutine(Configuration.API + ENDPOINT, CreateRequest().ToJson(), clip =>
 			{
 				audioClip = clip;
-				audioPlayer.PlayOneShot(clip);
 				Debug.Log($"Clip: {clip.frequency} {clip.length} {clip.samples}");
 			});
-			
-			//Give it time to play till end 
-			while (audioPlayer.isPlaying)
-			{
-				yield return null;
-			}
-			
 			Assert.NotNull(audioClip);
 			Assert.AreEqual(130560, audioClip.samples);
 			Assert.AreEqual(32000, audioClip.frequency);
 			Assert.AreEqual(4.08f, audioClip.length);
+			
+			yield return EditorAudioPlayer.PlayClipRoutine(audioClip);
 		}
 	}
 }

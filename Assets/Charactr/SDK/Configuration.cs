@@ -34,9 +34,6 @@ namespace Charactr.VoiceSDK.SDK
 #if UNITY_EDITOR
 		public static void Save(string apiClient, string apiKey, string audioSavePath = "Assets/Charactr/Audio/")
 		{
-			if (Load() != null && !EditorUtility.DisplayDialog("Overwrite", "Found previous configuration, overwrite?", "YES", "CANCEL"))
-				return;
-			
 			var instance = CreateInstance<Configuration>();
 			instance.Create(apiClient, apiKey, audioSavePath);
 			AssetDatabase.CreateAsset(instance, SAVE_PATH);

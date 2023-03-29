@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 
 namespace Charactr.Editor.Library
 {
 	[ExecuteInEditMode]
 	[RequireComponent(typeof(AudioListener), typeof(AudioSource))]
-	public class EditorAudioPlayer : MonoBehaviour
+	public class EditorAudioPlayer : MonoBehaviour, IDisposable
 	{
 		private AudioListener _listener;
 		private AudioSource _source;
@@ -18,15 +19,34 @@ namespace Charactr.Editor.Library
 
 		public static void PlayClip(AudioClip clip)
 		{
-			var player = new GameObject("~player").AddComponent<EditorAudioPlayer>();
-			player.PlayOneShot(clip);
+			var name = $"~TempPlayer_{clip.name}";
+			GetInstance(name).PlayOneShot(clip);
+		}
+
+		private static EditorAudioPlayer GetInstance(string name)
+		{
+			return new GameObject(name).AddComponent<EditorAudioPlayer>();
+		}
+		public static IEnumerator PlayClipRoutine(AudioClip clip)
+		{
+			var name = $"~TempPlayer_{clip.name}";
+			
+			using (var player = GetInstance(name))
+			{
+				player.TryGetComponent(out AudioSource source);
+				source.PlayOneShot(clip);
+
+				while (source.isPlaying)
+				{
+					yield return null;
+				}
+			}
 		}
 		
-		public void PlayOneShot(AudioClip clip)
+		private void PlayOneShot(AudioClip clip)
 		{
-			TryGetComponent(out _listener);
 			TryGetComponent(out _source);
-			name = $"~TempPlayer_{clip.name}";
+		
 			_source.PlayOneShot(clip);
 			_isPlaying = clip.length > 0.1f;
 		}
@@ -41,9 +61,14 @@ namespace Charactr.Editor.Library
 		{
 			if (!_source.isPlaying)
 			{
-				_isPlaying = false;
-				DestroyImmediate(gameObject, false);
+				Dispose();
 			}
+		}
+		
+		public void Dispose()
+		{
+			_isPlaying = false;
+			DestroyImmediate(gameObject, false);
 		}
 	}
 }

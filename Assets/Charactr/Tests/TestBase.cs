@@ -1,3 +1,4 @@
+using Charactr.Editor.Library;
 using Charactr.VoiceSDK.Model;
 using Charactr.VoiceSDK.Rest;
 using Charactr.VoiceSDK.SDK;
@@ -31,16 +32,5 @@ namespace Charactr.VoiceSDK.Tests
 			Text = "This is sample text to convert using Charactr API",
 			VoiceId = VOICE_ID
 		};
-
-		protected AudioSource CreatePlayerObject()
-		{
-			var audioPlayer = new GameObject("_player").AddComponent<AudioSource>();
-			var audioListener = audioPlayer.gameObject.AddComponent<AudioListener>();
-			
-			Assert.NotNull(audioPlayer);
-			Assert.NotNull(audioListener);
-			
-			return audioPlayer;
-		}
 	}
 }
