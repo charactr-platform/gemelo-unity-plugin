@@ -1,5 +1,5 @@
 Label {
-    font-size: 20px;
+    font-size: 16px;
     -unity-font-style: bold;
-    color: rgb(68, 138, 255);
+    color: rgb(118, 118, 118);
 }

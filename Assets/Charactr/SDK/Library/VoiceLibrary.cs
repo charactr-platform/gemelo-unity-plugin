@@ -9,6 +9,7 @@ namespace Charactr.SDK.Library
 	[CreateAssetMenu(menuName = "VoiceSDK/Create VoiceLibrary", fileName = "VoiceLibrary", order = 0)]
 	public class VoiceLibrary : ScriptableObject
 	{
+		public const string SAVE_PATH = "Charactr/Resources";
 		public List<VoiceItem> Items
 		{
 			get => items;
@@ -19,6 +20,13 @@ namespace Charactr.SDK.Library
 		public VoiceLibrary()
 		{
 			items = new List<VoiceItem>();
+		}
+
+		public static void Create()
+		{
+			var instance = CreateInstance<VoiceLibrary>();
+			var path = AssetDatabase.GenerateUniqueAssetPath($"Assets/{SAVE_PATH}/VoiceLibrary.asset");
+			AssetDatabase.CreateAsset(instance, path);
 		}
 		public bool GetItemByVoiceId(int voiceId, out VoiceItem voiceItem)
 		{
