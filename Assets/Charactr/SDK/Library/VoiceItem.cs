@@ -29,7 +29,7 @@ namespace Charactr.SDK.Library
             set => audioClip = value;
         }
 
-        public int Id => Mathf.Abs(text.GetHashCode());
+        public int Id => Mathf.Abs(text.GetHashCode() + voiceId);
         
         [SerializeField] private string text;
         [SerializeField] private int voiceId;
@@ -80,7 +80,7 @@ namespace Charactr.SDK.Library
             if (!di.Exists)
                 di.Create();
 
-            var filePath = $"{configuration.AudioSavePath}/{Id}.wav";
+            var filePath = $"{configuration.AudioSavePath}{Id}.wav";
             File.WriteAllBytes(filePath, data);
             AssetDatabase.ImportAsset(filePath);
             Debug.Log($"Saved asset at: {filePath}");

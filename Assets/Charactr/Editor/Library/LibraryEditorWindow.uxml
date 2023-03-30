@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <Style src="project://database/Assets/Charactr/Editor/Library/LibraryEditorWindow.uss?fileID=7433441132597879392&amp;guid=00118f51d99b4ea45954e7e7e70cbe72&amp;type=3#LibraryEditorWindow" />
-    <ui:Label text="Text-to-Voice library editor" style="justify-content: center; align-items: center; -unity-text-align: upper-center; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;" />
+    <ui:Label text="Text-to-Voice library editor" class="TopLabel topLabel" style="justify-content: center; align-items: center; -unity-text-align: upper-center; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;" />
     <ui:Button text="Create new library" display-tooltip-when-elided="true" name="createButton" />
     <ui:ScrollView />
 </ui:UXML>

@@ -10,6 +10,12 @@ namespace Charactr.SDK.Library
 	public class VoiceLibrary : ScriptableObject
 	{
 		public const string SAVE_PATH = "Charactr/Resources";
+		
+		public bool IsEmpty
+		{
+			get => items.Count == 0;
+		}
+		
 		public List<VoiceItem> Items
 		{
 			get => items;
@@ -97,7 +103,7 @@ namespace Charactr.SDK.Library
 			}
 			else
 			{
-				Debug.LogError("Can't find valid voice item with id = {id}");
+				Debug.LogError($"Can't find valid voice item with id = {id}");
 			}
 		}
 		

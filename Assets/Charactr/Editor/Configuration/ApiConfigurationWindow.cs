@@ -11,11 +11,12 @@ namespace Charactr.SDK.Editor
         private const string API_URL = "https://api.charactr.com";
         private TextField _keyField, _clientField;
         
-        [MenuItem("Charactr/ApiConfigurationWindow")]
+        [MenuItem("Charactr/Configuration")]
         public static void ShowWindow()
         {
             var wnd = GetWindow<ApiConfigurationWindow>();
-            wnd.titleContent = new GUIContent("ApiConfigurationWindow"); ;
+            wnd.titleContent = new GUIContent("Charactr SDK Configuration");
+            
         }
 
         public void CreateGUI()
@@ -30,12 +31,21 @@ namespace Charactr.SDK.Editor
 
             _clientField = root.Q<TextField>("ClientText");
             _keyField = root.Q<TextField>("ApiText");
-            
-            var linkButton = root.Q<Button>("LinkButton");
-            linkButton.RegisterCallback<MouseUpEvent>((e)=> Application.OpenURL(API_URL));
 
             var saveButton = root.Q<Button>("SaveButton");
             saveButton.RegisterCallback<MouseUpEvent>((e)=> SaveConfiguration());
+            
+            var linkButton = root.Q<Button>("LinkButton");
+            linkButton.RegisterCallback<MouseUpEvent>((e)=> Application.OpenURL(API_URL));
+            
+            var config = Configuration.Load();
+            
+            if (config != null)
+            {
+                _clientField.value = config.ApiClient;
+                _keyField.value = config.ApiKey;
+                saveButton.text = "Update";
+            }
         }
 
         private void SaveConfiguration()

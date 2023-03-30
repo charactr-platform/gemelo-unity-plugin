@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using Charactr.SDK.Library;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
 using VoiceItem = Charactr.SDK.Library.VoiceItem;
@@ -35,34 +37,74 @@ namespace Charactr.Editor.Library
                     borderRightColor = noneStyle,
                 }
             };
-
+            
             var textField = new PropertyField(property.FindPropertyRelative("text"), "Text to voice");
             var voiceField = new PropertyField(property.FindPropertyRelative("voiceId"), "Selected Voice");
             var audioField = new PropertyField(audioClip, "Audio");
             
-            var playButton = new Button(() => PlayAudioClip(audioClip.objectReferenceValue))
-            {
-                text = "Play",
-            };
-            
+            audioField.RegisterValueChangeCallback((s)=>UpdatePlayButtons(property, popup));
             popup.Add(textField);
             popup.Add(voiceField);
             popup.Add(audioField);
-            popup.Add(playButton);
-            
             container.Add(popup);
-
+            
             // Return the finished UI
             return container;
         }
 
-        private void PlayAudioClip(Object objectReferenceValue)
+        private void UpdatePlayButtons(SerializedProperty property, VisualElement container)
         {
-            if (objectReferenceValue is AudioClip audioclip)
+            var play = "playButton";
+            var get = "getButton";
+            
+            var audioClip = property.FindPropertyRelative("audioClip");
+            var audioClipPresent = audioClip.objectReferenceValue != null;
+
+            if (container.Q<Button>(get) != null && audioClipPresent)
+                container.Remove(container.Q<Button>(get ));
+            
+            if (container.Q<Button>(play) != null && audioClipPresent == false)
+                container.Remove(container.Q<Button>(play));
+
+            if (audioClip.objectReferenceValue is AudioClip clip)
             {
-                Debug.Log($"Playing : {audioclip.name}");
-                EditorAudioPlayer.PlayClip(audioclip);
+                var playButton = new Button(() => PlayAudioClip(clip))
+                {
+                    text = $"Play (duration {clip.length.ToString(CultureInfo.InvariantCulture)}s)",
+                    name = play
+                };
+                container.Add(playButton);
             }
+            else
+            {
+                var getButton = new Button(() => DownloadClip(property))
+                {
+                    text = "Download audio clip",
+                    name = get 
+                };
+                container.Add(getButton);
+            }
+        }
+        private async void DownloadClip(SerializedProperty property)
+        {
+            if (Selection.activeObject is VoiceLibrary voiceLibrary)
+            {
+                var hashId = CalculateCurrentHash(property);
+                await voiceLibrary.AddAudioClip(hashId);
+            }
+        }
+        
+        private int CalculateCurrentHash(SerializedProperty property)
+        {
+            var textProperty = property.FindPropertyRelative("text");
+            var voiceId = property.FindPropertyRelative("voiceId");
+            return Mathf.Abs(textProperty.stringValue.GetHashCode() + voiceId.intValue);
+        }
+        
+        private void PlayAudioClip(AudioClip audioclip)
+        {
+            Debug.Log($"Playing : {audioclip.name}");
+            EditorAudioPlayer.PlayClip(audioclip);
         }
         
     }

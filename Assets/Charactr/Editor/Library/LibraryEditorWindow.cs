@@ -12,9 +12,10 @@ namespace Charactr.SDK.Editor.Library
     public class LibraryEditorWindow : EditorWindow
     {
         public VisualTreeAsset visualTreeAsset;
-        private Button _button;
+        
         private VisualElement _root;
         private List<ObjectField> _libraryObjects;
+        private Button _deleteButton, _openButton;
         
         [MenuItem("Charactr/LibraryEditor")]
         public static void ShowWindow()
@@ -27,19 +28,13 @@ namespace Charactr.SDK.Editor.Library
         {
             // Each editor window contains a root VisualElement object
             _root = rootVisualElement;
-
-            
+            var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Charactr/Editor/Library/LibraryEditorWindow.uss");
             // Import UXML
-            VisualElement labelFromUXML = visualTreeAsset.Instantiate();
+            var labelFromUXML = visualTreeAsset.Instantiate();
             _root.Add(labelFromUXML);
 
             _root.Q<Button>("createButton").RegisterCallback<ClickEvent>((e) => OnCreateButton());
 
-            // A stylesheet can be added to a VisualElement.
-            // The style will be applied to the VisualElement and all of its children.
-            var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Charactr/Editor/Library/LibraryEditorWindow.uss");
-            VisualElement labelWithStyle = new Label("Hello World! With Style");
-            _root.Add(labelWithStyle);
             LoadItems();
         }
 
@@ -60,21 +55,87 @@ namespace Charactr.SDK.Editor.Library
                 {
                     _root.Remove(libraryObject);
                 }
+                
+                RemoveOpenButton();
+                RemoveDeleteButton();
             }
 
             _libraryObjects = new List<ObjectField>();
             
             foreach (var library in listOfLibraryObjects)
             {
-                var of = new ObjectField($" {count++} - Items: {library.Items.Count}")
+                var of = new ObjectField($" {count++} - Added items: {library.Items.Count}")
                 {
                     objectType = typeof(VoiceLibrary),
                     value = library,
                     focusable = false,
+                    style = { marginTop = new StyleLength(5)}
                 };
-                of.RegisterCallback<ClickEvent>((e) => {Debug.Log("Clicked on "+ library.name); });
+                
+                of.RegisterCallback<ClickEvent>((e) => AddContextButtons(library));
                 _libraryObjects.Add(of);
                 _root.Add(of);
+            }
+        }
+
+        private void AddContextButtons(VoiceLibrary library)
+        {
+            Debug.Log("Clicked on "+ library.name);
+
+            RemoveDeleteButton();
+            RemoveOpenButton();
+            
+            AddOpenButton(library);
+            AddDeleteButton(library);
+        }
+        
+        private void AddDeleteButton(VoiceLibrary library)
+        {
+            _deleteButton = new Button(() =>
+            {
+                var path = AssetDatabase.GetAssetPath(library);
+                if (AssetDatabase.DeleteAsset(path))
+                {
+                    LoadItems();
+                }
+            })
+            {
+                text = $"Delete: {library.name}",
+                style = { marginTop = new StyleLength(5),}
+            };
+            
+            _root.Add(_deleteButton);
+        }
+        
+        private void AddOpenButton(VoiceLibrary library)
+        {
+            _openButton = new Button(() =>
+            {
+                Selection.objects = new Object[] {library};
+            })
+            {
+                text = $"Open in inspector: {library.name}",
+                style = { marginTop = new StyleLength(5)}
+            };
+            
+            _root.Add(_openButton );
+        }
+
+        private void RemoveDeleteButton()
+        {
+            if (_deleteButton != null)
+            {
+                _root.Remove(_deleteButton);
+                _deleteButton = null;
+            }
+        }
+        
+        private void RemoveOpenButton()
+        {
+            if (_openButton != null)
+            {
+                _root.Remove(_openButton);
+                _openButton = null;
             }
         }
     }
