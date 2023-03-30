@@ -16,6 +16,9 @@ namespace Charactr.Editor.Library
     [CustomPropertyDrawer(typeof(VoiceItem))]
     public class VoiceItemProperty : PropertyDrawer
     {
+        private int _lastHash;
+        private int _lastAudioClipHash;
+        private VisualElement _popup;
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             // Create a new VisualElement to be the root the property UI
@@ -42,12 +45,18 @@ namespace Charactr.Editor.Library
             var voiceField = new PropertyField(property.FindPropertyRelative("voiceId"), "Selected Voice");
             var audioField = new PropertyField(audioClip, "Audio");
             
-            audioField.RegisterValueChangeCallback((s)=>UpdatePlayButtons(property, popup));
+            audioField.RegisterValueChangeCallback((s)=> UpdatePlayButtons(property, popup));
+            textField.RegisterValueChangeCallback((s)=> UpdatePlayButtons(property, popup));
+            voiceField.RegisterValueChangeCallback((s)=> UpdatePlayButtons(property, popup));
+            
             popup.Add(textField);
             popup.Add(voiceField);
             popup.Add(audioField);
             container.Add(popup);
             
+            _lastHash = CalculateCurrentHash(property);
+            _lastAudioClipHash = audioClip.GetHashCode();
+            _popup = popup;
             // Return the finished UI
             return container;
         }
@@ -58,17 +67,25 @@ namespace Charactr.Editor.Library
             var get = "getButton";
             
             var audioClip = property.FindPropertyRelative("audioClip");
-            var audioClipPresent = audioClip.objectReferenceValue != null;
-
-            if (container.Q<Button>(get) != null && audioClipPresent)
-                container.Remove(container.Q<Button>(get ));
             
-            if (container.Q<Button>(play) != null && audioClipPresent == false)
-                container.Remove(container.Q<Button>(play));
+            var newFieldsHash = CalculateCurrentHash(property);
+            var newAudioHash = audioClip.GetHashCode();
+       
+            var fieldsUpdateOccured = _lastHash != newFieldsHash;
+            var audioClipUpdateOccured = _lastAudioClipHash != newAudioHash;
 
-            if (audioClip.objectReferenceValue is AudioClip clip)
+            //TODO: recycle buttons instead of removing them
+            var getButton = container.Q<Button>(get);
+            if (getButton != null)
+                container.Remove(getButton);
+
+            var playButton = container.Q<Button>(play);
+            if (playButton != null)
+                container.Remove(playButton);
+
+            if (audioClip.objectReferenceValue is AudioClip clip && !fieldsUpdateOccured && audioClipUpdateOccured)
             {
-                var playButton = new Button(() => PlayAudioClip(clip))
+                playButton = new Button(() => PlayAudioClip(clip))
                 {
                     text = $"Play (duration {clip.length.ToString(CultureInfo.InvariantCulture)}s)",
                     name = play
@@ -77,20 +94,32 @@ namespace Charactr.Editor.Library
             }
             else
             {
-                var getButton = new Button(() => DownloadClip(property))
+                getButton = new Button(() =>
                 {
-                    text = "Download audio clip",
+                    //TODO: Remove old audio clip as we get a new one
+                    getButton.text = "Downloading...";
+                    getButton.clickable = null;
+                    
+                    DownloadClip(property, () => UpdatePlayButtons(property, container));
+                })
+                {
+                    text = fieldsUpdateOccured ? "Update audio clip":"Download audio clip", 
                     name = get 
                 };
+                
                 container.Add(getButton);
             }
+
+            _lastHash = newFieldsHash;
+            _lastAudioClipHash = newAudioHash;
         }
-        private async void DownloadClip(SerializedProperty property)
+        private async void DownloadClip(SerializedProperty property, Action onClipReady)
         {
             if (Selection.activeObject is VoiceLibrary voiceLibrary)
             {
                 var hashId = CalculateCurrentHash(property);
                 await voiceLibrary.AddAudioClip(hashId);
+                onClipReady.Invoke();
             }
         }
         
