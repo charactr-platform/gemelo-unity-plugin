@@ -38,7 +38,7 @@ namespace Charactr.SDK.Library
 		{
 			var index = items.FindIndex(f => f.VoiceId == voiceId);
 
-			voiceItem = default;
+			voiceItem = null;
 			
 			if (index < 0)
 			{
@@ -54,7 +54,7 @@ namespace Charactr.SDK.Library
 		{
 			var index = items.FindIndex(f => f.Id == id);
 			
-			voiceItem = default;
+			voiceItem = null;
 			
 			if (index < 0)
 			{
@@ -66,6 +66,20 @@ namespace Charactr.SDK.Library
 			voiceItem = items[index];
 			
 			return true;
+		}
+
+		public bool GetAudioClipById(int id, out AudioClip audioClip)
+		{
+			audioClip = null;
+			
+			if (GetItemById(id, out var voiceItem) && voiceItem.AudioClip != null)
+			{
+				audioClip = voiceItem.AudioClip;
+				return true;
+			}
+			
+			Debug.LogError($"Can't find AudioClip for item with id={id}");
+			return false;
 		}
 		
 		public int AddNewItem(string text, int voiceId)
@@ -99,7 +113,6 @@ namespace Charactr.SDK.Library
 			if (item.IsValid())
 			{
 				await item.GetAudioClip();
-				Debug.LogAssertion(item.AudioClip != null);
 			}
 			else
 			{

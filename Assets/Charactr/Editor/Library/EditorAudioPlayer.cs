@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Charactr.Editor.Library
 {
 	[ExecuteInEditMode]
-	[RequireComponent(typeof(AudioListener), typeof(AudioSource))]
+	[RequireComponent(typeof(AudioSource))]
 	public class EditorAudioPlayer : MonoBehaviour, IDisposable
 	{
 		private AudioListener _listener;
@@ -15,6 +15,9 @@ namespace Charactr.Editor.Library
 		private void Awake()
 		{
 			gameObject.hideFlags = HideFlags.HideAndDontSave;
+			
+			if (FindObjectOfType<AudioListener>() == null)
+				gameObject.AddComponent<AudioListener>();
 		}
 
 		public static void PlayClip(AudioClip clip)
@@ -35,20 +38,15 @@ namespace Charactr.Editor.Library
 			{
 				player.TryGetComponent(out AudioSource source);
 				source.PlayOneShot(clip);
-
-				while (source.isPlaying)
-				{
-					yield return null;
-				}
+				yield return new WaitForSecondsRealtime(clip.length);
 			}
 		}
 		
 		private void PlayOneShot(AudioClip clip)
 		{
 			TryGetComponent(out _source);
-		
 			_source.PlayOneShot(clip);
-			_isPlaying = clip.length > 0.1f;
+			_isPlaying = clip.length > Mathf.Epsilon;
 		}
 
 		private void Update()

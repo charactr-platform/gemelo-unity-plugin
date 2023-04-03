@@ -18,19 +18,31 @@ namespace Charactr.Editor.Library
     {
         private int _lastHash;
         private int _lastAudioClipHash;
-        private VisualElement _popup;
+        private SerializedProperty _textField;
+        private SerializedProperty _voiceId;
+        private SerializedProperty _audioClip;
+        private VoiceLibrary _target;
+        
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
+            _target = property.serializedObject.targetObject as VoiceLibrary;
+            
+            _textField = property.FindPropertyRelative("text");
+            _voiceId = property.FindPropertyRelative("voiceId");
+            _audioClip = property.FindPropertyRelative("audioClip");
+            
+            _lastHash = CalculateCurrentHash(property);
+            _lastAudioClipHash = _audioClip.GetHashCode();
+            
             // Create a new VisualElement to be the root the property UI
             var container = new VisualElement();
-
-            var noneStyle = new StyleColor(StyleKeyword.None);
             
-            var audioClip = property.FindPropertyRelative("audioClip");
+            var noneStyle = new StyleColor(StyleKeyword.None);
             
             var popup = new UnityEngine.UIElements.PopupWindow
             {
-                text = $"Voice item details ",
+                text = $"Voice item details [{_lastHash}]",
+                tooltip = "Click to copy item ID into clipboard...",
                 style =
                 {
                     backgroundColor = noneStyle,
@@ -41,35 +53,35 @@ namespace Charactr.Editor.Library
                 }
             };
             
-            var textField = new PropertyField(property.FindPropertyRelative("text"), "Text to voice");
-            var voiceField = new PropertyField(property.FindPropertyRelative("voiceId"), "Selected Voice");
-            var audioField = new PropertyField(audioClip, "Audio");
+            popup.RegisterCallback<ClickEvent>((e)=> EditorGUIUtility.systemCopyBuffer = _lastHash.ToString());
             
-            audioField.RegisterValueChangeCallback((s)=> UpdatePlayButtons(property, popup));
-            textField.RegisterValueChangeCallback((s)=> UpdatePlayButtons(property, popup));
-            voiceField.RegisterValueChangeCallback((s)=> UpdatePlayButtons(property, popup));
+            var textField = new PropertyField(_textField, "Text to voice");
+            var voiceField = new PropertyField(_voiceId, "Selected Voice Id");
+            var audioField = new PropertyField(_audioClip, "Downloaded AudioClip");
             
+        
             popup.Add(textField);
             popup.Add(voiceField);
             popup.Add(audioField);
             container.Add(popup);
-            
-            _lastHash = CalculateCurrentHash(property);
-            _lastAudioClipHash = audioClip.GetHashCode();
-            _popup = popup;
+
+            property.serializedObject.ApplyModifiedProperties();
+            //Register update after values are set
+            audioField.RegisterValueChangeCallback((s) => UpdatePlayButtons(property, popup));
+            textField.RegisterValueChangeCallback((s)=> UpdatePlayButtons(property, popup));
+            voiceField.RegisterValueChangeCallback((s)=> UpdatePlayButtons(property, popup));
+
             // Return the finished UI
             return container;
         }
-
+        
         private void UpdatePlayButtons(SerializedProperty property, VisualElement container)
         {
             var play = "playButton";
             var get = "getButton";
             
-            var audioClip = property.FindPropertyRelative("audioClip");
-            
             var newFieldsHash = CalculateCurrentHash(property);
-            var newAudioHash = audioClip.GetHashCode();
+            var newAudioHash = _audioClip.GetHashCode();
        
             var fieldsUpdateOccured = _lastHash != newFieldsHash;
             var audioClipUpdateOccured = _lastAudioClipHash != newAudioHash;
@@ -82,8 +94,10 @@ namespace Charactr.Editor.Library
             var playButton = container.Q<Button>(play);
             if (playButton != null)
                 container.Remove(playButton);
-
-            if (audioClip.objectReferenceValue is AudioClip clip && !fieldsUpdateOccured && audioClipUpdateOccured)
+            
+            _audioClip = property.FindPropertyRelative("audioClip");
+            
+            if (_audioClip.objectReferenceValue is AudioClip clip && !fieldsUpdateOccured && audioClipUpdateOccured)
             {
                 playButton = new Button(() => PlayAudioClip(clip))
                 {
@@ -115,25 +129,23 @@ namespace Charactr.Editor.Library
         }
         private async void DownloadClip(SerializedProperty property, Action onClipReady)
         {
-            if (Selection.activeObject is VoiceLibrary voiceLibrary)
-            {
-                var hashId = CalculateCurrentHash(property);
-                await voiceLibrary.AddAudioClip(hashId);
-                onClipReady.Invoke();
-            }
+            await _target.AddAudioClip(CalculateCurrentHash(property));
+            onClipReady.Invoke();
         }
         
+        //TODO: We should use single static call for hash calculations in VoiceItem
         private int CalculateCurrentHash(SerializedProperty property)
         {
-            var textProperty = property.FindPropertyRelative("text");
-            var voiceId = property.FindPropertyRelative("voiceId");
-            return Mathf.Abs(textProperty.stringValue.GetHashCode() + voiceId.intValue);
+            _textField = property.FindPropertyRelative("text");
+            _voiceId = property.FindPropertyRelative("voiceId");
+            return Mathf.Abs(_textField.stringValue.GetHashCode() + _voiceId.intValue);
         }
         
-        private void PlayAudioClip(AudioClip audioclip)
+        private void PlayAudioClip(AudioClip clip)
         {
-            Debug.Log($"Playing : {audioclip.name}");
-            EditorAudioPlayer.PlayClip(audioclip);
+            Debug.Log($"Playing:{clip.name}");
+            EditorAudioPlayer.PlayClip(clip);
+            EditorApplication.RepaintProjectWindow();
         }
         
     }
