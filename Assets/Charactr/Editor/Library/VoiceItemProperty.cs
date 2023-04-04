@@ -2,13 +2,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Charactr.SDK.Library;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 using UnityEngine.UIElements;
+using Button = UnityEngine.UIElements.Button;
+using Image = UnityEngine.UIElements.Image;
 using Object = UnityEngine.Object;
+using PopupWindow = UnityEngine.UIElements.PopupWindow;
 using VoiceItem = Charactr.SDK.Library.VoiceItem;
 
 namespace Charactr.Editor.Library
@@ -22,6 +27,15 @@ namespace Charactr.Editor.Library
         private SerializedProperty _voiceId;
         private SerializedProperty _audioClip;
         private VoiceLibrary _target;
+        private ItemState _itemState;
+        private enum ItemState
+        {
+            None, 
+            Init,
+            Play,
+            Update,
+            Download,
+        }
         
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
@@ -39,7 +53,7 @@ namespace Charactr.Editor.Library
             
             var noneStyle = new StyleColor(StyleKeyword.None);
             
-            var popup = new UnityEngine.UIElements.PopupWindow
+            var popup = new PopupWindow
             {
                 text = $"Voice item details [{_lastHash}]",
                 tooltip = "Click to copy item ID into clipboard...",
@@ -66,67 +80,76 @@ namespace Charactr.Editor.Library
             container.Add(popup);
 
             property.serializedObject.ApplyModifiedProperties();
+            
             //Register update after values are set
-            audioField.RegisterValueChangeCallback((s) => UpdatePlayButtons(property, popup));
-            textField.RegisterValueChangeCallback((s)=> UpdatePlayButtons(property, popup));
-            voiceField.RegisterValueChangeCallback((s)=> UpdatePlayButtons(property, popup));
+            audioField.RegisterValueChangeCallback((s) => UpdateControlsState(property, popup));
+            textField.RegisterValueChangeCallback((s) => UpdateControlsState(property, popup));
+            voiceField.RegisterValueChangeCallback((s) => UpdateControlsState(property, popup));
 
+            _itemState = ItemState.Init;
+            UpdateControlsState(property, popup);
             // Return the finished UI
             return container;
         }
         
-        private void UpdatePlayButtons(SerializedProperty property, VisualElement container)
+        private void UpdateControlsState(SerializedProperty property, PopupWindow popupWindow)
         {
-            var play = "playButton";
-            var get = "getButton";
+            //Ignore initial updates from Create...
+            if (_itemState == ItemState.None)
+                return;
+            
+            var controlButton = new Button();
+            var buttonLabel = new Label();
             
             var newFieldsHash = CalculateCurrentHash(property);
             var newAudioHash = _audioClip.GetHashCode();
-       
+            
             var fieldsUpdateOccured = _lastHash != newFieldsHash;
             var audioClipUpdateOccured = _lastAudioClipHash != newAudioHash;
-
+            
             //TODO: recycle buttons instead of removing them
-            var getButton = container.Q<Button>(get);
-            if (getButton != null)
-                container.Remove(getButton);
-
-            var playButton = container.Q<Button>(play);
-            if (playButton != null)
-                container.Remove(playButton);
+            var oldControlButton = popupWindow.Q<Button>();
+            if (oldControlButton  != null)
+                popupWindow.Remove(oldControlButton);
             
             _audioClip = property.FindPropertyRelative("audioClip");
+
+            var clip = _audioClip.objectReferenceValue as AudioClip;
             
-            if (_audioClip.objectReferenceValue is AudioClip clip && !fieldsUpdateOccured && audioClipUpdateOccured)
+            if (clip != null && !fieldsUpdateOccured && audioClipUpdateOccured)
             {
-                playButton = new Button(() => PlayAudioClip(clip))
-                {
-                    text = $"Play (duration {clip.length.ToString(CultureInfo.InvariantCulture)}s)",
-                    name = play
-                };
-                container.Add(playButton);
+                buttonLabel.text = $"Play (duration {clip.length.ToString(CultureInfo.InvariantCulture)}s)";
+                controlButton.clicked += () => PlayAudioClip(clip);
+                buttonLabel.AddToClassList("playIcon");
+                _itemState = ItemState.Play;
             }
             else
             {
-                getButton = new Button(() =>
+                controlButton.clicked += () =>
                 {
-                    //TODO: Remove old audio clip as we get a new one
-                    getButton.text = "Downloading...";
-                    getButton.clickable = null;
+                    if (clip != null)
+                        RemoveOldClip(clip);
                     
-                    DownloadClip(property, () => UpdatePlayButtons(property, container));
-                })
-                {
-                    text = fieldsUpdateOccured ? "Update audio clip":"Download audio clip", 
-                    name = get 
-                };
-                
-                container.Add(getButton);
-            }
+                    buttonLabel.text = "Downloading...";
+                    buttonLabel.AddToClassList("cloudIcon");
 
+                    DownloadClip(property, () => UpdateControlsState(property, popupWindow));
+                };
+
+                _itemState = fieldsUpdateOccured ? ItemState.Update : ItemState.Download;
+                buttonLabel.text = fieldsUpdateOccured ? "Update audio clip" : "Download audio clip";
+                buttonLabel.AddToClassList("warningIcon");
+            }
+            
+            controlButton.Add(buttonLabel);
+            popupWindow.Add(controlButton);
+            
             _lastHash = newFieldsHash;
             _lastAudioClipHash = newAudioHash;
+            
+            popupWindow.text = $"Voice item details [{_lastHash}]";
         }
+        
         private async void DownloadClip(SerializedProperty property, Action onClipReady)
         {
             await _target.AddAudioClip(CalculateCurrentHash(property));
@@ -146,6 +169,16 @@ namespace Charactr.Editor.Library
             Debug.Log($"Playing:{clip.name}");
             EditorAudioPlayer.PlayClip(clip);
             EditorApplication.RepaintProjectWindow();
+        }
+
+        private void RemoveOldClip(AudioClip clip)
+        {
+            var path = AssetDatabase.GetAssetPath(clip);
+            if (!string.IsNullOrEmpty(path))
+            {
+                AssetDatabase.DeleteAsset(path);
+                Debug.Log($"Removed old asset : {path}");
+            }
         }
         
     }
