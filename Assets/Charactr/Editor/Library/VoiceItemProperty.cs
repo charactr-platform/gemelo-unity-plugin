@@ -1,18 +1,11 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using Charactr.SDK.Library;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine.Networking;
-using UnityEngine.UI;
 using UnityEngine.UIElements;
 using Button = UnityEngine.UIElements.Button;
-using Image = UnityEngine.UIElements.Image;
-using Object = UnityEngine.Object;
 using PopupWindow = UnityEngine.UIElements.PopupWindow;
 using VoiceItem = Charactr.SDK.Library.VoiceItem;
 
@@ -27,6 +20,7 @@ namespace Charactr.Editor.Library
         private SerializedProperty _voiceId;
         private SerializedProperty _audioClip;
         private VoiceLibrary _target;
+     
         private ItemState _itemState;
         private enum ItemState
         {
@@ -40,10 +34,6 @@ namespace Charactr.Editor.Library
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             _target = property.serializedObject.targetObject as VoiceLibrary;
-            
-            _textField = property.FindPropertyRelative("text");
-            _voiceId = property.FindPropertyRelative("voiceId");
-            _audioClip = property.FindPropertyRelative("audioClip");
             
             _lastHash = CalculateCurrentHash(property);
             _lastAudioClipHash = _audioClip.GetHashCode();
@@ -67,22 +57,17 @@ namespace Charactr.Editor.Library
                 }
             };
             
-            popup.RegisterCallback<ClickEvent>((e)=> EditorGUIUtility.systemCopyBuffer = _lastHash.ToString());
+            popup.RegisterCallback<ClickEvent>((e)=> EditorGUIUtility.systemCopyBuffer = CalculateCurrentHash(property).ToString());
             
             var textField = new PropertyField(_textField, "Text to voice");
             var voiceField = new PropertyField(_voiceId, "Selected Voice Id");
             var audioField = new PropertyField(_audioClip, "Downloaded AudioClip");
-            
-        
             popup.Add(textField);
             popup.Add(voiceField);
             popup.Add(audioField);
             container.Add(popup);
-
-            property.serializedObject.ApplyModifiedProperties();
             
             //Register update after values are set
-            audioField.RegisterValueChangeCallback((s) => UpdateControlsState(property, popup));
             textField.RegisterValueChangeCallback((s) => UpdateControlsState(property, popup));
             voiceField.RegisterValueChangeCallback((s) => UpdateControlsState(property, popup));
 
@@ -112,28 +97,25 @@ namespace Charactr.Editor.Library
             if (oldControlButton  != null)
                 popupWindow.Remove(oldControlButton);
             
-            _audioClip = property.FindPropertyRelative("audioClip");
-
             var clip = _audioClip.objectReferenceValue as AudioClip;
             
-            if (clip != null && !fieldsUpdateOccured && audioClipUpdateOccured)
+            if (clip != null && (!fieldsUpdateOccured || _itemState == ItemState.Download) && audioClipUpdateOccured)
             {
                 buttonLabel.text = $"Play (duration {clip.length.ToString(CultureInfo.InvariantCulture)}s)";
                 controlButton.clicked += () => PlayAudioClip(clip);
                 buttonLabel.AddToClassList("playIcon");
                 _itemState = ItemState.Play;
+                _audioClip.serializedObject.Update();
             }
             else
             {
-                controlButton.clicked += () =>
+                controlButton.clicked += async () =>
                 {
-                    if (clip != null)
-                        RemoveOldClip(clip);
-                    
+                    if (clip != null) RemoveOldClip(clip);
                     buttonLabel.text = "Downloading...";
                     buttonLabel.AddToClassList("cloudIcon");
-
-                    DownloadClip(property, () => UpdateControlsState(property, popupWindow));
+                    await _target.AddAudioClip(newFieldsHash);
+                    UpdateControlsState(property, popupWindow);
                 };
 
                 _itemState = fieldsUpdateOccured ? ItemState.Update : ItemState.Download;
@@ -150,17 +132,12 @@ namespace Charactr.Editor.Library
             popupWindow.text = $"Voice item details [{_lastHash}]";
         }
         
-        private async void DownloadClip(SerializedProperty property, Action onClipReady)
-        {
-            await _target.AddAudioClip(CalculateCurrentHash(property));
-            onClipReady.Invoke();
-        }
-        
         //TODO: We should use single static call for hash calculations in VoiceItem
         private int CalculateCurrentHash(SerializedProperty property)
         {
             _textField = property.FindPropertyRelative("text");
             _voiceId = property.FindPropertyRelative("voiceId");
+            _audioClip = property.FindPropertyRelative("audioClip");
             return Mathf.Abs(_textField.stringValue.GetHashCode() + _voiceId.intValue);
         }
         

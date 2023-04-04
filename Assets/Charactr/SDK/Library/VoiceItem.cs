@@ -84,9 +84,8 @@ namespace Charactr.SDK.Library
             File.WriteAllBytes(filePath, data);
             AssetDatabase.ImportAsset(filePath);
             Debug.Log($"Saved asset at: {filePath}");
-            AudioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(filePath);
+            audioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(filePath);
             Debug.Assert(AudioClip != null);
-         
 #endif
         }
 
