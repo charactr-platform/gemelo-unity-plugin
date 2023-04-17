@@ -18,7 +18,7 @@ namespace Charactr.VoiceSDK.Tests
 		[Test]
 		public async Task GetConversion_Returns_WAV()
 		{
-			var wavBytes = await Http.PostAsync(Configuration.API + ENDPOINT, CreateRequest().ToJson());
+			var wavBytes = await EditorHttp.PostAsync(Configuration.API + ENDPOINT, CreateRequest().ToJson());
 			
 			Assert.NotNull(wavBytes);
 			Assert.IsNotEmpty(wavBytes);
@@ -27,7 +27,7 @@ namespace Charactr.VoiceSDK.Tests
 		[Test]
 		public async Task GetBytesAndConvertToWAV_Returns_WAV()
 		{
-			var wavBytes = await Http.PostAsync(Configuration.API + ENDPOINT, CreateRequest().ToJson());
+			var wavBytes = await EditorHttp.PostAsync(Configuration.API + ENDPOINT, CreateRequest().ToJson());
 			
 			Assert.NotNull(wavBytes);
 			Assert.IsNotEmpty(wavBytes);
@@ -52,17 +52,19 @@ namespace Charactr.VoiceSDK.Tests
 			EditorAudioPlayer.PlayClip(clip);
 			await Task.Delay((int)clip.length * 1000);
 		}
-		
+
 		[UnityTest]
-		public IEnumerator PlayConversion_Coroutine_Returns_OK()
+		public IEnumerator PlayConversion_UnityAudioRequestClass_Returns_OK()
 		{
 			AudioClip audioClip = null;
 			
-			yield return Http.GetAudioClipRoutine(Configuration.API + ENDPOINT, CreateRequest().ToJson(), clip =>
-			{
-				audioClip = clip;
-				Debug.Log($"Clip: {clip.frequency} {clip.length} {clip.samples}");
-			});
+			var request = RuntimeHttp.GetAudioClipRequest(Configuration.API + ENDPOINT, CreateRequest());
+			yield return request.SendRequest();
+			
+			audioClip = request.AudioClip;
+			
+			Debug.Log($"Clip: {audioClip.frequency} {audioClip.length} {audioClip.samples}");
+			
 			Assert.NotNull(audioClip);
 			Assert.AreEqual(130560, audioClip.samples);
 			Assert.AreEqual(32000, audioClip.frequency);

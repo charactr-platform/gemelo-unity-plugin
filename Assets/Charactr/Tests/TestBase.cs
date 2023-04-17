@@ -1,4 +1,3 @@
-using Charactr.Editor.Library;
 using Charactr.VoiceSDK.Model;
 using Charactr.VoiceSDK.Rest;
 using Charactr.VoiceSDK.SDK;
@@ -14,7 +13,8 @@ namespace Charactr.VoiceSDK.Tests
 		public const string CLIENT_KEY = "87Pgd9jP4BoFeblC8xstxSHGVdnhZl1B";
 		public const string API_KEY = "qynCJRdjOc3hNvAAmDZUMFgTqi1hOXTC";
 		
-		protected RestHttpClient Http;
+		protected EditorRestClient EditorHttp;
+		protected RuntimeRestClient RuntimeHttp;
 		protected Configuration Configuration;
         
 		[SetUp]
@@ -24,7 +24,8 @@ namespace Charactr.VoiceSDK.Tests
 			Configuration = Configuration.Load();
 			Assert.NotNull(Configuration);
 			
-			Http = new RestHttpClient(Configuration.ApiClient, Configuration.ApiKey, (error) => Debug.LogError(error.Message));
+			EditorHttp = new EditorRestClient(Configuration, Debug.LogError);
+			RuntimeHttp = new RuntimeRestClient(Configuration);
 		}
 
 		protected ConvertRequest CreateRequest() => new ConvertRequest()
