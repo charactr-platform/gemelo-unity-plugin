@@ -29,12 +29,12 @@ namespace Charactr.SDK.Library
             set => audioClip = value;
         }
 
-        public int Id => Mathf.Abs(text.GetHashCode());
+        public int Id => Mathf.Abs(text.GetHashCode() + voiceId);
         
         [SerializeField] private string text;
         [SerializeField] private int voiceId;
         [SerializeField] private AudioClip audioClip;
-
+        
         public bool IsValid() => !string.IsNullOrEmpty(Text) && VoiceId > 0 && voiceId < 999;
         public ConvertRequest GetRequest()
         {
@@ -80,13 +80,12 @@ namespace Charactr.SDK.Library
             if (!di.Exists)
                 di.Create();
 
-            var filePath = $"{configuration.AudioSavePath}/{Id}.wav";
+            var filePath = $"{configuration.AudioSavePath}{Id}.wav";
             File.WriteAllBytes(filePath, data);
             AssetDatabase.ImportAsset(filePath);
             Debug.Log($"Saved asset at: {filePath}");
-            AudioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(filePath);
+            audioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(filePath);
             Debug.Assert(AudioClip != null);
-         
 #endif
         }
 

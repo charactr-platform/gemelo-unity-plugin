@@ -9,6 +9,13 @@ namespace Charactr.SDK.Library
 	[CreateAssetMenu(menuName = "VoiceSDK/Create VoiceLibrary", fileName = "VoiceLibrary", order = 0)]
 	public class VoiceLibrary : ScriptableObject
 	{
+		public const string SAVE_PATH = "Charactr/Resources";
+		
+		public bool IsEmpty
+		{
+			get => items.Count == 0;
+		}
+		
 		public List<VoiceItem> Items
 		{
 			get => items;
@@ -20,11 +27,18 @@ namespace Charactr.SDK.Library
 		{
 			items = new List<VoiceItem>();
 		}
+
+		public static void Create()
+		{
+			var instance = CreateInstance<VoiceLibrary>();
+			var path = AssetDatabase.GenerateUniqueAssetPath($"Assets/{SAVE_PATH}/VoiceLibrary.asset");
+			AssetDatabase.CreateAsset(instance, path);
+		}
 		public bool GetItemByVoiceId(int voiceId, out VoiceItem voiceItem)
 		{
 			var index = items.FindIndex(f => f.VoiceId == voiceId);
 
-			voiceItem = default;
+			voiceItem = null;
 			
 			if (index < 0)
 			{
@@ -40,7 +54,7 @@ namespace Charactr.SDK.Library
 		{
 			var index = items.FindIndex(f => f.Id == id);
 			
-			voiceItem = default;
+			voiceItem = null;
 			
 			if (index < 0)
 			{
@@ -52,6 +66,20 @@ namespace Charactr.SDK.Library
 			voiceItem = items[index];
 			
 			return true;
+		}
+
+		public bool GetAudioClipById(int id, out AudioClip audioClip)
+		{
+			audioClip = null;
+			
+			if (GetItemById(id, out var voiceItem) && voiceItem.AudioClip != null)
+			{
+				audioClip = voiceItem.AudioClip;
+				return true;
+			}
+			
+			Debug.LogError($"Can't find AudioClip for item with id={id}");
+			return false;
 		}
 		
 		public int AddNewItem(string text, int voiceId)
@@ -85,11 +113,10 @@ namespace Charactr.SDK.Library
 			if (item.IsValid())
 			{
 				await item.GetAudioClip();
-				Debug.LogAssertion(item.AudioClip != null);
 			}
 			else
 			{
-				Debug.LogError("Can't find valid voice item with id = {id}");
+				Debug.LogError($"Can't find valid voice item with id = {id}");
 			}
 		}
 		
