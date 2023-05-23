@@ -16,8 +16,8 @@ namespace Charactr.VoiceSDK.Rest
 		public EditorRestClient(Configuration configuration, Action<FrameworkErrorMessage> onError): base(configuration, onError)
 		{
 			_client = new HttpClient();
-			_client.DefaultRequestHeaders.Add(API_CLIENT, ClientKey);
-			_client.DefaultRequestHeaders.Add(API_KEY, APIKey);
+			_client.DefaultRequestHeaders.Add(Configuration.API_CLIENT, ClientKey);
+			_client.DefaultRequestHeaders.Add(Configuration.API_KEY, APIKey);
 			_client.DefaultRequestHeaders.UserAgent.Add(ProductInfoHeaderValue.Parse("Charactr.Unity.SDK"));
 		}
 		

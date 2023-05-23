@@ -40,7 +40,9 @@ namespace Charactr.SDK.Editor.Library
 
         private void OnCreateButton()
         {
-            VoiceLibrary.Create();
+            var instance = CreateInstance<VoiceLibrary>();
+            var path = AssetDatabase.GenerateUniqueAssetPath($"Assets/{VoiceLibrary.SAVE_PATH}/VoiceLibrary.asset");
+            AssetDatabase.CreateAsset(instance, path);
             LoadItems();
         }
         

@@ -5,8 +5,10 @@ namespace Charactr.VoiceSDK
 {
 	public class Configuration : ScriptableObject
 	{
-		public const string LOCATION = "Assets/Charactr/VoiceSDK";
-		public const string API = "https://api.charactr.dev/v1/tts/";
+		public const string API_CLIENT = "X-Client-Key";
+		public const string API_KEY = "X-Api-Key";
+		
+		public const string API = "https://api.charactr.com/v1/tts/";
 		private const string FILENAME = "Configuration";
 		public const string SAVE_PATH = "Assets/Charactr/Resources/"+FILENAME+".asset";
 		
@@ -52,6 +54,10 @@ namespace Charactr.VoiceSDK
 		public static Configuration Load()
 		{
 			return Resources.Load<Configuration>(FILENAME);
+		} 
+		public static Configuration LoadStreaming()
+		{
+			return Resources.Load<Configuration>(FILENAME+"_Streaming");
 		} 
 	}
 }

@@ -28,13 +28,7 @@ namespace Charactr.VoiceSDK.Library
 		{
 			items = new List<VoiceItem>();
 		}
-
-		public static void Create()
-		{
-			var instance = CreateInstance<VoiceLibrary>();
-			var path = AssetDatabase.GenerateUniqueAssetPath($"Assets/{SAVE_PATH}/VoiceLibrary.asset");
-			AssetDatabase.CreateAsset(instance, path);
-		}
+		
 		public bool GetItemByVoiceId(int voiceId, out VoiceItem voiceItem)
 		{
 			var index = items.FindIndex(f => f.VoiceId == voiceId);

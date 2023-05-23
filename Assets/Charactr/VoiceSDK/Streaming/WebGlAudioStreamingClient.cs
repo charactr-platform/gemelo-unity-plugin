@@ -50,7 +50,7 @@ namespace Charactr.SDK.Streaming
 
 			var clip = AudioClip;
 			var clipId = clip.GetInstanceID().ToString();
-			var sampleSize = 32;
+			var sampleSize = 1024;
 			
 			_audioSource.clip = clip;
 			_audioSource.Play();

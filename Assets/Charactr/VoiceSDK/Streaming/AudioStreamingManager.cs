@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Charactr.SDK.Streaming;
 using GptDemo.Streaming;
 using UnityEngine;
 
@@ -21,7 +22,7 @@ namespace Charactr.VoiceSDK.Streaming
 
         private void Awake()
         {
-            _configuration = Configuration.Load();
+            _configuration = Configuration.LoadStreaming();
             
             if (_configuration == null)
                 throw new Exception("Can't load Configuration data");
@@ -46,7 +47,7 @@ namespace Charactr.VoiceSDK.Streaming
             {
                 var audioSource = GetComponent<AudioSource>();
 #if UNITY_WEBGL && !UNITY_EDITOR
-                _client = new WebGlAudioStreamingClient(url, this);
+                _streamingClient = new WebGlAudioStreamingClient(url, configuration, audioSource);
 #else
                 _streamingClient = new DefaultAudioStreamingClient(url, configuration, audioSource);
 #endif
@@ -61,7 +62,8 @@ namespace Charactr.VoiceSDK.Streaming
             
             AudioClip = _streamingClient.AudioClip;
         }
-        public void Dispose()
+        
+        void OnDestroy()
         {
             _streamingClient.Dispose();
             _streamingClient = null;

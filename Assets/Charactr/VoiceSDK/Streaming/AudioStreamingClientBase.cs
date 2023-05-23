@@ -167,11 +167,6 @@ namespace Charactr.VoiceSDK.Streaming
 			Debug.Log("Closed: " + obj);
 		}
 		
-		/*
-		protected string GetAuthCommand() =>  "{\"type\": \"authApiKey\"," +
-		                                      "\"clientKey\":\"wq6kL0fsrCnpQt6Mr1XkGSfxp0QYyehp\"," +
-		                                      "\"apiKey\":\"qFzMq0NKtd88DAOUE4MRcVV2IQzmgbo2\"}";
-		*/
 		protected string GetAuthCommand() 
 		{
 			var authData = new AuthCommand()
