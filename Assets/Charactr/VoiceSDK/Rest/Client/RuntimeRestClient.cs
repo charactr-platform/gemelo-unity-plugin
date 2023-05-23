@@ -11,8 +11,8 @@ namespace Charactr.VoiceSDK.Rest
 		public UnityAudioConvertRequest GetAudioClipRequest(string url, ConvertRequest convertRequest)
 		{
 			var request = new UnityAudioConvertRequest(url, convertRequest);
-			request.AddHeader(API_CLIENT, ClientKey);
-			request.AddHeader(API_KEY, APIKey);
+			request.AddHeader(Configuration.API_CLIENT, ClientKey);
+			request.AddHeader(Configuration.API_KEY, APIKey);
 			return request;
 		}
 		
