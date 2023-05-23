@@ -20,7 +20,7 @@ namespace Charactr.VoiceSDK.Editor.Configuration
         public void CreateGUI()
         {
             // Each editor window contains a root VisualElement object
-            VisualElement root = rootVisualElement;
+            var root = rootVisualElement;
             
             root.Add(visualTreeAsset.Instantiate());
 

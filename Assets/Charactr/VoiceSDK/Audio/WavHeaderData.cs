@@ -37,8 +37,14 @@ namespace Charactr.SDK.Wav
 				
 			//TODO: Validate PCM wav header
 			var headerOffset = extensible ? subchunkSize + 20 + 16 : 44;
-
+			
+		
+			
+			if (headerOffset == data.Length)
+				return (audioFormat, headerOffset, false);
+			
 			var wavDataSize = BitConverter.ToInt32 (data, headerOffset);
+			
 			headerOffset += 4;
 			
 			if (wavDataSize != data.Length - headerOffset)

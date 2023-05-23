@@ -14,6 +14,8 @@ namespace GptDemo.Streaming
 		private readonly AudioSource _audioSource;
 		public DefaultAudioStreamingClient(string url, Configuration configuration, AudioSource audioSource): base(configuration, audioSource.gameObject)
 		{
+			_audioSource = audioSource;
+			
 			_socket = new WebSocket(url);
 			_socket.OnOpen += (sender, args) => OnOpen.Invoke();
 			_socket.OnClose += (sender, args) => OnClose.Invoke(args.Reason);
