@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections;
 using System.Threading.Tasks;
-using Charactr.SDK.Editor;
 using Charactr.SDK.Wav;
 using Charactr.VoiceSDK.Model;
 using Charactr.VoiceSDK.Rest;
@@ -18,14 +18,14 @@ namespace Charactr.SDK
 		public byte[] Data { get; private set; }
 		
 		private readonly EditorRestClient _client;
-		
+
 		public Convert()
 		{
 			var configuration = Configuration.Load();
 			
 			if (configuration == null)
 			{
-				ApiConfigurationWindow.ShowWindow();
+				//ApiConfigurationWindow.ShowWindow();
 				return;
 			}
 
@@ -52,11 +52,7 @@ namespace Charactr.SDK
 			if (_client == null)
 				throw new Exception("Can't connect to API, please provide configuration details first!");
 			
-			if (string.IsNullOrEmpty(convertRequest.Text))
-				throw new Exception("Text can't be empty");
-
-			if (convertRequest.VoiceId <= 0)
-				throw new Exception("Please set proper voice Id");
+			ValidateRequest(convertRequest);
 				
 			var wavData = await _client.PostAsync(Configuration.API + "convert", convertRequest.ToJson());
 			
@@ -67,7 +63,27 @@ namespace Charactr.SDK
 			
 			return new WavBuilder(wavData).CreateAudioClip();
 		}
-		
+
+		public UnityAudioConvertRequest ConvertToAudioClipRuntime(ConvertRequest convertRequest)
+		{
+			if (_client == null)
+				throw new Exception("Can't connect to API, please provide configuration details first!");
+			
+			ValidateRequest(convertRequest);
+			
+			var runtimeRest = new RuntimeRestClient(Configuration);
+
+			return runtimeRest.GetAudioClipRequest(Configuration.API + "convert", convertRequest);
+		}
+
+		private void ValidateRequest(ConvertRequest request)
+		{
+			if (string.IsNullOrEmpty( request.Text))
+				throw new Exception("Text can't be empty");
+
+			if ( request.VoiceId <= 0)
+				throw new Exception("Please set proper voice Id");
+		}
 		public void Dispose()
 		{
 			_client?.Dispose();
