@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Charactr.VoiceSDK;
-using Charactr.VoiceSDK.Streaming;
 using NativeWebSocket;
 using UnityEngine;
 
-namespace Charactr.SDK.Streaming
+namespace Charactr.VoiceSDK.Streaming
 {
 	//TODO: Implement GetAverage() method from `original` Amplitude.cs
 	

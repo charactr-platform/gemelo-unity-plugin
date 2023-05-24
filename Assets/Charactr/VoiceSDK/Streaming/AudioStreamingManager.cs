@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Charactr.SDK.Streaming;
 using UnityEngine;
 
 namespace Charactr.VoiceSDK.Streaming

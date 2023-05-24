@@ -1,6 +1,5 @@
-using System;
 using System.Globalization;
-using Charactr.VoiceSDK;
+using Charactr.VoiceSDK.Audio;
 using Charactr.VoiceSDK.Library;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -8,9 +7,9 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Button = UnityEngine.UIElements.Button;
 using PopupWindow = UnityEngine.UIElements.PopupWindow;
-using VoiceItem = Charactr.SDK.Library.VoiceItem;
+using VoiceItem = Charactr.VoiceSDK.Library.VoiceItem;
 
-namespace Charactr.Editor.Library
+namespace Charactr.VoiceSDK.Editor.Library
 {
     [CustomPropertyDrawer(typeof(VoiceItem))]
     public class VoiceItemProperty : PropertyDrawer

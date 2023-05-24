@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Charactr.SDK.Wav;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Wav
+namespace Charactr.VoiceSDK.Audio
 {
 	public class WavBuilder
 	{

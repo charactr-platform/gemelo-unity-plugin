@@ -4,10 +4,10 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Charactr.VoiceSDK.Model;
+using Charactr.VoiceSDK.Rest.Model;
 using Newtonsoft.Json;
 
-namespace Charactr.VoiceSDK.Rest
+namespace Charactr.VoiceSDK.Rest.Client
 {
 	public class EditorRestClient: RestClient, IDisposable
 	{

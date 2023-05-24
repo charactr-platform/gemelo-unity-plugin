@@ -1,5 +1,6 @@
-using Charactr.VoiceSDK.Model;
 using Charactr.VoiceSDK.Rest;
+using Charactr.VoiceSDK.Rest.Client;
+using Charactr.VoiceSDK.Rest.Model;
 using NUnit.Framework;
 using UnityEngine;
 

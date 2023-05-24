@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace Charactr.SDK.Wav
+namespace Charactr.VoiceSDK.Audio
 {
 	public struct WavHeaderData
 	{

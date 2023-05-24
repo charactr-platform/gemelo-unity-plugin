@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Threading.Tasks;
-using Charactr.SDK.Wav;
-using Charactr.VoiceSDK;
-using Charactr.VoiceSDK.Model;
+using Charactr.VoiceSDK.Audio;
 using Charactr.VoiceSDK.Rest;
-using Charactr.VoiceSDK.Wav;
+using Charactr.VoiceSDK.Rest.Client;
+using Charactr.VoiceSDK.Rest.Model;
 using UnityEngine;
 
-namespace Charactr.SDK
+namespace Charactr.VoiceSDK
 {
 	/// <summary>
 	/// Base class to utilize Charactr API

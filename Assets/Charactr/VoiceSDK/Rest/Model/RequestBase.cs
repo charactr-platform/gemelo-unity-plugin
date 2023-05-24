@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Charactr.VoiceSDK.Model
+namespace Charactr.VoiceSDK.Rest.Model
 {
 	public class RequestBase
 	{

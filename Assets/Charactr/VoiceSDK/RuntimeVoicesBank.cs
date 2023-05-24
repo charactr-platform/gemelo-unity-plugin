@@ -1,3 +1,4 @@
+using Charactr.VoiceSDK.Audio;
 using Charactr.VoiceSDK.Library;
 using UnityEngine;
 

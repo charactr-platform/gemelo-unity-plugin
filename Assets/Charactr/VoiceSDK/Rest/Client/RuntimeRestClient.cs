@@ -1,8 +1,8 @@
 ﻿using System;
-using Charactr.VoiceSDK.Model;
+using Charactr.VoiceSDK.Rest.Model;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Rest
+namespace Charactr.VoiceSDK.Rest.Client
 {
 	public class RuntimeRestClient : RestClient, IDisposable
 	{

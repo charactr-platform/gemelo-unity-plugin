@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Text;
-using Charactr.VoiceSDK.Model;
+using Charactr.VoiceSDK.Rest.Model;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Charactr.VoiceSDK.Rest
+namespace Charactr.VoiceSDK.Rest.Client
 {
 	public class UnityAudioConvertRequest
 	{

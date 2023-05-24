@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Threading.Tasks;
-using Charactr.SDK.Wav;
-using Charactr.VoiceSDK.Wav;
+using Charactr.VoiceSDK.Audio;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;

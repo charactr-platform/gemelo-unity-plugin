@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Charactr.VoiceSDK.Wav;
+using Charactr.VoiceSDK.Audio;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -59,10 +59,17 @@ namespace Charactr.VoiceSDK.Streaming
 
 			lock (_dataQueue)
 			{
-				while (_dataQueue.Count > 0)
+				if (WavBuilder == null)
+				{
+					CreateWavBuilderFromHeader(_dataQueue.Dequeue());
+					return;
+				}
+
+				do
 				{
 					LoadData(_dataQueue.Dequeue());
-				}
+				} 
+				while (_dataQueue.Count != 0);
 			}
 		}
 
@@ -76,12 +83,6 @@ namespace Charactr.VoiceSDK.Streaming
 		
 		private void LoadData(byte[] data)
 		{
-			if (WavBuilder == null)
-			{
-				CreateWavBuilderFromHeader(data);
-				return;
-			}
-        
 			AudioLength = WavBuilder.BufferData(data, out var pcmData);
 			AudioSamples += pcmData.Length;
 			

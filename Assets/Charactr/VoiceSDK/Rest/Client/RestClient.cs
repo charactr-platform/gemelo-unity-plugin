@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Charactr.VoiceSDK.Rest
+namespace Charactr.VoiceSDK.Rest.Client
 {
 	public class RestClient
 	{
