@@ -1,2 +1,2 @@
-# unity-charactr-plugin
-Unity Charactr API plugin for Asset Store
+# unity-voice-sdk
+Charactr Voice SDK (API plugin) for Unity and Unity Asset Store
