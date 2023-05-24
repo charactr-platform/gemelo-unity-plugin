@@ -17,7 +17,7 @@ namespace Charactr.SDK
 		public Configuration Configuration { get; }
 		public byte[] Data { get; private set; }
 		
-		private readonly RestHttpClient _client;
+		private readonly EditorRestClient _client;
 		
 		public Convert()
 		{
@@ -31,7 +31,7 @@ namespace Charactr.SDK
 
 			Configuration = configuration;
 			
-			_client = new RestHttpClient(configuration.ApiClient, configuration.ApiKey, OnRestError);
+			_client = new EditorRestClient(Configuration, OnRestError);
 		}
 
 		private void OnRestError(FrameworkErrorMessage errorMessage)
