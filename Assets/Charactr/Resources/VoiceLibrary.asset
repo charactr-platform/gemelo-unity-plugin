@@ -15,10 +15,10 @@ MonoBehaviour:
   items:
   - text: Hello world! This is first entry from Charactr SDK.
     voiceId: 151
-    audioClip: {fileID: 8300000, guid: c4dffcdb41ccc174583845d8f43e91d5, type: 3}
+    audioClip: {fileID: 8300000, guid: 35b6de601ba2394459dd49713cafd57d, type: 3}
   - text: Welcome to the dark side!
     voiceId: 151
-    audioClip: {fileID: 8300000, guid: 86293e284ebfaa547aabaef0fcda1420, type: 3}
+    audioClip: {fileID: 8300000, guid: cbb34c7a6f8da48468c5cd3bae267396, type: 3}
   - text: I'm yours father Luke!
     voiceId: 151
-    audioClip: {fileID: 8300000, guid: 3ce126356c9913b4bb4da1b2b20f83bc, type: 3}
+    audioClip: {fileID: 8300000, guid: 150f55d64ddd506439054b3f9bf7c71b, type: 3}
