@@ -84,6 +84,7 @@ namespace Charactr.VoiceSDK.Wav
 				{
 					if (!LoadNextBuffer())
 					{
+						data[i] = 0f;
 						Debug.LogWarning("Can't load next pcm buffer");
 						break;
 					}

@@ -2,7 +2,6 @@
 using System.Runtime.InteropServices;
 using Charactr.VoiceSDK;
 using Charactr.VoiceSDK.Streaming;
-using GptDemo.Streaming;
 using NativeWebSocket;
 using UnityEngine;
 
@@ -37,10 +36,10 @@ namespace Charactr.SDK.Streaming
 			_audioSource = audioSource;
 			
 			_socket = new NativeWebSocket.WebSocket(url);
-			_socket.OnOpen += () => OnOpen.Invoke();
-			_socket.OnClose += code => OnClose.Invoke(code.ToString());
-			_socket.OnError += msg => OnError.Invoke(msg);
-			_socket.OnMessage += data => OnData.Invoke(data);
+			_socket.OnOpen += OnOpen;
+			_socket.OnClose += code => OnClose(code.ToString());
+			_socket.OnError += OnError;
+			_socket.OnMessage += OnData;
 		}
 		
 		public override void Play()

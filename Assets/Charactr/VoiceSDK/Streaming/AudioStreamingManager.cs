@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Charactr.SDK.Streaming;
-using GptDemo.Streaming;
 using UnityEngine;
 
 namespace Charactr.VoiceSDK.Streaming
@@ -12,11 +11,12 @@ namespace Charactr.VoiceSDK.Streaming
     {
         const string URL = "wss://api.slowpoke.charactr.dev/v1/tts/stream/simplex/ws";
         public AudioClip AudioClip { get; private set; }
-        public Action<float> OnAudioBufferFull { get; set; }
-        
+        public Action OnAudioEnd { get; private set; }
+        public Action OnAudioReady { get; private set; }
+      
         [SerializeField] private int voiceId = 112;
 
-        private AudioStreamingClientBase _streamingClient;
+        private IAudioStreamingClient _streamingClient;
         private Configuration _configuration;
         private Queue<Action> _actions;
 
@@ -31,7 +31,7 @@ namespace Charactr.VoiceSDK.Streaming
         public IEnumerator ConvertAndStartPlaying(string text)
         {
             yield return CreateClientInstance(text, _configuration);
-            _streamingClient.Play();
+            Play();
         }
         
         public IEnumerator Convert(string text)
@@ -51,8 +51,6 @@ namespace Charactr.VoiceSDK.Streaming
 #else
                 _streamingClient = new DefaultAudioStreamingClient(url, configuration, audioSource);
 #endif
-                _streamingClient.OnBufferFull = OnAudioBufferFull;
-                
                 _streamingClient.Connect();
             }
            
@@ -61,17 +59,45 @@ namespace Charactr.VoiceSDK.Streaming
             yield return new WaitUntil(() => _streamingClient.Initialized);
             
             AudioClip = _streamingClient.AudioClip;
+            OnAudioReady?.Invoke();
         }
-        
+
         void OnDestroy()
         {
-            _streamingClient.Dispose();
-            _streamingClient = null;
+            DisposeClient();
         }
 
         private void Update()
         {
-            _streamingClient?.DepleteQueue();
+            if (_streamingClient != null)
+            {
+                _streamingClient.DepleteBufferQueue();
+                CheckForAudioEnd(_streamingClient);
+            }
+        }
+
+        public void Play()
+        {
+            _streamingClient?.Play();
+        }
+
+        private void DisposeClient()
+        {
+            _streamingClient?.Dispose();
+            _streamingClient = null;
+        }
+
+        private void CheckForAudioEnd(IAudioStreamingClient client)
+        {
+            if (!client.BufferingCompleted)
+                return;
+            
+            if (client.AudioSource.timeSamples >= client.AudioSamples)
+            {
+                client.AudioSource.Stop();
+                OnAudioEnd?.Invoke();
+                DisposeClient();
+            }
         }
     }
 }

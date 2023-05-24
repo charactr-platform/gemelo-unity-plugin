@@ -1,8 +1,7 @@
 ﻿using System;
-using Charactr.VoiceSDK.Streaming;
 using UnityEngine;
 
-namespace Charactr.SDK.Streaming
+namespace Charactr.VoiceSDK.Streaming
 {
 	public class CustomAudioStreamingClient : AudioStreamingClientBase
 	{
@@ -12,10 +11,9 @@ namespace Charactr.SDK.Streaming
 			_audioSource = audioSource;
 		}
 		
-		public void Disconnect(string reason) => OnClose.Invoke(reason);
-		
-		public void FillBuffer(byte[] data) => OnData.Invoke(data);
-		public override void Connect() => OnOpen.Invoke();
+		public void Disconnect(string reason) => OnClose(reason);
+		public void FillBuffer(byte[] data) => OnData(data);
+		public override void Connect() => OnOpen();
 		protected override bool IsConnected() => true;
 		public override void Play()
 		{

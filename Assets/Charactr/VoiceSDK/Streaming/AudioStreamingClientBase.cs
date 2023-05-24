@@ -12,15 +12,12 @@ namespace Charactr.VoiceSDK.Streaming
 		public bool Connected => IsConnected();
 		public bool Initialized => _clip != null;
 		public AudioClip AudioClip => _clip;
-		public float Length { get; private set; }
-		public Action<float> OnBufferFull { get; set; }
-		protected Action<byte[]> OnData { get; set; }
-		protected Action<string> OnError { get; }
-		protected Action<string> OnClose { get; }
-		protected Action OnOpen { get; }
-		public WavBuilder WavBuilder { get; private set; }
+		public bool BufferingCompleted { get; private set; }
+		public float AudioLength { get; private set; }
+		public int AudioSamples { get; private set; }
+		private WavBuilder WavBuilder { get; set; }
 
-		private const int MinimalFrameCount = 5;
+		private const int MinimalFrameCount = 4;
 		
 		private AudioClip _clip = null;
 		private readonly Queue<string> _commands;
@@ -36,18 +33,13 @@ namespace Charactr.VoiceSDK.Streaming
 
 			_configuration = configuration;
 			_behaviour = behaviour.GetComponent<MonoBehaviour>();
-			
-			OnOpen = OnOpenCallback;
-			OnError = OnErrorCallback;
-			OnClose = OnCloseCallback;
-			OnData = EnqueueData;
 		}
 		protected void EnqueueCommand(string command)
 		{
 			_commands.Enqueue(command);
 		}
 
-		private void EnqueueData(byte[] data)
+		protected void OnData(byte[] data)
 		{
 			//Invoke on main thread 
 			lock (_dataQueue)
@@ -57,11 +49,11 @@ namespace Charactr.VoiceSDK.Streaming
 			}
 		}
 
-		public void DepleteQueue()
+		public void DepleteBufferQueue()
 		{
 			if (IsDataQueueEmpty())
 			{
-				CheckForAudioEnd();
+				CheckForBufferEnd();
 				return;
 			}
 
@@ -90,7 +82,9 @@ namespace Charactr.VoiceSDK.Streaming
 				return;
 			}
         
-			Length = WavBuilder.BufferData(data, out var pcmData);
+			AudioLength = WavBuilder.BufferData(data, out var pcmData);
+			AudioSamples += pcmData.Length;
+			
 			OnPcmData(_frameCount, pcmData);
 			
 			_frameCount++;
@@ -108,15 +102,18 @@ namespace Charactr.VoiceSDK.Streaming
 			WavBuilder = new WavBuilder(data);
 			_frameCount = 1;
 			_totalFramesRead = 0;
+			BufferingCompleted = false;
+			AudioLength = 0f;
+			AudioSamples = 0;
 		}
 		
-		private void CheckForAudioEnd()
+		private void CheckForBufferEnd()
 		{
 			if (Initialized && !Connected && _totalFramesRead != 0)
 			{
-				OnBufferFull?.Invoke(Length);
-				Debug.Log($"Buffer loaded [{_totalFramesRead}]: {Length}s");
+				Debug.Log($"Buffer loaded [{_totalFramesRead}]: {AudioLength}s");
 				_totalFramesRead = 0;
+				BufferingCompleted = true;
 			}
 		}
 
@@ -129,8 +126,8 @@ namespace Charactr.VoiceSDK.Streaming
 			//Assign clip when Audio is loaded
 			_clip = clip;
 		}
-		
-		private void OnOpenCallback()
+
+		protected void OnOpen()
 		{
 			while (_commands.Count > 0)
 			{
@@ -151,17 +148,15 @@ namespace Charactr.VoiceSDK.Streaming
 			Debug.Log("Disposed streaming client");
 		}
 		
-		
 		public abstract void Connect();
 		protected abstract bool IsConnected();
 		public abstract void Play();
 		protected abstract void Send(string text);
 		protected abstract void OnPcmData(int frameIndex, float[] buffer);
 		public virtual void SendConvertCommand(string text) => Send(GetConvertCommand(text));
+		protected virtual void OnError(string obj) => Debug.LogError("Error: " + obj);
 
-		protected virtual void OnErrorCallback(string obj) => Debug.LogError("Error: " + obj);
-
-		protected virtual void OnCloseCallback(string obj)
+		protected virtual void OnClose(string obj)
 		{
 			_totalFramesRead = _frameCount;
 			Debug.Log("Closed: " + obj);
