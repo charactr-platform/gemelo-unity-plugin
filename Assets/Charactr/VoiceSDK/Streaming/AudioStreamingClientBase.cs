@@ -17,7 +17,7 @@ namespace Charactr.VoiceSDK.Streaming
 		public int AudioSamples { get; private set; }
 		private WavBuilder WavBuilder { get; set; }
 
-		private const int MinimalFrameCount = 4;
+		private const int MinimalFrameCount = 5;
 		
 		private AudioClip _clip = null;
 		private readonly Queue<string> _commands;
@@ -25,6 +25,7 @@ namespace Charactr.VoiceSDK.Streaming
 		private int _frameCount = 0, _totalFramesRead, _enqueuedFrames;
 		private readonly MonoBehaviour _behaviour;
 		private readonly Configuration _configuration;
+		private readonly WavDebugSave _debugSave;
 
 		protected AudioStreamingClientBase(Configuration configuration, GameObject behaviour)
 		{
@@ -83,6 +84,7 @@ namespace Charactr.VoiceSDK.Streaming
 		
 		private void LoadData(byte[] data)
 		{
+			
 			AudioLength = WavBuilder.BufferData(data, out var pcmData);
 			AudioSamples += pcmData.Length;
 			
@@ -100,7 +102,12 @@ namespace Charactr.VoiceSDK.Streaming
 
 		private void CreateWavBuilderFromHeader(byte[] data)
 		{
-			WavBuilder = new WavBuilder(data);
+			var debug = false;
+#if UNITY_EDITOR && DEBUG
+			debug = true;
+#endif
+			WavBuilder = new WavBuilder(data, debug);
+
 			_frameCount = 1;
 			_totalFramesRead = 0;
 			BufferingCompleted = false;

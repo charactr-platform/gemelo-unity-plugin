@@ -15,12 +15,13 @@ namespace Charactr.VoiceSDK.Audio
 		private List<float> _wavDataBuffer;
 
 		private readonly Queue<float[]> _waveBuffers;
-
-		public WavBuilder(byte[] data)
+		private readonly WavDebugSave _debugSave;
+		public WavBuilder(byte[] data, bool debug = false)
 		{
 			_waveBuffers = new Queue<float[]>();
 			_data = data;
 			_header = new WavHeaderData(data);
+			if (debug) _debugSave = new WavDebugSave(data);
 		}
 
 		public AudioClip CreateAudioClipStream(string name, int seconds = 30)
@@ -46,10 +47,13 @@ namespace Charactr.VoiceSDK.Audio
 		{
 			_lastBytesReadCount += ConvertByteToFloat(newData, out var waveData);
 			pcmData = waveData;
-			
+			_debugSave?.OnData(newData);
+
 			_wavBufferSamplesLength += waveData.Length;
 			_waveBuffers.Enqueue(waveData);
-			float length = _wavBufferSamplesLength / (_header.SampleRate * 1f);
+			
+			var length = _wavBufferSamplesLength / (_header.SampleRate * 1f);
+			
 			Debug.Log("Loaded bytes: "+ _lastBytesReadCount + " audioSamples: "+ _wavBufferSamplesLength + " length:"+length);
 			return length;
 		}

@@ -7,9 +7,10 @@ namespace Charactr.VoiceSDK.Streaming
 {
 	//TODO: Implement GetAverage() method from `original` Amplitude.cs
 	
-	public class WebGlAudioStreamingClient : AudioStreamingClientBase
+	public class WebGlAudioStreamingClient : AudioStreamingClientBase, IAudioStreamingClient
 	{
-		
+		public AudioSource AudioSource => _audioSource;
+
 		[DllImport("__Internal")]
 		private static extern bool WebGL_StartSampling(string uniqueName, int bufferIndex, int sampleSize, bool streaming = false);
 
@@ -61,14 +62,13 @@ namespace Charactr.VoiceSDK.Streaming
 			//Send buffer in with zero based index (Wav Header is frameIndex = 0)
 			WebGL_FillBuffer(buffer,  buffer.Length, frameIndex - 1);
 		}
-
+		
 		public override void Connect()
 		{
 			EnqueueCommand(GetAuthCommand());
 			_socket.Connect();
 		}
 		
-
 		//Close stream manually
 		public override void Dispose()
 		{
