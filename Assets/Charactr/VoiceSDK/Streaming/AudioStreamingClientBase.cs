@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Charactr.VoiceSDK.Audio;
 using Newtonsoft.Json;
@@ -84,7 +83,6 @@ namespace Charactr.VoiceSDK.Streaming
 		
 		private void LoadData(byte[] data)
 		{
-			
 			AudioLength = WavBuilder.BufferData(data, out var pcmData);
 			AudioSamples += pcmData.Length;
 			
@@ -107,7 +105,7 @@ namespace Charactr.VoiceSDK.Streaming
 			debug = true;
 #endif
 			WavBuilder = new WavBuilder(data, debug);
-
+			_clip = null;
 			_frameCount = 1;
 			_totalFramesRead = 0;
 			BufferingCompleted = false;
@@ -145,6 +143,7 @@ namespace Charactr.VoiceSDK.Streaming
 
 		public virtual void Dispose()
 		{
+			WavBuilder.Dispose();
 			WavBuilder = null;
 			_clip = null;
 			_commands.Clear();

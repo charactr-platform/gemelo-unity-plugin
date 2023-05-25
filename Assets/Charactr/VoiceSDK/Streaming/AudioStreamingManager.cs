@@ -10,10 +10,11 @@ namespace Charactr.VoiceSDK.Streaming
     {
         const string URL = "wss://api.slowpoke.charactr.dev/v1/tts/stream/simplex/ws";
         public AudioClip AudioClip { get; private set; }
-        public Action OnAudioEnd { get; private set; }
-        public Action OnAudioReady { get; private set; }
+        public bool AudioEnd { get; private set; }
+        public event Action OnAudioEnd;
+        public event Action OnAudioReady;
       
-        [SerializeField] private int voiceId = 112;
+        [SerializeField] private int voiceId = 151;
 
         private IAudioStreamingClient _streamingClient;
         private Configuration _configuration;
@@ -90,13 +91,15 @@ namespace Charactr.VoiceSDK.Streaming
         {
             if (!client.BufferingCompleted)
                 return;
+
+            AudioEnd = client.AudioSource.timeSamples >= client.AudioSamples;
             
-            if (client.AudioSource.timeSamples >= client.AudioSamples)
-            {
-                client.AudioSource.Stop();
-                OnAudioEnd?.Invoke();
-                DisposeClient();
-            }
+            if (!AudioEnd)
+                return;
+            
+            client.AudioSource.Stop();
+            DisposeClient();
+            OnAudioEnd?.Invoke();
         }
     }
 }

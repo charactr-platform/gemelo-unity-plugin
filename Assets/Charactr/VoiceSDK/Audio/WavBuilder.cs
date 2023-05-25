@@ -12,12 +12,13 @@ namespace Charactr.VoiceSDK.Audio
 		private int _lastBytesReadCount = 0;
 		private int _wavBufferSamplesLength = 0;
 		private int _wavBufferReadLength = 0;
-		private List<float> _wavDataBuffer;
-
+		private int _discardedSamples = 0;
+		private readonly List<float> _wavDataBuffer;
 		private readonly Queue<float[]> _waveBuffers;
 		private readonly WavDebugSave _debugSave;
 		public WavBuilder(byte[] data, bool debug = false)
 		{
+			_wavDataBuffer = new List<float>();
 			_waveBuffers = new Queue<float[]>();
 			_data = data;
 			_header = new WavHeaderData(data);
@@ -72,38 +73,27 @@ namespace Charactr.VoiceSDK.Audio
 		private void PcmReaderCallback(float[] data)
 		{
 			var readSize = data.Length - 1;
-			
-			if (_wavDataBuffer == null)
-			{
-				_wavDataBuffer = new List<float>();
-				LoadNextBuffer();
-			}
+			var discarded = 0;
 			
 			for (int i = 0; i < readSize; i++)
 			{
 				var readIndex = _wavBufferReadLength + i;
 				
-				if (readIndex >= _wavDataBuffer.Count)
+				if (readIndex >= _wavDataBuffer.Count && !LoadNextBuffer())
 				{
-					if (!LoadNextBuffer())
-					{
-						data[i] = 0f;
-						Debug.LogWarning("Can't load next pcm buffer");
-						break;
-					}
+					data[i] = 0f;
+					discarded++;
+					continue;
 				}
-
-				try
-				{
-					data[i] = _wavDataBuffer[readIndex];
-				}
-				catch (Exception e)
-				{
-					Debug.LogError($"Exception: {e}, readindex: {readIndex} size: {_wavDataBuffer.Count}");
-				}
+				
+				data[i] = _wavDataBuffer[readIndex];
 			}
-
+			
 			_wavBufferReadLength += readSize;
+			_discardedSamples += discarded;
+			
+			if (discarded > 0)
+				Debug.LogWarning($"No data found, discarded audio samples: {discarded}");
 		}
 
 		private int ConvertByteToFloat(byte[] data, out float[] waveData, int offset = 0)
@@ -120,6 +110,11 @@ namespace Charactr.VoiceSDK.Audio
 				waveData[i] = BitConverter.ToInt16(data, pos) / 32768f;
 			}
 			return pos;
+		}
+
+		public void Dispose()
+		{
+			_debugSave?.Close();
 		}
 	}
 }

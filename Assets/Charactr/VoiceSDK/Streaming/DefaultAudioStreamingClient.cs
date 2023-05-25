@@ -1,6 +1,11 @@
 ﻿using System;
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
+using System.Net.WebSockets;
 using UnityEngine;
-using WebSocketSharp;
+using WebSocket = WebSocketSharp.WebSocket;
+using WebSocketState = WebSocketSharp.WebSocketState;
 
 namespace Charactr.VoiceSDK.Streaming
 {
@@ -21,7 +26,6 @@ namespace Charactr.VoiceSDK.Streaming
 		}
 
 		protected override void OnPcmData(int frameIndex, float[] buffer) { }
-
 		
 		public override void Connect()
 		{
@@ -40,7 +44,7 @@ namespace Charactr.VoiceSDK.Streaming
 			_audioSource.clip = AudioClip;
 			_audioSource.Play();
 		}
-
+		
 		protected override void Send(string text)
 		{
 			if (Connected)
