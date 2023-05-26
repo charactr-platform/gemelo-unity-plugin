@@ -21,7 +21,7 @@ namespace Charactr.VoiceSDK.Streaming
 		private AudioClip _clip = null;
 		private readonly Queue<string> _commands;
 		private readonly Queue<byte[]> _dataQueue;
-		private int _frameCount = 0, _totalFramesRead, _enqueuedFrames;
+		private int _frameCount, _totalFramesRead;
 		private readonly MonoBehaviour _behaviour;
 		private readonly Configuration _configuration;
 		private readonly WavDebugSave _debugSave;
@@ -44,41 +44,32 @@ namespace Charactr.VoiceSDK.Streaming
 			//Invoke on main thread 
 			lock (_dataQueue)
 			{
-				_enqueuedFrames++;
 				_dataQueue.Enqueue(data);
 			}
 		}
 
 		public void DepleteBufferQueue()
 		{
-			if (IsDataQueueEmpty())
-			{
-				CheckForBufferEnd();
-				return;
-			}
-
 			lock (_dataQueue)
 			{
-				if (WavBuilder == null)
+				if (WavBuilder == null && !IsDataQueueEmpty())
 				{
 					CreateWavBuilderFromHeader(_dataQueue.Dequeue());
 					return;
 				}
 
-				do
+				while (!IsDataQueueEmpty())
 				{
 					LoadData(_dataQueue.Dequeue());
 				} 
-				while (_dataQueue.Count != 0);
+				
+				CheckForBufferEnd();
 			}
 		}
 
 		private bool IsDataQueueEmpty()
 		{
-			lock (_dataQueue)
-			{
-				return _dataQueue.Count == 0;
-			}
+			return _dataQueue.Count == 0;
 		}
 		
 		private void LoadData(byte[] data)
@@ -94,8 +85,6 @@ namespace Charactr.VoiceSDK.Streaming
 			{
 				_behaviour.StartCoroutine(LoadAudioClipBuffer());
 			}
-
-			Debug.Log($"On LoadData: {_frameCount}/{_enqueuedFrames}");
 		}
 
 		private void CreateWavBuilderFromHeader(byte[] data)
@@ -168,19 +157,22 @@ namespace Charactr.VoiceSDK.Streaming
 			_totalFramesRead = _frameCount;
 			Debug.Log("Closed: " + obj);
 		}
+
+		protected string GetAuthCommand() => 
+			GetAuthCommand(_configuration.ApiKey, _configuration.ApiClient);
 		
-		protected string GetAuthCommand() 
+		public static string GetAuthCommand(string apiKey, string clientKey) 
 		{
 			var authData = new AuthCommand()
 			{
-				ApiKey = _configuration.ApiKey,
-				ClientKey = _configuration.ApiClient,
+				ApiKey = apiKey,
+				ClientKey = clientKey,
 			};
 			
 			return JsonConvert.SerializeObject(authData);
 		}
 
-		private string GetConvertCommand(string text)
+		public static string GetConvertCommand(string text)
 		{
 			var textCommand = new ConvertCommand()
 			{
@@ -191,14 +183,14 @@ namespace Charactr.VoiceSDK.Streaming
 		}
 	}
 
-	struct AuthCommand
+	public struct AuthCommand
 	{
 		[JsonProperty(PropertyName = "type")] public string Type => "authApiKey";
 		[JsonProperty(PropertyName = "clientKey")] public string ClientKey { get; set; }
 		[JsonProperty(PropertyName = "apiKey")] public string ApiKey { get; set; }
 	}
 
-	struct ConvertCommand
+	public struct ConvertCommand
 	{
 		[JsonProperty(PropertyName = "type")] public string Type => "convert";
 		[JsonProperty(PropertyName = "text")] public string Text { get; set; }

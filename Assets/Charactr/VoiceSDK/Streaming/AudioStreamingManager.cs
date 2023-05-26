@@ -8,7 +8,7 @@ namespace Charactr.VoiceSDK.Streaming
     [RequireComponent(typeof(AudioSource))]
     public class AudioStreamingManager: MonoBehaviour
     {
-        const string URL = "wss://api.slowpoke.charactr.dev/v1/tts/stream/simplex/ws";
+        public const string URL = "wss://api.slowpoke.charactr.dev/v1/tts/stream/simplex/ws";
         public AudioClip AudioClip { get; private set; }
         public bool AudioEnd { get; private set; }
         public event Action OnAudioEnd;
