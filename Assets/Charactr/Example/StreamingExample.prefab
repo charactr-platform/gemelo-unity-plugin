@@ -188,4 +188,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   streamingManager: {fileID: 4959724508167933505}
-  text: Hello from Charactr Software Development Kit for Unity...
+  texts:
+  - Hello from Charactr Software Development Kit for Unity.

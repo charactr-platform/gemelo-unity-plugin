@@ -1,8 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Net;
-using System.Net.Sockets;
-using System.Net.WebSockets;
 using UnityEngine;
 using WebSocket = WebSocketSharp.WebSocket;
 using WebSocketState = WebSocketSharp.WebSocketState;
