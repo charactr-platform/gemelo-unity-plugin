@@ -4,17 +4,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Charactr.VoiceSDK.Streaming;
-using Newtonsoft.Json;
 using NUnit.Framework;
-using UnityEditor.Experimental;
-using UnityEditor.PackageManager;
-using UnityEditor.VersionControl;
 using UnityEngine;
 using Task = System.Threading.Tasks.Task;
 
 namespace Charactr.VoiceSDK.Tests
 {
-	public partial class Streaming
+	public class Streaming
 	{
 		private const string Text = "Hello from Charactr Software Development Kit for Unity";
 		private const int VoiceId = 112;
@@ -156,6 +152,40 @@ namespace Charactr.VoiceSDK.Tests
 			await Task.Delay(3000);
 			Assert.IsTrue(w.Status == WebSocketState.CloseReceived);
 			Assert.AreEqual(219180, bytesCount);
+		}
+
+		[Test]
+		public async Task SendConvertMessageLoop_StatusNormalClosure()
+		{
+			var authCommand = AudioStreamingClientBase.GetAuthCommand(_configuration.ApiKey, _configuration.ApiClient);
+			var convertCommand = AudioStreamingClientBase.GetConvertCommand(Text);
+
+			for (int i = 0; i < 10; i++)
+			{
+				var bytesCount = 0;
+				var w = new NativeSocketWrapper(AudioStreamingManager.URL + $"?voiceId={VoiceId}");
+				w.OnData += bytes =>
+				{
+					bytesCount += bytes.Length;
+					Debug.Log($"OnData: {bytes.Length}/{bytesCount}");
+				};
+			
+				w.OnOpen += () =>
+				{
+					w.SendText(authCommand);
+					w.SendText(convertCommand);
+				};
+				
+				w.OnClose += (s) =>
+				{
+					Debug.Log($"Iteration closed: {i}");
+				};
+				
+				w.Connect();
+				await Task.Delay(2000);
+				Assert.AreEqual(WebSocketState.CloseReceived,w.Status);
+				Assert.AreEqual(219180, bytesCount);
+			}
 		}
 	}
 }

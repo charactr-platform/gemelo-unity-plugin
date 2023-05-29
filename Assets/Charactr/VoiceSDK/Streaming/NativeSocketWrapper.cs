@@ -4,7 +4,6 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using UnityEngine;
 
 namespace Charactr.VoiceSDK.Tests
 {
@@ -43,31 +42,43 @@ namespace Charactr.VoiceSDK.Tests
 		public async void SendText(string text)
 		{
 			var bytesToSendConvert = new ArraySegment<byte>(Encoding.UTF8.GetBytes(text));
-			await _ws.SendAsync(bytesToSendConvert, WebSocketMessageType.Text, true, _token.Token);
+			
+			if (_ws.CloseStatus == null && _ws.State == WebSocketState.Open)
+			{
+				await _ws.SendAsync(bytesToSendConvert, WebSocketMessageType.Text, true, _token.Token);
+			}
+			else
+			{
+				throw new Exception("Can't send data: " + _ws.State);
+			}
 		}
 
 		public async void Close()
 		{
+			const string description = "Closing on user request";
+			
 			if (Status != WebSocketState.Open)
 				throw new Exception("Can't close, status: " + Status);
 
 			_dispatch.Dispose();
-			var description = "Closing on user request";
-			await _ws.CloseAsync(WebSocketCloseStatus.NormalClosure, description , _token.Token);
+			await _ws.CloseAsync(WebSocketCloseStatus.NormalClosure, description, _token.Token);
 			OnClose?.Invoke(description);
 		}
 		
 		private async Task Dispatch()
 		{
-			var rcvBytes = new byte[128];
+			var rcvBytes = new byte[1024 * 1024];
 			var rcvBuffer = new ArraySegment<byte>(rcvBytes);
 			WebSocketReceiveResult result = null;
 			
 			do
 			{
 				result = await _ws.ReceiveAsync(rcvBuffer, _token.Token);
-				var msgBytes = rcvBuffer.Skip(rcvBuffer.Offset).Take(result.Count).ToArray();
-				OnData?.Invoke(msgBytes);
+				if (result.Count > 0)
+				{
+					var msgBytes = rcvBuffer.Skip(rcvBuffer.Offset).Take(result.Count).ToArray();
+					OnData?.Invoke(msgBytes);
+				}
 			} 
 			while (result.CloseStatus == null);
 			

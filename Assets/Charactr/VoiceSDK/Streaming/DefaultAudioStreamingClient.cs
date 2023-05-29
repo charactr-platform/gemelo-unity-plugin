@@ -1,7 +1,6 @@
 ﻿using System;
+using Charactr.VoiceSDK.Tests;
 using UnityEngine;
-using WebSocket = WebSocketSharp.WebSocket;
-using WebSocketState = WebSocketSharp.WebSocketState;
 
 namespace Charactr.VoiceSDK.Streaming
 {
@@ -9,16 +8,16 @@ namespace Charactr.VoiceSDK.Streaming
 	{
 		public AudioSource AudioSource => _audioSource;
 
-		private readonly WebSocket _socket;
+		private readonly NativeSocketWrapper _socket;
 		private readonly AudioSource _audioSource;
 		public DefaultAudioStreamingClient(string url, Configuration configuration, AudioSource audioSource): base(configuration, audioSource.gameObject)
 		{
 			_audioSource = audioSource;
-			_socket = new WebSocket(url);
-			_socket.OnOpen += (sender, args) => OnOpen();
-			_socket.OnClose += (sender, args) => OnClose(args.Reason);
-			_socket.OnError += (sender, args) => OnError(args.Message);
-			_socket.OnMessage += (sender, args) => OnData(args.RawData);
+			_socket = new NativeSocketWrapper(url);
+			_socket.OnOpen += OnOpen;
+			_socket.OnClose += OnClose;
+			_socket.OnError += OnError;
+			_socket.OnData += OnData;
 		}
 
 		protected override void OnPcmData(int frameIndex, float[] buffer) { }
@@ -28,9 +27,9 @@ namespace Charactr.VoiceSDK.Streaming
 			EnqueueCommand(GetAuthCommand());
 			_socket.Connect();
 		}
-		
+
 		protected override bool IsConnected() =>
-			_socket.ReadyState == WebSocketState.Open;
+			_socket.Status == System.Net.WebSockets.WebSocketState.Open;
 
 		public override void Play()
 		{
@@ -44,7 +43,7 @@ namespace Charactr.VoiceSDK.Streaming
 		protected override void Send(string text)
 		{
 			if (Connected)
-				_socket.Send(text);
+				_socket.SendText(text);
 			else
 				EnqueueCommand(text);
 		}
