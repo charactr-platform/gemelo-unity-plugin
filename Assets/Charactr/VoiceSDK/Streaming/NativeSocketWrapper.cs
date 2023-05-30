@@ -4,11 +4,14 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Charactr.VoiceSDK.Tests
 {
 	public class NativeSocketWrapper
 	{
+		const string Description = "Closing on user request";
+
 		public WebSocketState Status => _ws.State;
 		public event Action OnOpen;
 		public event Action<string> OnClose;
@@ -55,14 +58,13 @@ namespace Charactr.VoiceSDK.Tests
 
 		public async void Close()
 		{
-			const string description = "Closing on user request";
-			
-			if (Status != WebSocketState.Open)
-				throw new Exception("Can't close, status: " + Status);
-
 			_dispatch.Dispose();
-			await _ws.CloseAsync(WebSocketCloseStatus.NormalClosure, description, _token.Token);
-			OnClose?.Invoke(description);
+
+			if (_ws == null) return;
+			
+			await _ws.CloseAsync(WebSocketCloseStatus.NormalClosure, Description, _token.Token);
+			_ws.Dispose();
+			OnClose?.Invoke(Description);
 		}
 		
 		private async Task Dispatch()

@@ -163,7 +163,10 @@ namespace Charactr.VoiceSDK.Tests
 			for (int i = 0; i < 10; i++)
 			{
 				var bytesCount = 0;
-				var w = new NativeSocketWrapper(AudioStreamingManager.URL + $"?voiceId={VoiceId}");
+				var start =  DateTimeOffset.Now;
+				
+				var w = new NativeSocketWrapper(AudioStreamingManager.URL + $"?voiceId={181}");
+				
 				w.OnData += bytes =>
 				{
 					bytesCount += bytes.Length;
@@ -178,11 +181,14 @@ namespace Charactr.VoiceSDK.Tests
 				
 				w.OnClose += (s) =>
 				{
-					Debug.Log($"Iteration closed: {i}");
+					var end = DateTimeOffset.Now;
+					Debug.Log($"Iteration closed: {i} Message: {s} {(end - start).Milliseconds}ms");
 				};
 				
+				w.OnError += Debug.LogError;
+				
 				w.Connect();
-				await Task.Delay(2000);
+				await Task.Delay(750);
 				Assert.AreEqual(WebSocketState.CloseReceived,w.Status);
 				Assert.AreEqual(219180, bytesCount);
 			}
