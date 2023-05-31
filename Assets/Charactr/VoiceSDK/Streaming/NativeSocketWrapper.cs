@@ -21,7 +21,6 @@ namespace Charactr.VoiceSDK.Tests
 		private readonly ClientWebSocket _ws;
 		private readonly CancellationTokenSource _token;
 		private readonly Uri _uri;
-		private Task _dispatch;
 		public NativeSocketWrapper(string url, int timeout = 5000)
 		{
 			_ws = new ClientWebSocket();
@@ -39,7 +38,7 @@ namespace Charactr.VoiceSDK.Tests
 			else
 				OnError?.Invoke(Status.ToString());
 
-			_dispatch = Dispatch();
+			Dispatch();
 		}
 
 		public async void SendText(string text)
@@ -56,13 +55,16 @@ namespace Charactr.VoiceSDK.Tests
 			}
 		}
 
-		public async void Close()
+		public async Task Close()
 		{
-			_dispatch.Dispose();
-
-			if (_ws == null) return;
+			if (_ws == null)
+			{
+				Debug.LogError("Websocket disposed already");
+				return;
+			}
 			
 			await _ws.CloseAsync(WebSocketCloseStatus.NormalClosure, Description, _token.Token);
+			
 			_ws.Dispose();
 			OnClose?.Invoke(Description);
 		}
@@ -86,10 +88,11 @@ namespace Charactr.VoiceSDK.Tests
 			
 			if (result.CloseStatus == WebSocketCloseStatus.NormalClosure)
 			{
-				OnClose?.Invoke(result.CloseStatusDescription);
+				await Close();
 			}
 			else
 			{
+				_ws.Dispose();
 				OnError?.Invoke(result.CloseStatusDescription);
 			}
 		}

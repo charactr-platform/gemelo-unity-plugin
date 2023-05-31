@@ -341,10 +341,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: StreamingExample
       objectReference: {fileID: 0}
-    - target: {fileID: 4959724508373500997, guid: 4363683e803d7f843b12d6bbf7cdbf3a, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4959724508373501003, guid: 4363683e803d7f843b12d6bbf7cdbf3a, type: 3}
       propertyPath: m_RootOrder
       value: 1

@@ -6,29 +6,41 @@ using UnityEngine;
 
 public class StreamingExample : MonoBehaviour
 {
+    [Serializable]
+    public struct VoiceDb
+    {
+        public string Text;
+        public int VoiceId;
+    }
+    
     [SerializeField] AudioStreamingManager streamingManager;
-    [SerializeField] private List<string> texts = new List<string>()
+    [SerializeField] private List<VoiceDb> texts = new List<VoiceDb>()
     {
-        "Hello from Charactr Software Development Kit for Unity",
-        "No valid plans for the future can be made by those who have no capacity for living now.",
-        "Try not to become a man of success, but rather try to become a man of value."
+        new VoiceDb()
+        {
+            Text = "Hello from Charactr Software Development Kit for Unity.",
+            VoiceId = 181,
+        },
     };
-    // Start is called before the first frame update
-    private int index = 0;
-    void Start()
+    
+    IEnumerator Start()
     {
-        streamingManager.OnAudioEnd += PlayNext;
-        PlayNext();
+        for (int i = 0; i < texts.Count; i++)
+        {
+            Debug.Log("Play next: "+i);
+            yield return PlayNext(i);
+        }
     }
 
-    private void PlayNext()
+    private IEnumerator PlayNext(int i)
     {
-        var c = index++ % texts.Count;
-        StartCoroutine(PlayText(texts[c]));
+        var current = texts[i];
+        yield return PlayText(current.Text, current.VoiceId);
     }
 
-    private IEnumerator PlayText(string text)
+    private IEnumerator PlayText(string text, int voiceID)
     {
+        streamingManager.SetVoiceId(voiceID);
         yield return streamingManager.ConvertAndStartPlaying(text);
     }
 }

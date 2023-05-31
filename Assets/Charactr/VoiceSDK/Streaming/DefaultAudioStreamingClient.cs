@@ -40,6 +40,14 @@ namespace Charactr.VoiceSDK.Streaming
 			_audioSource.Play();
 		}
 		
+		public override void Dispose()
+		{
+			base.Dispose();
+			
+			if (Connected)
+				_socket.Close();
+		}
+		
 		protected override void Send(string text)
 		{
 			if (Connected)

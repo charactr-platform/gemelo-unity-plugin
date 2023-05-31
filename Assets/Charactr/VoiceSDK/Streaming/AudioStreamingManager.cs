@@ -28,10 +28,15 @@ namespace Charactr.VoiceSDK.Streaming
                 throw new Exception("Can't load Configuration data");
         }
 
+        public void SetVoiceId(int voice)
+        {
+            voiceId = voice;
+        }
+        
         public IEnumerator ConvertAndStartPlaying(string text)
         {
             yield return CreateClientInstance(text, _configuration);
-            Play();
+            yield return Play();
         }
         
         public IEnumerator Convert(string text)
@@ -43,17 +48,16 @@ namespace Charactr.VoiceSDK.Streaming
         {
             var url = URL + $"?voiceId={voiceId}";
             
-            if (_streamingClient == null)
-            {
-                var audioSource = GetComponent<AudioSource>();
+            var audioSource = GetComponent<AudioSource>();
+            audioSource.Stop();
+            
 #if UNITY_WEBGL && !UNITY_EDITOR
-                _streamingClient = new WebGlAudioStreamingClient(url, configuration, audioSource);
+            _streamingClient = new WebGlAudioStreamingClient(url, configuration, audioSource);
 #else
-                _streamingClient = new DefaultAudioStreamingClient(url, configuration, audioSource);
+            _streamingClient = new DefaultAudioStreamingClient(url, configuration, audioSource);
 #endif
-                _streamingClient.Connect();
-            }
-           
+            _streamingClient.Connect();
+
             _streamingClient.SendConvertCommand(text);
 
             yield return new WaitUntil(() => _streamingClient.Initialized);
@@ -72,13 +76,15 @@ namespace Charactr.VoiceSDK.Streaming
             if (_streamingClient != null)
             {
                 _streamingClient.DepleteBufferQueue();
-                CheckForAudioEnd(_streamingClient);
+                AudioEnd = CheckForAudioEnd(_streamingClient);
             }
         }
 
-        public void Play()
+        public IEnumerator Play()
         {
+            AudioEnd = false;
             _streamingClient?.Play();
+            yield return new WaitUntil(() => AudioEnd);
         }
 
         private void DisposeClient()
@@ -87,19 +93,22 @@ namespace Charactr.VoiceSDK.Streaming
             _streamingClient = null;
         }
 
-        private void CheckForAudioEnd(IAudioStreamingClient client)
+        private bool CheckForAudioEnd(IAudioStreamingClient client)
         {
             if (!client.BufferingCompleted)
-                return;
+                return false;
 
-            AudioEnd = client.AudioSource.timeSamples >= client.AudioSamples;
-            
-            if (!AudioEnd)
-                return;
+            var playbackSamples = client.AudioSource.timeSamples;
+            var clipSamples = client.AudioSamples;
+
+            if (playbackSamples < clipSamples)
+                return false;
             
             client.AudioSource.Stop();
             DisposeClient();
             OnAudioEnd?.Invoke();
+            Debug.Log($"Playback finished [{playbackSamples}/{clipSamples}]");
+            return true;
         }
     }
 }
