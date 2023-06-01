@@ -12,6 +12,7 @@ namespace Charactr.VoiceSDK.Streaming
 		public bool Initialized { get; }
 		public void Connect();
 		public void Play();
+		public float GetAverage();
 		public void SendConvertCommand(string text);
 		public void DepleteBufferQueue();
 		public void Dispose();

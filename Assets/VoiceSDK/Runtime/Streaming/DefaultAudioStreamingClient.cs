@@ -39,7 +39,16 @@ namespace Charactr.VoiceSDK.Streaming
 			_audioSource.clip = AudioClip;
 			_audioSource.Play();
 		}
-		
+
+		public float GetAverage()
+		{
+			var sample = new float[SampleSize];
+			
+			_audioSource.GetOutputData(sample, 0);
+			
+			return GetSampleAverage(sample);
+		}
+
 		public override void Dispose()
 		{
 			base.Dispose();

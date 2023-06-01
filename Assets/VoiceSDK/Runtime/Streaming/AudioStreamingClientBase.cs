@@ -6,8 +6,10 @@ using UnityEngine;
 
 namespace Charactr.VoiceSDK.Streaming
 {
+	
 	public abstract class AudioStreamingClientBase
 	{
+		public const int SampleSize = 1024;
 		public bool Connected => IsConnected();
 		public bool Initialized => _clip != null;
 		public AudioClip AudioClip => _clip;
@@ -25,6 +27,18 @@ namespace Charactr.VoiceSDK.Streaming
 		private readonly MonoBehaviour _behaviour;
 		private readonly Configuration _configuration;
 		private readonly WavDebugSave _debugSave;
+
+		#region Amplitude
+
+		private readonly int _sampleSize;
+		private readonly float[] _sample;
+		private float _avgTotal = 0;
+		private float _maxTotal = 0;
+		private float _max;
+		private const float BoostBase = 1f;
+		private const float Boost = 0.2f;
+
+		#endregion
 
 		protected AudioStreamingClientBase(Configuration configuration, GameObject behaviour)
 		{
@@ -125,7 +139,34 @@ namespace Charactr.VoiceSDK.Streaming
 				Send(_commands.Dequeue());
 			}
 		}
+		public float GetSampleAverage(float[] sample)
+		{
+			float tempVal = 0;
+			
+			_avgTotal = 0;
+			_maxTotal = 0;
 
+			for (int i = 0; i < sample.Length; i++)
+			{
+				// Get the sample value
+				tempVal = sample[i];
+				// Get the absolute value
+				tempVal = Mathf.Abs(tempVal);
+				// Add boost
+				tempVal = Mathf.Pow(tempVal, BoostBase - Boost);
+				// Write boosted value back to the original sample
+				sample[i] = tempVal;
+
+				_avgTotal += sample[i];
+
+				if (sample[i] > _maxTotal)
+					_maxTotal = sample[i];
+			}
+			
+			_max = _maxTotal;
+			return _avgTotal / _sampleSize;
+		}
+		
 		public virtual void Dispose()
 		{
 			WavBuilder.Dispose();
