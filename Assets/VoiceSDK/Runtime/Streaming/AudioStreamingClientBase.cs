@@ -89,11 +89,7 @@ namespace Charactr.VoiceSDK.Streaming
 
 		private void CreateWavBuilderFromHeader(byte[] data)
 		{
-			var debug = false;
-#if UNITY_EDITOR && DEBUG
-			debug = true;
-#endif
-			WavBuilder = new WavBuilder(data, debug);
+			WavBuilder = new WavBuilder(data);
 			_clip = null;
 			_frameCount = 1;
 			_totalFramesRead = 0;

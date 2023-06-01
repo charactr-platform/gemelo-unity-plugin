@@ -10,7 +10,7 @@ namespace Charactr.VoiceSDK.Audio
 		private int _position = 0;
 		public WavDebugSave(byte[] header)
 		{
-			_stream = new FileStream(Application.streamingAssetsPath + "/DebugSave.wav", FileMode.Create);
+			_stream = new FileStream(Application.streamingAssetsPath + "../../../DebugSave.wav", FileMode.Create);
 			_stream.Write(header,0,header.Length);
 			_position += header.Length;
 		}
