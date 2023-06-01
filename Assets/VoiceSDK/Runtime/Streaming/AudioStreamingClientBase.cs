@@ -6,10 +6,9 @@ using UnityEngine;
 
 namespace Charactr.VoiceSDK.Streaming
 {
-	
 	public abstract class AudioStreamingClientBase
 	{
-		public const int SampleSize = 1024;
+
 		public bool Connected => IsConnected();
 		public bool Initialized => _clip != null;
 		public AudioClip AudioClip => _clip;
@@ -27,24 +26,14 @@ namespace Charactr.VoiceSDK.Streaming
 		private readonly MonoBehaviour _behaviour;
 		private readonly Configuration _configuration;
 		private readonly WavDebugSave _debugSave;
-
-		#region Amplitude
-
-		private readonly int _sampleSize;
-		private readonly float[] _sample;
-		private float _avgTotal = 0;
-		private float _maxTotal = 0;
-		private float _max;
-		private const float BoostBase = 1f;
-		private const float Boost = 0.2f;
-
-		#endregion
-
+		private readonly AverageProvider _averageProvider;
+		
 		protected AudioStreamingClientBase(Configuration configuration, GameObject behaviour)
 		{
 			_commands = new Queue<string>();
 			_dataQueue = new Queue<byte[]>();
 
+			_averageProvider = new AverageProvider();
 			_configuration = configuration;
 			_behaviour = behaviour.GetComponent<MonoBehaviour>();
 		}
@@ -61,7 +50,6 @@ namespace Charactr.VoiceSDK.Streaming
 				_dataQueue.Enqueue(data);
 			}
 		}
-
 		public void DepleteBufferQueue()
 		{
 			lock (_dataQueue)
@@ -139,33 +127,6 @@ namespace Charactr.VoiceSDK.Streaming
 				Send(_commands.Dequeue());
 			}
 		}
-		public float GetSampleAverage(float[] sample)
-		{
-			float tempVal = 0;
-			
-			_avgTotal = 0;
-			_maxTotal = 0;
-
-			for (int i = 0; i < sample.Length; i++)
-			{
-				// Get the sample value
-				tempVal = sample[i];
-				// Get the absolute value
-				tempVal = Mathf.Abs(tempVal);
-				// Add boost
-				tempVal = Mathf.Pow(tempVal, BoostBase - Boost);
-				// Write boosted value back to the original sample
-				sample[i] = tempVal;
-
-				_avgTotal += sample[i];
-
-				if (sample[i] > _maxTotal)
-					_maxTotal = sample[i];
-			}
-			
-			_max = _maxTotal;
-			return _avgTotal / _sampleSize;
-		}
 		
 		public virtual void Dispose()
 		{
@@ -184,8 +145,14 @@ namespace Charactr.VoiceSDK.Streaming
 		public abstract void Connect();
 		protected abstract bool IsConnected();
 		public abstract void Play();
+
+		protected float GetSampleAverage(float[] sample)
+		{
+			return _averageProvider.GetSampleAverage(sample);
+		}
 		protected abstract void Send(string text);
 		protected abstract void OnPcmData(int frameIndex, float[] buffer);
+		
 		public virtual void SendConvertCommand(string text) => Send(GetConvertCommand(text));
 		protected virtual void OnError(string obj) => Debug.LogError("Error: " + obj);
 

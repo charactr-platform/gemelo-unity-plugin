@@ -20,7 +20,7 @@ namespace Charactr.VoiceSDK.Streaming
 			_audioSource = audioSource;
 			
 			_socket = new NativeWebSocket.WebSocket(url);
-			_bufferProcessor = new WebGlAudioBufferProcessor(SampleSize);
+			_bufferProcessor = new WebGlAudioBufferProcessor(AverageProvider.SampleSize);
 			
 			_socket.OnOpen += OnOpen;
 			_socket.OnClose += code => OnClose(code.ToString());

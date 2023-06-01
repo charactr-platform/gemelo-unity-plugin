@@ -1,4 +1,5 @@
 ﻿using System;
+using Charactr.VoiceSDK.Audio;
 using Charactr.VoiceSDK.Tests;
 using UnityEngine;
 
@@ -39,10 +40,10 @@ namespace Charactr.VoiceSDK.Streaming
 			_audioSource.clip = AudioClip;
 			_audioSource.Play();
 		}
-
+		
 		public float GetAverage()
 		{
-			var sample = new float[SampleSize];
+			var sample = new float[AverageProvider.SampleSize];
 			
 			_audioSource.GetOutputData(sample, 0);
 			
