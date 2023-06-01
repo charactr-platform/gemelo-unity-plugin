@@ -17,7 +17,7 @@
             "displayName": "Streaming Example",
             "description": "Contains example scene with tts streaming",
             "path": "Samples~/Streaming"
-        },
+        }],
  "keywords": [
     "Voice",
     "TTS",
