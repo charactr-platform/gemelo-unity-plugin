@@ -141,7 +141,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d96fa7869c2ff6c49b666fa387ff7f80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  voiceId: 112
+  voiceId: 181
 --- !u!1 &4959724508373500997
 GameObject:
   m_ObjectHideFlags: 0
@@ -188,4 +188,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   streamingManager: {fileID: 4959724508167933505}
-  text: Hello from Charactr Software Development Kit for Unity
+  texts:
+  - Text: Hello from Charactr Software Development Kit for Unity.
+    VoiceId: 201
+  - Text: Hello from Charactr Software Development Kit for Unity.
+    VoiceId: 112
+  - Text: Hello from Charactr Software Development Kit for Unity.
+    VoiceId: 34
+  - Text: Hello from Charactr Software Development Kit for Unity.
+    VoiceId: 179

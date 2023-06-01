@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK
+namespace Charactr.VoiceSDK.Audio
 {
 	[ExecuteInEditMode]
 	[RequireComponent(typeof(AudioSource))]

@@ -1,9 +1,8 @@
-using Charactr.SDK.Library;
 using Charactr.VoiceSDK.Library;
 using UnityEditor;
 using UnityEngine.UIElements;
 
-namespace Charactr.SDK.Editor.Library
+namespace Charactr.VoiceSDK.Editor.Library
 {
 	[CustomEditor(typeof(VoiceLibrary))]
 	public class LibraryInspector : UnityEditor.Editor

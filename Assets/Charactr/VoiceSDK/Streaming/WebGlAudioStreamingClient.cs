@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Charactr.VoiceSDK;
-using Charactr.VoiceSDK.Streaming;
-using GptDemo.Streaming;
 using NativeWebSocket;
 using UnityEngine;
 
-namespace Charactr.SDK.Streaming
+namespace Charactr.VoiceSDK.Streaming
 {
 	//TODO: Implement GetAverage() method from `original` Amplitude.cs
 	
-	public class WebGlAudioStreamingClient : AudioStreamingClientBase
+	public class WebGlAudioStreamingClient : AudioStreamingClientBase, IAudioStreamingClient
 	{
-		
+		public AudioSource AudioSource => _audioSource;
+
 		[DllImport("__Internal")]
 		private static extern bool WebGL_StartSampling(string uniqueName, int bufferIndex, int sampleSize, bool streaming = false);
 
@@ -37,10 +35,10 @@ namespace Charactr.SDK.Streaming
 			_audioSource = audioSource;
 			
 			_socket = new NativeWebSocket.WebSocket(url);
-			_socket.OnOpen += () => OnOpen.Invoke();
-			_socket.OnClose += code => OnClose.Invoke(code.ToString());
-			_socket.OnError += msg => OnError.Invoke(msg);
-			_socket.OnMessage += data => OnData.Invoke(data);
+			_socket.OnOpen += OnOpen;
+			_socket.OnClose += code => OnClose(code.ToString());
+			_socket.OnError += OnError;
+			_socket.OnMessage += OnData;
 		}
 		
 		public override void Play()
@@ -64,14 +62,13 @@ namespace Charactr.SDK.Streaming
 			//Send buffer in with zero based index (Wav Header is frameIndex = 0)
 			WebGL_FillBuffer(buffer,  buffer.Length, frameIndex - 1);
 		}
-
+		
 		public override void Connect()
 		{
 			EnqueueCommand(GetAuthCommand());
 			_socket.Connect();
 		}
 		
-
 		//Close stream manually
 		public override void Dispose()
 		{

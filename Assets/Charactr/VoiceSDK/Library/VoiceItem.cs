@@ -1,11 +1,11 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Charactr.VoiceSDK.Model;
+using Charactr.VoiceSDK.Rest.Model;
 using UnityEditor;
 using UnityEngine;
 
-namespace Charactr.SDK.Library
+namespace Charactr.VoiceSDK.Library
 {
     [System.Serializable]
     public class VoiceItem

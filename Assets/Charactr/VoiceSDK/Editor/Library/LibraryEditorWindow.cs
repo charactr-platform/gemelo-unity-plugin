@@ -1,13 +1,11 @@
 using System.Collections.Generic;
-using Charactr.SDK.Library;
 using Charactr.VoiceSDK.Library;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityEditor.UIElements;
 
-
-namespace Charactr.SDK.Editor.Library
+namespace Charactr.VoiceSDK.Editor.Library
 {
     public class LibraryEditorWindow : EditorWindow
     {

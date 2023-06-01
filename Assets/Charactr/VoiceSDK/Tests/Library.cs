@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Charactr.SDK.Library;
 using Charactr.VoiceSDK.Library;
 using NUnit.Framework;
 using UnityEditor;

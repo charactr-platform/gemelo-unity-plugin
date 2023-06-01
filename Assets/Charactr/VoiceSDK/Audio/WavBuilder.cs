@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Charactr.SDK.Wav;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Wav
+namespace Charactr.VoiceSDK.Audio
 {
 	public class WavBuilder
 	{
@@ -13,15 +12,17 @@ namespace Charactr.VoiceSDK.Wav
 		private int _lastBytesReadCount = 0;
 		private int _wavBufferSamplesLength = 0;
 		private int _wavBufferReadLength = 0;
-		private List<float> _wavDataBuffer;
-
+		private int _discardedSamples = 0;
+		private readonly List<float> _wavDataBuffer;
 		private readonly Queue<float[]> _waveBuffers;
-
-		public WavBuilder(byte[] data)
+		private readonly WavDebugSave _debugSave;
+		public WavBuilder(byte[] data, bool debug = false)
 		{
+			_wavDataBuffer = new List<float>();
 			_waveBuffers = new Queue<float[]>();
 			_data = data;
 			_header = new WavHeaderData(data);
+			if (debug) _debugSave = new WavDebugSave(data);
 		}
 
 		public AudioClip CreateAudioClipStream(string name, int seconds = 30)
@@ -31,7 +32,7 @@ namespace Charactr.VoiceSDK.Wav
 #else
 			var clip = AudioClip.Create(name, _header.SampleRate * seconds, _header.Channels, _header.SampleRate, true, PcmReaderCallback);
 #endif
-			Debug.Log($"Created AudioClip instance [Length = {clip.length}, load type = {clip.loadType}]");
+			Debug.Log($"Created AudioClip [Rate: {_header.SampleRate}] [Length = {clip.length}, load type = {clip.loadType}]");
 			return clip;
 		}
 
@@ -47,10 +48,13 @@ namespace Charactr.VoiceSDK.Wav
 		{
 			_lastBytesReadCount += ConvertByteToFloat(newData, out var waveData);
 			pcmData = waveData;
-			
+			_debugSave?.OnData(newData);
+
 			_wavBufferSamplesLength += waveData.Length;
 			_waveBuffers.Enqueue(waveData);
-			float length = _wavBufferSamplesLength / (_header.SampleRate * 1f);
+			
+			var length = _wavBufferSamplesLength / (_header.SampleRate * 1f);
+			
 			Debug.Log("Loaded bytes: "+ _lastBytesReadCount + " audioSamples: "+ _wavBufferSamplesLength + " length:"+length);
 			return length;
 		}
@@ -69,37 +73,27 @@ namespace Charactr.VoiceSDK.Wav
 		private void PcmReaderCallback(float[] data)
 		{
 			var readSize = data.Length - 1;
-			
-			if (_wavDataBuffer == null)
-			{
-				_wavDataBuffer = new List<float>();
-				LoadNextBuffer();
-			}
+			var discarded = 0;
 			
 			for (int i = 0; i < readSize; i++)
 			{
 				var readIndex = _wavBufferReadLength + i;
 				
-				if (readIndex >= _wavDataBuffer.Count)
+				if (readIndex >= _wavDataBuffer.Count && !LoadNextBuffer())
 				{
-					if (!LoadNextBuffer())
-					{
-						Debug.LogWarning("Can't load next pcm buffer");
-						break;
-					}
+					data[i] = 0f;
+					discarded++;
+					continue;
 				}
-
-				try
-				{
-					data[i] = _wavDataBuffer[readIndex];
-				}
-				catch (Exception e)
-				{
-					Debug.LogError($"Exception: {e}, readindex: {readIndex} size: {_wavDataBuffer.Count}");
-				}
+				
+				data[i] = _wavDataBuffer[readIndex];
 			}
-
+			
 			_wavBufferReadLength += readSize;
+			_discardedSamples += discarded;
+			
+			if (discarded > 0)
+				Debug.LogWarning($"No data found, discarded audio samples: {discarded}");
 		}
 
 		private int ConvertByteToFloat(byte[] data, out float[] waveData, int offset = 0)
@@ -116,6 +110,11 @@ namespace Charactr.VoiceSDK.Wav
 				waveData[i] = BitConverter.ToInt16(data, pos) / 32768f;
 			}
 			return pos;
+		}
+
+		public void Dispose()
+		{
+			_debugSave?.Close();
 		}
 	}
 }

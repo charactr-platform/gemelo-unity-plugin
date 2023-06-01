@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using Charactr.VoiceSDK.Wav;
+using Charactr.VoiceSDK.Audio;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -12,22 +11,20 @@ namespace Charactr.VoiceSDK.Streaming
 		public bool Connected => IsConnected();
 		public bool Initialized => _clip != null;
 		public AudioClip AudioClip => _clip;
-		public float Length { get; private set; }
-		public Action<float> OnBufferFull { get; set; }
-		protected Action<byte[]> OnData { get; set; }
-		protected Action<string> OnError { get; }
-		protected Action<string> OnClose { get; }
-		protected Action OnOpen { get; }
-		public WavBuilder WavBuilder { get; private set; }
+		public bool BufferingCompleted { get; private set; }
+		public float AudioLength { get; private set; }
+		public int AudioSamples { get; private set; }
+		private WavBuilder WavBuilder { get; set; }
 
 		private const int MinimalFrameCount = 5;
 		
 		private AudioClip _clip = null;
 		private readonly Queue<string> _commands;
 		private readonly Queue<byte[]> _dataQueue;
-		private int _frameCount = 0, _totalFramesRead, _enqueuedFrames;
+		private int _frameCount, _totalFramesRead;
 		private readonly MonoBehaviour _behaviour;
 		private readonly Configuration _configuration;
+		private readonly WavDebugSave _debugSave;
 
 		protected AudioStreamingClientBase(Configuration configuration, GameObject behaviour)
 		{
@@ -36,61 +33,50 @@ namespace Charactr.VoiceSDK.Streaming
 
 			_configuration = configuration;
 			_behaviour = behaviour.GetComponent<MonoBehaviour>();
-			
-			OnOpen = OnOpenCallback;
-			OnError = OnErrorCallback;
-			OnClose = OnCloseCallback;
-			OnData = EnqueueData;
 		}
 		protected void EnqueueCommand(string command)
 		{
 			_commands.Enqueue(command);
 		}
 
-		private void EnqueueData(byte[] data)
+		protected void OnData(byte[] data)
 		{
 			//Invoke on main thread 
 			lock (_dataQueue)
 			{
-				_enqueuedFrames++;
 				_dataQueue.Enqueue(data);
 			}
 		}
 
-		public void DepleteQueue()
+		public void DepleteBufferQueue()
 		{
-			if (IsDataQueueEmpty())
-			{
-				CheckForAudioEnd();
-				return;
-			}
-
 			lock (_dataQueue)
 			{
-				while (_dataQueue.Count > 0)
+				if (WavBuilder == null && !IsDataQueueEmpty())
+				{
+					CreateWavBuilderFromHeader(_dataQueue.Dequeue());
+					return;
+				}
+
+				while (!IsDataQueueEmpty())
 				{
 					LoadData(_dataQueue.Dequeue());
-				}
+				} 
+				
+				CheckForBufferEnd();
 			}
 		}
 
 		private bool IsDataQueueEmpty()
 		{
-			lock (_dataQueue)
-			{
-				return _dataQueue.Count == 0;
-			}
+			return _dataQueue.Count == 0;
 		}
 		
 		private void LoadData(byte[] data)
 		{
-			if (WavBuilder == null)
-			{
-				CreateWavBuilderFromHeader(data);
-				return;
-			}
-        
-			Length = WavBuilder.BufferData(data, out var pcmData);
+			AudioLength = WavBuilder.BufferData(data, out var pcmData);
+			AudioSamples += pcmData.Length;
+			
 			OnPcmData(_frameCount, pcmData);
 			
 			_frameCount++;
@@ -99,24 +85,30 @@ namespace Charactr.VoiceSDK.Streaming
 			{
 				_behaviour.StartCoroutine(LoadAudioClipBuffer());
 			}
-
-			Debug.Log($"On LoadData: {_frameCount}/{_enqueuedFrames}");
 		}
 
 		private void CreateWavBuilderFromHeader(byte[] data)
 		{
-			WavBuilder = new WavBuilder(data);
+			var debug = false;
+#if UNITY_EDITOR && DEBUG
+			debug = true;
+#endif
+			WavBuilder = new WavBuilder(data, debug);
+			_clip = null;
 			_frameCount = 1;
 			_totalFramesRead = 0;
+			BufferingCompleted = false;
+			AudioLength = 0f;
+			AudioSamples = 0;
 		}
 		
-		private void CheckForAudioEnd()
+		private void CheckForBufferEnd()
 		{
 			if (Initialized && !Connected && _totalFramesRead != 0)
 			{
-				OnBufferFull?.Invoke(Length);
-				Debug.Log($"Buffer loaded [{_totalFramesRead}]: {Length}s");
+				Debug.Log($"Buffer loaded [{_totalFramesRead}]: {AudioLength}s");
 				_totalFramesRead = 0;
+				BufferingCompleted = true;
 			}
 		}
 
@@ -129,8 +121,8 @@ namespace Charactr.VoiceSDK.Streaming
 			//Assign clip when Audio is loaded
 			_clip = clip;
 		}
-		
-		private void OnOpenCallback()
+
+		protected void OnOpen()
 		{
 			while (_commands.Count > 0)
 			{
@@ -140,6 +132,7 @@ namespace Charactr.VoiceSDK.Streaming
 
 		public virtual void Dispose()
 		{
+			WavBuilder.Dispose();
 			WavBuilder = null;
 			_clip = null;
 			_commands.Clear();
@@ -151,34 +144,35 @@ namespace Charactr.VoiceSDK.Streaming
 			Debug.Log("Disposed streaming client");
 		}
 		
-		
 		public abstract void Connect();
 		protected abstract bool IsConnected();
 		public abstract void Play();
 		protected abstract void Send(string text);
 		protected abstract void OnPcmData(int frameIndex, float[] buffer);
 		public virtual void SendConvertCommand(string text) => Send(GetConvertCommand(text));
+		protected virtual void OnError(string obj) => Debug.LogError("Error: " + obj);
 
-		protected virtual void OnErrorCallback(string obj) => Debug.LogError("Error: " + obj);
-
-		protected virtual void OnCloseCallback(string obj)
+		protected virtual void OnClose(string obj)
 		{
 			_totalFramesRead = _frameCount;
 			Debug.Log("Closed: " + obj);
 		}
+
+		protected string GetAuthCommand() => 
+			GetAuthCommand(_configuration.ApiKey, _configuration.ApiClient);
 		
-		protected string GetAuthCommand() 
+		public static string GetAuthCommand(string apiKey, string clientKey) 
 		{
 			var authData = new AuthCommand()
 			{
-				ApiKey = _configuration.ApiKey,
-				ClientKey = _configuration.ApiClient,
+				ApiKey = apiKey,
+				ClientKey = clientKey,
 			};
 			
 			return JsonConvert.SerializeObject(authData);
 		}
 
-		private string GetConvertCommand(string text)
+		public static string GetConvertCommand(string text)
 		{
 			var textCommand = new ConvertCommand()
 			{
@@ -189,14 +183,14 @@ namespace Charactr.VoiceSDK.Streaming
 		}
 	}
 
-	struct AuthCommand
+	public struct AuthCommand
 	{
 		[JsonProperty(PropertyName = "type")] public string Type => "authApiKey";
 		[JsonProperty(PropertyName = "clientKey")] public string ClientKey { get; set; }
 		[JsonProperty(PropertyName = "apiKey")] public string ApiKey { get; set; }
 	}
 
-	struct ConvertCommand
+	public struct ConvertCommand
 	{
 		[JsonProperty(PropertyName = "type")] public string Type => "convert";
 		[JsonProperty(PropertyName = "text")] public string Text { get; set; }

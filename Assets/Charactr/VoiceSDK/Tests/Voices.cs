@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using Charactr.VoiceSDK.Model;
+using Charactr.VoiceSDK.Rest.Model;
 using NUnit.Framework;
 
 namespace Charactr.VoiceSDK.Tests

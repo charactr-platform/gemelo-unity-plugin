@@ -23,11 +23,14 @@ var AmplitudeLib = {
 
 	WebGL_GetBufferInstanceOfLastAudioClip: function() {
         if (WEBAudio && WEBAudio.audioInstanceIdCounter) {
-            return WEBAudio.audioInstanceIdCounter;
+         for (let index = WEBAudio.audioInstanceIdCounter; index > 0; --index) {
+             var object = WEBAudio.audioInstances[index];
+             if (object.buffer) return index;       
+            }
         }
         return -1;
     },
-	
+    
     WebGL_Stats: function() {
         for (let index = 0; index <= WEBAudio.audioInstanceIdCounter; index++) {
     
@@ -49,7 +52,6 @@ var AmplitudeLib = {
         var floatArray = new Float32Array(buffer.buffer, buffer.byteOffset, size);
 
         chunksBuffer.chunks[index] = floatArray;
-        console.log("index: " + index + "- size: " +  size + "  / "+ buffer.length + " / length: "+ floatArray.length);
     },
    
     /** Create an analyzer and connect it to the audio source
@@ -76,29 +78,28 @@ var AmplitudeLib = {
         }
         
         //Channel - Audio Source instance
-        
-        var channel = WEBAudio.audioInstances[bufferInstance];
-                                                
-        var sound = WEBAudio.audioInstances[bufferInstance-1];
-            
-        if (count > 3)
-        {
-            channel = WEBAudio.audioInstances[3];
-            sound = WEBAudio.audioInstances[bufferInstance];
-        }
+        var channelIndex = 1;
+        for (let index = WEBAudio.audioInstanceIdCounter; index > 0; --index) {
+                 var object = WEBAudio.audioInstances[index];
+                 if (object.gain) {
+                    channelIndex = index;
+                    break;
+                 }      
+            }
+      
+        var sound = WEBAudio.audioInstances[bufferInstance];
+        var channel = WEBAudio.audioInstances[channelIndex];
         
         if (!sound || !sound.buffer) {
-            console.log("buffer instance is not an sound instance: "+bufferInstance); 
+            console.error("buffer instance is not an sound instance: "+bufferInstance); 
             console.dir(sound);
+            return;
         }
         
-        console.log("AudioContext: "+sound+ " duration:"+sound.buffer.duration);
-
         var source2 = ctx.createBufferSource();
 
         source2.buffer = sound.buffer;
-        
-
+       
         if (channel != null) {
 
             source2.disconnect();

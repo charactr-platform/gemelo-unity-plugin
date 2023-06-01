@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Charactr.VoiceSDK.Model
+namespace Charactr.VoiceSDK.Rest.Model
 {
 	public class VoicesResponse : List<VoiceDescription>, IAPIResponse { }
 	
