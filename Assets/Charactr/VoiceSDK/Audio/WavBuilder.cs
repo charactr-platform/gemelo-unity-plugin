@@ -32,7 +32,7 @@ namespace Charactr.VoiceSDK.Audio
 #else
 			var clip = AudioClip.Create(name, _header.SampleRate * seconds, _header.Channels, _header.SampleRate, true, PcmReaderCallback);
 #endif
-			Debug.Log($"Created AudioClip instance [Length = {clip.length}, load type = {clip.loadType}]");
+			Debug.Log($"Created AudioClip [Rate: {_header.SampleRate}] [Length = {clip.length}, load type = {clip.loadType}]");
 			return clip;
 		}
 
