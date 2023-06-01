@@ -1,10 +1,9 @@
 {
   "dependencies": {
-    "com.unity.nuget.newtonsoft-json": "2.0.0",
-    "com.unity.ide.rider": "3.0.15",
-    "com.unity.test-framework": "2.0.1-exp.2",
+    "com.unity.ide.rider": "3.0.22",
+    "com.unity.nuget.newtonsoft-json": "3.0.2",
+    "com.unity.test-framework": "2.0.1-pre.18",
     "com.unity.textmeshpro": "3.0.6",
-    "com.unity.timeline": "1.6.4",
     "com.unity.ugui": "1.0.0",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
