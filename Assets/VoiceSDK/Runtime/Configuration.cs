@@ -1,5 +1,7 @@
-﻿using UnityEditor;
+﻿using System;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.Windows;
 
 namespace Charactr.VoiceSDK
 {
@@ -10,7 +12,7 @@ namespace Charactr.VoiceSDK
 		
 		public const string API = "https://api.charactr.com/v1/tts/";
 		private const string FILENAME = "Configuration";
-		public const string SAVE_PATH = "Assets/Charactr/Resources/"+FILENAME+".asset";
+		public const string SAVE_PATH = "Assets/Resources/"+FILENAME+".asset";
 		
 		public string ApiClient
 		{
@@ -39,6 +41,7 @@ namespace Charactr.VoiceSDK
 		{
 			var instance = CreateInstance<Configuration>();
 			instance.Create(apiClient, apiKey, audioSavePath);
+			AssetDatabase.CreateFolder("Assets", "Resources");
 			AssetDatabase.CreateAsset(instance, SAVE_PATH);
 		}
 		
@@ -53,11 +56,16 @@ namespace Charactr.VoiceSDK
 		
 		public static Configuration Load()
 		{
-			return Resources.Load<Configuration>(FILENAME);
-		} 
-		public static Configuration LoadStreaming()
+			var configuration = Resources.Load<Configuration>(FILENAME);
+			if (configuration == null)
+				throw new Exception("Create configuration settings first: Menu->Charactr->Configuration");
+			
+			return configuration;
+		}
+
+		public static bool Exists()
 		{
-			return Resources.Load<Configuration>(FILENAME+"_Streaming");
-		} 
+			return Resources.Load<Configuration>(FILENAME) != null;
+		}
 	}
 }

@@ -13,13 +13,15 @@ namespace Charactr.VoiceSDK.Tests
 	public class Streaming
 	{
 		private const string Text = "Hello from Charactr Software Development Kit for Unity";
-		private const int VoiceId = 112;
+		private const int VoiceId = 151;
+		private const int ByteSize = 247084;
+		private const int Timeout = 3000;
 		private async Task<ClientWebSocket> GetClient(int voiceId = 151)
 		{
 			var ws = new ClientWebSocket();
 			var serverUri = new Uri(AudioStreamingManager.URL + $"?voiceId={voiceId}");
 			var source = new CancellationTokenSource();
-			source.CancelAfter(5000);
+			source.CancelAfter(Timeout);
 
 			await ws.ConnectAsync(serverUri, source.Token);
 			return ws;
@@ -30,7 +32,7 @@ namespace Charactr.VoiceSDK.Tests
 		[SetUp]
 		public void Setup()
 		{
-			_configuration = Configuration.LoadStreaming();
+			_configuration = Configuration.Load();
 			
 			Assert.NotNull(_configuration);
 			Assert.IsNotEmpty(_configuration.ApiClient);
@@ -47,9 +49,9 @@ namespace Charactr.VoiceSDK.Tests
 		}
 
 		[Test]
-		public async Task SendAuthMessage_StatusPolicyViolation()
+		public async Task SendAuthMessage_WrongVoiceId_StatusPolicyViolation()
 		{
-			var ws = await GetClient(151);
+			var ws = await GetClient(1);
 			
 			Assert.NotNull(ws);
 			Assert.IsTrue(ws.State == WebSocketState.Open);
@@ -108,7 +110,7 @@ namespace Charactr.VoiceSDK.Tests
 			Assert.GreaterOrEqual(total,1);
 			Assert.IsTrue(result.EndOfMessage);
 			Assert.IsTrue(result.CloseStatus == WebSocketCloseStatus.NormalClosure);
-			Assert.AreEqual(219180,total);
+			Assert.AreEqual(ByteSize,total);
 			
 			Debug.Log("Total:" + total);
 			Debug.Log("Total time:" + total / 2f / 44100f);
@@ -149,9 +151,9 @@ namespace Charactr.VoiceSDK.Tests
 			};
 			
 			w.Connect();
-			await Task.Delay(3000);
-			Assert.IsTrue(w.Status == WebSocketState.CloseReceived);
-			Assert.AreEqual(219180, bytesCount);
+			await Task.Delay(Timeout);
+			Assert.IsTrue(w.Status == WebSocketState.Closed);
+			Assert.AreEqual(ByteSize , bytesCount);
 		}
 
 		[Test]
@@ -188,10 +190,9 @@ namespace Charactr.VoiceSDK.Tests
 				w.OnError += Debug.LogError;
 				
 				w.Connect();
-				await Task.Delay(800);
-
+				await Task.Delay(Timeout);
 				Assert.AreEqual(WebSocketState.Closed,w.Status);
-				Assert.AreEqual(219180, bytesCount);
+				Assert.AreEqual(ByteSize , bytesCount);
 			}
 		}
 	}

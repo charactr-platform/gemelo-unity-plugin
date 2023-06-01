@@ -8,7 +8,7 @@ namespace Charactr.VoiceSDK.Streaming
     [RequireComponent(typeof(AudioSource))]
     public class AudioStreamingManager: MonoBehaviour
     {
-        public const string URL = "wss://api.slowpoke.charactr.dev/v1/tts/stream/simplex/ws";
+        public const string URL = "wss://api.charactr.com/v1/tts/stream/simplex/ws";
         public AudioClip AudioClip { get; private set; }
         public bool AudioEnd { get; private set; }
         public event Action OnAudioEnd;
@@ -22,7 +22,7 @@ namespace Charactr.VoiceSDK.Streaming
 
         private void Awake()
         {
-            _configuration = Configuration.LoadStreaming();
+            _configuration = Configuration.Load();
             
             if (_configuration == null)
                 throw new Exception("Can't load Configuration data");

@@ -32,15 +32,14 @@ namespace Charactr.VoiceSDK.Editor.Configuration
             
             var linkButton = root.Q<Button>("LinkButton");
             linkButton.RegisterCallback<MouseUpEvent>((e)=> Application.OpenURL(API_URL));
+
+            if (!VoiceSDK.Configuration.Exists())
+                return;
             
             var config = VoiceSDK.Configuration.Load();
-            
-            if (config != null)
-            {
-                _clientField.value = config.ApiClient;
-                _keyField.value = config.ApiKey;
-                saveButton.text = "Update";
-            }
+            _clientField.value = config.ApiClient;
+            _keyField.value = config.ApiKey;
+            saveButton.text = "Update";
         }
 
         private void SaveConfiguration()
@@ -53,7 +52,7 @@ namespace Charactr.VoiceSDK.Editor.Configuration
             
             VoiceSDK.Configuration.Save(client, key);
 
-            if (VoiceSDK.Configuration.Load() != null)
+            if (VoiceSDK.Configuration.Exists())
                 EditorUtility.DisplayDialog("Congrats!", "Configuration saved!", "OK");
             else
                 EditorUtility.DisplayDialog("Save error!",

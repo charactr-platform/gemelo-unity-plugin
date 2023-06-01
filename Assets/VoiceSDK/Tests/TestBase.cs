@@ -10,9 +10,6 @@ namespace Charactr.VoiceSDK.Tests
 	{
 		public const int VOICE_ID = 151; //Liam voice
 		
-		public const string CLIENT_KEY = "";
-		public const string API_KEY = "";
-		
 		protected EditorRestClient EditorHttp;
 		protected RuntimeRestClient RuntimeHttp;
 		protected Configuration Configuration;
@@ -20,7 +17,6 @@ namespace Charactr.VoiceSDK.Tests
 		[SetUp]
 		public void Setup()
 		{
-			Configuration.Save(CLIENT_KEY, API_KEY);
 			Configuration = Configuration.Load();
 			Assert.NotNull(Configuration);
 			
