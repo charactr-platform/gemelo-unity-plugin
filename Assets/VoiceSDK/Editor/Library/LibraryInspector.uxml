@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="project://database/Assets/Charactr/Editor/Library/LibraryEditorWindow.uss?fileID=7433441132597879392&amp;guid=00118f51d99b4ea45954e7e7e70cbe72&amp;type=3#LibraryEditorWindow" />
+    <ui:Label text="Voice clips library" class="topLabel" style="justify-content: center; align-items: center; -unity-text-align: upper-center; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;" />
+    <ui:Button text="Download voice clips" display-tooltip-when-elided="true" name="updateButton" />
+    <ui:ScrollView scroll-deceleration-rate="0,135" elasticity="0,1" mode="VerticalAndHorizontal" style="flex-basis: auto; width: 100%;">
+        <uie:PropertyField binding-path="items" label="VoiceItems" style="margin-left: 25px; margin-right: 25px; margin-top: auto; margin-bottom: auto; flex-wrap: wrap; flex-basis: auto; width: auto; height: auto;" />
+    </ui:ScrollView>
+</ui:UXML>
