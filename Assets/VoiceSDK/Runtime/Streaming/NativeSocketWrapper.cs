@@ -78,6 +78,7 @@ namespace Charactr.VoiceSDK.Tests
 			do
 			{
 				result = await _ws.ReceiveAsync(rcvBuffer, _token.Token);
+				
 				if (result.MessageType == WebSocketMessageType.Binary)
 				{
 					var msgBytes = rcvBuffer.Skip(rcvBuffer.Offset).Take(result.Count).ToArray();

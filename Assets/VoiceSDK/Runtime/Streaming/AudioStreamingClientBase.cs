@@ -47,6 +47,7 @@ namespace Charactr.VoiceSDK.Streaming
 				_dataQueue.Enqueue(data);
 			}
 		}
+		
 		public void DepleteBufferQueue()
 		{
 			lock (_dataQueue)
@@ -72,29 +73,39 @@ namespace Charactr.VoiceSDK.Streaming
 			AudioLength = WavBuilder.BufferData(data, out var pcmData);
 			TimeSamples = WavBuilder.ProcessedSamplesCount + WavBuilder.EmptySamples;
 			
+			//WebGL needs first buffer before start of sampling
 			OnPcmData(_frameCount, pcmData);
+			
+			if (_frameCount == 1)
+				CreateAudioClip();
+			
 			_frameCount++;
 		}
 
-		private void CreateWavBuilderFromHeader(byte[] data)
+		private void CreateWavBuilderFromHeader(byte[] header)
 		{
-			WavBuilder = new WavBuilder(data, true);
 			_clip = null;
 			_frameCount = 1;
 			_totalFramesRead = 0;
 			BufferingCompleted = false;
 			AudioLength = 0f;
 			TimeSamples = 0;
+			WavBuilder = new WavBuilder(header);
+
 			
+		}
+
+		private void CreateAudioClip()
+		{
 			var clip = WavBuilder.CreateAudioClipStream("test");
+			
 			if (clip.LoadAudioData() == false)
 				throw new Exception("Data not loaded");
 			
 			Debug.Log($"Loaded audio clip...{clip.loadState}");
-			//Assign clip when Audio is loaded
+		
 			_clip = clip;
 		}
-		
 		private void CheckForBufferEnd()
 		{
 			if (Initialized && !Connected && _totalFramesRead != 0)

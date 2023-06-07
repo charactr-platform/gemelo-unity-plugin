@@ -28,7 +28,7 @@ namespace Charactr.VoiceSDK.Audio
 			if (debug) _debugSave = new WavDebugSave(data);
 		}
 
-		public AudioClip CreateAudioClipStream(string name, int seconds = 30)
+		public AudioClip CreateAudioClipStream(string name, int seconds = 10)
 		{
 			var rate = _header.SampleRate;
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -48,12 +48,11 @@ namespace Charactr.VoiceSDK.Audio
 			return _clip;
 		}
 
-		public float BufferData(Span<byte> newData, out float[] pcmData)
+		public float BufferData(Span<byte> bytes, out float[] pcmData)
 		{
-			_lastBytesReadCount += ConvertByteToFloat(newData, out var waveData);
-			pcmData = waveData;
-			_samplesBuffer.AddRange(waveData);
-			_processedSamplesCount += waveData.Length;
+			_lastBytesReadCount += ConvertByteToFloat(bytes, out pcmData);
+			_processedSamplesCount += pcmData.Length;
+			_samplesBuffer.AddRange(pcmData);
 
 			var length = _processedSamplesCount / (_header.SampleRate * 1f);
 			
@@ -63,8 +62,11 @@ namespace Charactr.VoiceSDK.Audio
 		
 		public void WriteAudioClipDataToFile()
 		{
-			_debugSave.ConvertAndWrite(_samplesBuffer.ToArray());
-			_debugSave.Close();
+			if (_debugSave != null)
+			{
+				_debugSave.ConvertAndWrite(_samplesBuffer.ToArray());
+				_debugSave.Close();
+			}
 		}
 		
 		private void PcmReaderCallback(float[] data)

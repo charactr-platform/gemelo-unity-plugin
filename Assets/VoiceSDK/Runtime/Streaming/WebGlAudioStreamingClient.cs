@@ -8,7 +8,6 @@ namespace Charactr.VoiceSDK.Streaming
 	public class WebGlAudioStreamingClient : AudioStreamingClientBase, IAudioStreamingClient
 	{
 		public AudioSource AudioSource => _audioSource;
-		public int TimeSamples { get; }
 
 		private readonly NativeWebSocket.WebSocket _socket;
 		private readonly AudioSource _audioSource;
