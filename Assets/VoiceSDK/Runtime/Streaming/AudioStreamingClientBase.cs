@@ -39,9 +39,9 @@ namespace Charactr.VoiceSDK.Streaming
 			_commands.Enqueue(command);
 		}
 
+		//Invoke on main thread 
 		protected void OnData(byte[] data)
 		{
-			//Invoke on main thread 
 			lock (_dataQueue)
 			{
 				_dataQueue.Enqueue(data);
@@ -90,9 +90,12 @@ namespace Charactr.VoiceSDK.Streaming
 			BufferingCompleted = false;
 			AudioLength = 0f;
 			TimeSamples = 0;
-			WavBuilder = new WavBuilder(header);
-
 			
+			#if UNITY_EDITOR
+			WavBuilder = new WavBuilder(header, true);
+			#else
+			WavBuilder = new WavBuilder(header);
+			#endif
 		}
 
 		private void CreateAudioClip()
@@ -106,6 +109,7 @@ namespace Charactr.VoiceSDK.Streaming
 		
 			_clip = clip;
 		}
+		
 		private void CheckForBufferEnd()
 		{
 			if (Initialized && !Connected && _totalFramesRead != 0)

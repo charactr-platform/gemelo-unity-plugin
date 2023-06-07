@@ -107,7 +107,7 @@ namespace Charactr.VoiceSDK.Audio
 			
 			for (int i = 0; i < waveData.Length; i++)
 			{
-				pos = (i * blockSize);
+				pos = (i * blockSize) + offset;
 				
 				waveData[i] = ConvertBytes(audioData,pos, blockSize);
 			}
