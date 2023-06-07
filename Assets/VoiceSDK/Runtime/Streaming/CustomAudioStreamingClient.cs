@@ -6,7 +6,7 @@ namespace Charactr.VoiceSDK.Streaming
 	public class CustomAudioStreamingClient : AudioStreamingClientBase
 	{
 		private readonly AudioSource _audioSource;
-		public CustomAudioStreamingClient(AudioSource audioSource) : base(null, audioSource.gameObject)
+		public CustomAudioStreamingClient(AudioSource audioSource) : base(null)
 		{
 			_audioSource = audioSource;
 		}

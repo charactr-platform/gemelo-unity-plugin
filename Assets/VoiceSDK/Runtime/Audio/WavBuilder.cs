@@ -1,4 +1,5 @@
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,20 +7,22 @@ namespace Charactr.VoiceSDK.Audio
 {
 	public class WavBuilder
 	{
+		public int EmptySamples => _silenceSamplesCount;
+		public int ProcessedSamplesCount => _processedSamplesCount;
+		
 		private readonly Memory<byte> _data;
 		private readonly WavHeaderData _header;
 		
 		private int _lastBytesReadCount = 0;
-		private int _wavBufferSamplesLength = 0;
-		private int _wavBufferReadLength = 0;
-		private int _discardedSamples = 0;
-		private readonly List<float> _wavDataBuffer;
-		private readonly Queue<float[]> _waveBuffers;
+		private int _processedSamplesCount = 0;
+		private int _playbackPosition = 0;
+		private int _silenceSamplesCount = 0;
+		private readonly List<float> _samplesBuffer;
 		private readonly WavDebugSave _debugSave;
+		private AudioClip _clip;
 		public WavBuilder(byte[] data, bool debug = false)
 		{
-			_wavDataBuffer = new List<float>();
-			_waveBuffers = new Queue<float[]>();
+			_samplesBuffer = new List<float>();
 			_data = data;
 			_header = new WavHeaderData(data);
 			if (debug) _debugSave = new WavDebugSave(data);
@@ -27,91 +30,96 @@ namespace Charactr.VoiceSDK.Audio
 
 		public AudioClip CreateAudioClipStream(string name, int seconds = 30)
 		{
+			var rate = _header.SampleRate;
 #if UNITY_WEBGL && !UNITY_EDITOR
-			var clip = AudioClip.Create(name, _header.SampleRate * seconds, _header.Channels, _header.SampleRate, false);
+			_clip = AudioClip.Create(name, rate * seconds, 1, rate, false);
 #else
-			var clip = AudioClip.Create(name, _header.SampleRate * seconds, _header.Channels, _header.SampleRate, true, PcmReaderCallback);
+			_clip = AudioClip.Create(name, rate * seconds, 1, rate, true, PcmReaderCallback);
 #endif
-			Debug.Log($"Created AudioClip [Rate: {_header.SampleRate}] [Length = {clip.length}, load type = {clip.loadType}]");
-			return clip;
+			Debug.Log($"Created AudioClip [Rate: {rate}, CH: {_header.Channels}, Length: {_clip.length}, Type: {_clip.loadType}]");
+		
+			return _clip;
 		}
-
 		public AudioClip CreateAudioClip(string name = "clip")
 		{
 			ConvertByteToFloat(_data.ToArray(), out var waveData, _header.DataOffset);
-			var clip = AudioClip.Create(name, waveData.Length, _header.Channels, _header.SampleRate, false);
-			clip.SetData(waveData, 0);
-			return clip;
+			_clip = AudioClip.Create(name, waveData.Length, _header.Channels, _header.SampleRate, false);
+			_clip.SetData(waveData, 0);
+			return _clip;
 		}
 
-		public float BufferData(byte[] newData, out float[] pcmData)
+		public float BufferData(Span<byte> newData, out float[] pcmData)
 		{
 			_lastBytesReadCount += ConvertByteToFloat(newData, out var waveData);
 			pcmData = waveData;
-			_debugSave?.OnData(newData);
+			_samplesBuffer.AddRange(waveData);
+			_processedSamplesCount += waveData.Length;
 
-			_wavBufferSamplesLength += waveData.Length;
-			_waveBuffers.Enqueue(waveData);
+			var length = _processedSamplesCount / (_header.SampleRate * 1f);
 			
-			var length = _wavBufferSamplesLength / (_header.SampleRate * 1f);
-			
-			Debug.Log("Loaded bytes: "+ _lastBytesReadCount + " audioSamples: "+ _wavBufferSamplesLength + " length:"+length);
+			Debug.Log("Loaded bytes: "+ _lastBytesReadCount + " audioSamples: "+ _processedSamplesCount + " length:"+length);
 			return length;
 		}
-
-		private bool LoadNextBuffer()
+		
+		public void WriteAudioClipDataToFile()
 		{
-			if (_waveBuffers.Count == 0)
-				return false;
-
-			var read = _waveBuffers.Dequeue();
-			_wavDataBuffer.AddRange(read);
-
-			return read.Length > 0;
+			_debugSave.ConvertAndWrite(_samplesBuffer.ToArray());
+			_debugSave.Close();
 		}
-
+		
 		private void PcmReaderCallback(float[] data)
 		{
-			var readSize = data.Length - 1;
-			var discarded = 0;
+			var readSize = data.Length;
+			var skipped = 0;
 			
 			for (int i = 0; i < readSize; i++)
 			{
-				var readIndex = _wavBufferReadLength + i;
+				var readIndex = _playbackPosition + i;
 				
-				if (readIndex >= _wavDataBuffer.Count && !LoadNextBuffer())
+				if (readIndex >= _samplesBuffer.Count)
 				{
 					data[i] = 0f;
-					discarded++;
-					continue;
+					skipped++;
 				}
-				
-				data[i] = _wavDataBuffer[readIndex];
+				else
+					data[i] = _samplesBuffer[readIndex];
 			}
-			
-			_wavBufferReadLength += readSize;
-			_discardedSamples += discarded;
-			
-			if (discarded > 0)
-				Debug.LogWarning($"No data found, discarded audio samples: {discarded}");
-		}
 
-		private int ConvertByteToFloat(byte[] data, out float[] waveData, int offset = 0)
+			var playbackTime = readSize - skipped;
+			_playbackPosition += playbackTime;
+			_silenceSamplesCount += skipped;
+			
+			if (playbackTime == 0)
+				Debug.Log("awaiting data...");
+		}
+		
+		private int ConvertByteToFloat(Span<byte> data, out float[] waveData, int offset = 0)
 		{
 			var pos = 0;
-			var size = data.Length - offset;
+			var size = data.Length;
 			var blockSize = sizeof(short);
-		
+			
 			waveData = new float[size / blockSize];
-		
+
+			var audioData = data.ToArray();
+			
 			for (int i = 0; i < waveData.Length; i++)
 			{
-				pos = offset + (i * blockSize);
-				waveData[i] = BitConverter.ToInt16(data, pos) / 32768f;
+				pos = (i * blockSize);
+				
+				waveData[i] = ConvertBytes(audioData,pos, blockSize);
 			}
-			return pos;
+			
+			return size;
 		}
 
+		private float ConvertBytes(byte[] data, int index, int size)
+		{
+			var mem = new ReadOnlySpan<byte>(data, index, size);
+			
+			return BinaryPrimitives.ReadInt16LittleEndian(mem) / 32768f;
+		}
+		
 		public void Dispose()
 		{
 			_debugSave?.Close();

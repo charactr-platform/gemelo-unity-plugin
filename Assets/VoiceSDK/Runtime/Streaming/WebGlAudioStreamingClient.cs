@@ -8,14 +8,14 @@ namespace Charactr.VoiceSDK.Streaming
 	public class WebGlAudioStreamingClient : AudioStreamingClientBase, IAudioStreamingClient
 	{
 		public AudioSource AudioSource => _audioSource;
-		
+		public int TimeSamples { get; }
+
 		private readonly NativeWebSocket.WebSocket _socket;
 		private readonly AudioSource _audioSource;
 		private readonly GameObject _gameObject;
 		private readonly WebGlAudioBufferProcessor _bufferProcessor;
 		
-		public WebGlAudioStreamingClient(string url, Configuration configuration, AudioSource audioSource) :
-					base(configuration, audioSource.gameObject)
+		public WebGlAudioStreamingClient(string url, Configuration configuration, AudioSource audioSource) : base(configuration)
 		{
 			_audioSource = audioSource;
 			

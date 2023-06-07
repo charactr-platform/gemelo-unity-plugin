@@ -11,7 +11,7 @@ namespace Charactr.VoiceSDK.Streaming
 
 		private readonly NativeSocketWrapper _socket;
 		private readonly AudioSource _audioSource;
-		public DefaultAudioStreamingClient(string url, Configuration configuration, AudioSource audioSource): base(configuration, audioSource.gameObject)
+		public DefaultAudioStreamingClient(string url, Configuration configuration, AudioSource audioSource): base(configuration)
 		{
 			_audioSource = audioSource;
 			_socket = new NativeSocketWrapper(url);
