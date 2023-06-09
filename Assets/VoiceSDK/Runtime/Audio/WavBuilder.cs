@@ -1,7 +1,9 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Playables;
 
 namespace Charactr.VoiceSDK.Audio
 {
@@ -42,18 +44,17 @@ namespace Charactr.VoiceSDK.Audio
 		}
 		public AudioClip CreateAudioClip(string name = "clip")
 		{
-			ConvertByteToFloat(_data.ToArray(), out var waveData, _header.DataOffset);
+			PcmFrame.ConvertByteToFloat(_data.ToArray(), out var waveData, _header.DataOffset);
 			_clip = AudioClip.Create(name, waveData.Length, _header.Channels, _header.SampleRate, false);
 			_clip.SetData(waveData, 0);
 			return _clip;
 		}
 
-		public float BufferData(Span<byte> bytes, out float[] pcmData)
+		public float BufferData(PcmFrame frame)
 		{
-			_lastBytesReadCount += ConvertByteToFloat(bytes, out pcmData);
-			_processedSamplesCount += pcmData.Length;
-			_samplesBuffer.AddRange(pcmData);
-
+			_lastBytesReadCount += PcmFrame.ByteSize;
+			_processedSamplesCount += frame.Samples.Length;
+			_samplesBuffer.AddRange(frame.Samples);
 			var length = _processedSamplesCount / (_header.SampleRate * 1f);
 			
 			Debug.Log("Loaded bytes: "+ _lastBytesReadCount + " audioSamples: "+ _processedSamplesCount + " length:"+length);
@@ -95,32 +96,6 @@ namespace Charactr.VoiceSDK.Audio
 				Debug.Log("awaiting data...");
 		}
 		
-		private int ConvertByteToFloat(Span<byte> data, out float[] waveData, int offset = 0)
-		{
-			var pos = 0;
-			var size = data.Length;
-			var blockSize = sizeof(short);
-			
-			waveData = new float[size / blockSize];
-
-			var audioData = data.ToArray();
-			
-			for (int i = 0; i < waveData.Length; i++)
-			{
-				pos = (i * blockSize) + offset;
-				
-				waveData[i] = ConvertBytes(audioData,pos, blockSize);
-			}
-			
-			return size;
-		}
-
-		private float ConvertBytes(byte[] data, int index, int size)
-		{
-			var mem = new ReadOnlySpan<byte>(data, index, size);
-			
-			return BinaryPrimitives.ReadInt16LittleEndian(mem) / 32768f;
-		}
 		
 		public void Dispose()
 		{

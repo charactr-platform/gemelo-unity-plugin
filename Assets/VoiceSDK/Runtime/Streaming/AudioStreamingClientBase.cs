@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Charactr.VoiceSDK.Audio;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -23,12 +25,15 @@ namespace Charactr.VoiceSDK.Streaming
 		private readonly Configuration _configuration;
 		private readonly WavDebugSave _debugSave;
 		private readonly AverageProvider _averageProvider;
+
+		private readonly Queue<PcmFrame> _pcmFrames;
+		private PcmFrame _currentPcmFrame;
 		
 		protected AudioStreamingClientBase(Configuration configuration)
 		{
 			_commands = new Queue<string>();
 			_dataQueue = new Queue<byte[]>();
-
+			_pcmFrames = new Queue<PcmFrame>();
 			_averageProvider = new AverageProvider();
 			_configuration = configuration;
 		}
@@ -54,30 +59,45 @@ namespace Charactr.VoiceSDK.Streaming
 				
 				if (HasData() && WavBuilder == null)
 				{
-					var h = _dataQueue.Dequeue();
-					//Debug.Log("Header length: "+ h.Length);
-					CreateWavBuilderFromHeader(h);
+					CreateWavBuilderFromHeader(_dataQueue.Dequeue());
 					return;
 				}
 
 				while (HasData())
 				{
-					var h = _dataQueue.Dequeue();
-					//Debug.Log("Data length: "+ h.Length);
-					LoadData(h);
+					CreateFrameData(_dataQueue.Dequeue());
+					
+					for (int i = 0; i < _pcmFrames.Count; i++)
+					{
+						if (_pcmFrames.TryDequeue(out var frame))
+							BufferPcmFrameData(frame);
+					}
 				}
 			}
 
 			CheckForBufferEnd();
 		}
-
-		private void LoadData(Span<byte> data)
+		
+		private void CreateFrameData(Span<byte> data)
 		{
-			AudioLength = WavBuilder.BufferData(data, out var pcmData);
+			if (!_currentPcmFrame.AddData(data.ToArray(), out var overflow))
+				return;
+			
+			_pcmFrames.Enqueue(_currentPcmFrame);
+
+			_currentPcmFrame = new PcmFrame();
+			Debug.Log("Frame created");
+			
+			CreateFrameData(overflow);
+		}
+		
+		private void BufferPcmFrameData(PcmFrame frame)
+		{
+			AudioLength = WavBuilder.BufferData(frame);
 			TimeSamples = WavBuilder.ProcessedSamplesCount + WavBuilder.EmptySamples;
 			
 			//WebGL needs first buffer before start of sampling
-			OnPcmData(_frameCount, pcmData);
+			OnPcmData(_frameCount, frame.Samples);
 			
 			//Buffer some data before we start audio play
 			if (_frameCount == 4)
@@ -94,6 +114,7 @@ namespace Charactr.VoiceSDK.Streaming
 			BufferingCompleted = false;
 			AudioLength = 0f;
 			TimeSamples = 0;
+			_currentPcmFrame = new PcmFrame();
 			
 			#if UNITY_EDITOR
 			WavBuilder = new WavBuilder(header, true);
@@ -140,7 +161,7 @@ namespace Charactr.VoiceSDK.Streaming
 			_clip = null;
 			_commands.Clear();
 			_dataQueue.Clear();
-
+			_pcmFrames.Clear();
 			Debug.Log("Disposed streaming client");
 		}
 		
