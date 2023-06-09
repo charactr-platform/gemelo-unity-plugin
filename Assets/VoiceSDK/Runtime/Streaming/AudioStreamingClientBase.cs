@@ -139,6 +139,13 @@ namespace Charactr.VoiceSDK.Streaming
 		{
 			if (Initialized && !Connected && _totalFramesRead != 0)
 			{
+				if (_currentPcmFrame.HasData)
+				{
+					_currentPcmFrame.WriteSamples(true);
+					BufferPcmFrameData(_currentPcmFrame);
+					_currentPcmFrame = new PcmFrame();
+				}
+
 				Debug.Log($"Buffer loaded [{_totalFramesRead}]: {AudioLength}s");
 				_totalFramesRead = 0;
 				BufferingCompleted = true;

@@ -9,7 +9,8 @@ namespace Charactr.VoiceSDK.Audio
 	{
 		public const int ByteSize = 8192;
 		public float[] Samples => _samples;
-			
+		public bool HasData => _bytes?.Length > 0 && _samples == null;
+		
 		private readonly MemoryStream _bytes;
 		private Memory<byte> _frameBytes;
 		private float[] _samples;
@@ -24,17 +25,29 @@ namespace Charactr.VoiceSDK.Audio
 			if (_bytes.Length < ByteSize)
 				_bytes.Write(data);
 				
-			if (_bytes.Length > ByteSize && _bytes.TryGetBuffer(out var segment))
+			if (_bytes.Length > ByteSize)
 			{
-				_frameBytes = segment.Slice(0, ByteSize);
-				overflow = segment.Slice(ByteSize).ToArray();
-				ConvertByteToFloat(_frameBytes.ToArray(), out _samples);
+				overflow = WriteSamples();
 				return true;
 			}
 				
 			overflow = null;
 
 			return false;
+		}
+
+		public byte[] WriteSamples(bool endOfData = false)
+		{
+			var bytesCount = endOfData ? (int) _bytes.Length : ByteSize;
+
+			if (!_bytes.TryGetBuffer(out var segment))
+				return null;
+			
+			_frameBytes = segment.Slice(0, bytesCount);
+				
+			ConvertByteToFloat(_frameBytes.ToArray(), out _samples);
+
+			return endOfData ? null : segment.Slice(ByteSize).ToArray();
 		}
 		
 		public static int ConvertByteToFloat(Span<byte> data, out float[] waveData, int offset = 0)
