@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Charactr.VoiceSDK.Audio;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -52,16 +50,21 @@ namespace Charactr.VoiceSDK.Streaming
 		{
 			lock (_dataQueue)
 			{
-				if (_dataQueue.Count > 0)
+				bool HasData() => _dataQueue.Count > 0;
+				
+				if (HasData() && WavBuilder == null)
 				{
-					if (WavBuilder == null)
-					{
-						CreateWavBuilderFromHeader(_dataQueue.Dequeue());
-						return;
-					}
+					var h = _dataQueue.Dequeue();
+					//Debug.Log("Header length: "+ h.Length);
+					CreateWavBuilderFromHeader(h);
+					return;
+				}
 
-					var span = new Span<byte>(_dataQueue.Dequeue());
-					LoadData(span);
+				while (HasData())
+				{
+					var h = _dataQueue.Dequeue();
+					//Debug.Log("Data length: "+ h.Length);
+					LoadData(h);
 				}
 			}
 
@@ -76,7 +79,8 @@ namespace Charactr.VoiceSDK.Streaming
 			//WebGL needs first buffer before start of sampling
 			OnPcmData(_frameCount, pcmData);
 			
-			if (_frameCount == 1)
+			//Buffer some data before we start audio play
+			if (_frameCount == 4)
 				CreateAudioClip();
 			
 			_frameCount++;
