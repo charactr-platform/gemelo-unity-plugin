@@ -2,7 +2,7 @@
 var AmplitudeLib = {
     /** Contains all the currently running analyzers */
     $analyzers: {},
-    $chunksBuffer:{},
+    $pcmFramesBuffer:{},
     
     WebGL_Dispose: function() {
 
@@ -43,15 +43,16 @@ var AmplitudeLib = {
 
         var buffer = new Uint8Array(Module.HEAPU8.buffer, array, Float32Array.BYTES_PER_ELEMENT * size);
 
-        if (typeof chunksBuffer.chunks == "undefined")
+        if (typeof pcmFramesBuffer.frames == "undefined")
         {
-            chunksBuffer.chunks = [];
-            console.log("chunks ready")
+            pcmFramesBuffer.frames = [];
+            console.log("PCM frames buffer ready")
         }
-        
+    
         var floatArray = new Float32Array(buffer.buffer, buffer.byteOffset, size);
 
-        chunksBuffer.chunks[index] = floatArray;
+        pcmFramesBuffer.frames[index] = floatArray;
+        console.log("FillBuffer: "+ index + " -  length: "+ pcmFramesBuffer.frames[index].length)
     },
    
     /** Create an analyzer and connect it to the audio source
@@ -64,8 +65,13 @@ var AmplitudeLib = {
         var analyzer = null;
         var audioInstance = null;
         var source = null;
-        var stream = {chunks: chunksBuffer.chunks};
-        var samplesPerUpdate = sampleSize;
+        var stream = {
+            pcmBufferSize: 4096,
+            currentBufferIndex: 0,
+            bufferPosition: 0,
+            buffer: new Float32Array(4096),
+            frames: pcmFramesBuffer.frames
+        };
 
         var count = WEBAudio.audioInstanceIdCounter;
         
@@ -115,52 +121,44 @@ var AmplitudeLib = {
         if (source == null)
             return false;
 
-        stream.processorNode = ctx.createScriptProcessor(samplesPerUpdate, 1, 1);
-        stream.currentBufferIndex = 0;
-        stream.bufferPosition = 0;
-        stream.buffer = chunksBuffer.chunks[0];
-
+    
+        stream.processorNode = ctx.createScriptProcessor(stream.pcmBufferSize, 1, 1);
         stream.processorNode.onaudioprocess = function(event) {
 
+            var outputArray = event.outputBuffer.getChannelData(0);
+
             if (!streaming) {
-                var outputArray = event.outputBuffer.getChannelData(0);
                 var inputArray = event.inputBuffer.getChannelData(0);
                 outputArray = inputArray;
                 return;
             }
 
 
-            var chunksLoaded = chunksBuffer.chunks.length - 1;
-            var outputArray = event.outputBuffer.getChannelData(0);
-            
-            var bufferReady = chunksLoaded > stream.currentBufferIndex;
-            
-            if (!bufferReady)
+            if (outputArray.length < stream.pcmBufferSize)
             {
-                outputArray = event.inputBuffer;
-                //console.log("No more data...");
+                console.log("No output size...")
                 return;
             }
-        
-            for (let sample = 0; sample < samplesPerUpdate; sample++) {
 
-                //Be cafefull of empty chunks where length = 0
-                if (stream.buffer.length > 0)
-                    outputArray[sample] = stream.buffer[stream.bufferPosition + sample];
-                else
-                    outputArray[sample] = 0.0;
-            }
-
-            stream.bufferPosition += samplesPerUpdate;
-            //console.log("Processing..." +stream.currentBufferIndex + " / "  + chunksLoaded + " ("+ stream.buffer.length + ")");
-    
-            //Set new chunk into buffer 
-            if (stream.bufferPosition + samplesPerUpdate > stream.buffer.length)
+            var framesLoadedCount = stream.frames.length - 1;
+             
+            if (framesLoadedCount < stream.currentBufferIndex)
             {
-                stream.currentBufferIndex++;
-                stream.buffer = chunksBuffer.chunks[stream.currentBufferIndex];
-                stream.bufferPosition = 0;
+                outputArray = new Float32Array(stream.pcmBufferSize);
+                console.log("No more data...");
+                return;
             }
+            else 
+            {
+                stream.buffer = stream.frames[stream.currentBufferIndex];
+                stream.currentBufferIndex++;
+            }
+        
+            for (let index = 0; index < stream.buffer.length; index++) {
+                outputArray[index] = stream.buffer[index];
+            }
+
+            console.log("Processed samples [" +stream.buffer.length + " / " + outputArray.length +"] ["+stream.currentBufferIndex + " / "  + framesLoadedCount + "]");
         }
         
         channel.source.connect(stream.processorNode);
@@ -189,11 +187,15 @@ var AmplitudeLib = {
         var analyzerName = UTF8ToString(uniqueName);
         var analyzerObj = analyzers[analyzerName];
         
+        if (typeof pcmFramesBuffer.frames != "undefined"){
+            delete pcmFramesBuffer.frames;
+            console.log("Cleared PcmFramesBuffer")
+        }
+
         if (analyzerObj != null) {
             try {
                 analyzerObj.source.disconnect();
                 analyzerObj.stream.processorNode.disconnect();
-                chunksBuffer.chunks.length = 0;
                 delete analyzers[analyzerName];
                 return true;
             }
@@ -260,6 +262,6 @@ var AmplitudeLib = {
         return false;
     }
 };
-autoAddDeps(AmplitudeLib, '$chunksBuffer');
+autoAddDeps(AmplitudeLib, '$pcmFramesBuffer');
 autoAddDeps(AmplitudeLib, '$analyzers');
 mergeInto(LibraryManager.library, AmplitudeLib);

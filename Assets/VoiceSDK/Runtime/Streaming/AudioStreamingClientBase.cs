@@ -84,10 +84,9 @@ namespace Charactr.VoiceSDK.Streaming
 				return;
 			
 			_pcmFrames.Enqueue(_currentPcmFrame);
-
-			_currentPcmFrame = new PcmFrame();
-			Debug.Log("Frame created");
 			
+			_currentPcmFrame = new PcmFrame();
+
 			CreateFrameData(overflow);
 		}
 		
@@ -100,7 +99,7 @@ namespace Charactr.VoiceSDK.Streaming
 			OnPcmData(_frameCount, frame.Samples);
 			
 			//Buffer some data before we start audio play
-			if (_frameCount == 4)
+			if (_frameCount == 5)
 				CreateAudioClip();
 			
 			_frameCount++;

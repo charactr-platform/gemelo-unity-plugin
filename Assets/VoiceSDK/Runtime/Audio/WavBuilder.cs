@@ -1,9 +1,6 @@
 using System;
-using System.Buffers.Binary;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.Playables;
 
 namespace Charactr.VoiceSDK.Audio
 {
@@ -30,7 +27,7 @@ namespace Charactr.VoiceSDK.Audio
 			if (debug) _debugSave = new WavDebugSave(data);
 		}
 
-		public AudioClip CreateAudioClipStream(string name, int seconds = 10)
+		public AudioClip CreateAudioClipStream(string name, int seconds = 30)
 		{
 			var rate = _header.SampleRate;
 #if UNITY_WEBGL && !UNITY_EDITOR
