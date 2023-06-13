@@ -1,7 +1,6 @@
 using System;
 using System.Buffers.Binary;
 using System.IO;
-using System.Linq;
 
 namespace Charactr.VoiceSDK.Audio
 {
@@ -25,7 +24,7 @@ namespace Charactr.VoiceSDK.Audio
 			if (_bytes.Length < ByteSize)
 				_bytes.Write(data);
 				
-			if (_bytes.Length > ByteSize)
+			if (_bytes.Length >= ByteSize)
 			{
 				overflow = WriteSamples();
 				return true;

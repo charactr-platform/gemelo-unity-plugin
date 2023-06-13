@@ -52,7 +52,7 @@ var AmplitudeLib = {
         var floatArray = new Float32Array(buffer.buffer, buffer.byteOffset, size);
 
         pcmFramesBuffer.frames[index] = floatArray;
-        console.log("FillBuffer: "+ index + " -  length: "+ pcmFramesBuffer.frames[index].length)
+        console.log("FillBuffer []: "+ index + " -  length: "+ pcmFramesBuffer.frames[index].length)
     },
    
     /** Create an analyzer and connect it to the audio source
@@ -101,27 +101,17 @@ var AmplitudeLib = {
             console.dir(sound);
             return;
         }
-        
-        var source2 = ctx.createBufferSource();
-
-        source2.buffer = sound.buffer;
+    
        
         if (channel != null) {
-
-            source2.disconnect();
-            channel.source = source2;
-            channel.gain.disconnect();
-            
-            channel.gain.connect(ctx.destination);
-            
             audioInstance = channel;
-            source = channel.source;
+            source = ctx.createBufferSource();
+            source.buffer = sound.buffer;
         }
         
         if (source == null)
             return false;
 
-    
         stream.processorNode = ctx.createScriptProcessor(stream.pcmBufferSize, 1, 1);
         stream.processorNode.onaudioprocess = function(event) {
 
@@ -154,16 +144,25 @@ var AmplitudeLib = {
                 stream.currentBufferIndex++;
             }
         
-            for (let index = 0; index < stream.buffer.length; index++) {
-                outputArray[index] = stream.buffer[index];
+            for (let index = 0; index < stream.pcmBufferSize; index++) {
+
+                if (stream.buffer.length < index)
+                    outputArray[index] = 0.0;
+                else
+                    outputArray[index] = stream.buffer[index]; 
+
             }
 
             console.log("Processed samples [" +stream.buffer.length + " / " + outputArray.length +"] ["+stream.currentBufferIndex + " / "  + framesLoadedCount + "]");
         }
         
-        channel.source.connect(stream.processorNode);
+        source.connect(stream.processorNode);
         
-        stream.processorNode.connect(audioInstance.gain);
+        source.playbackRate.value = 0.72;
+
+        console.dir(source);
+
+        stream.processorNode.connect(ctx.destination);
         
         analyzer = ctx.createAnalyser();
             
