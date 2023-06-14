@@ -49,12 +49,12 @@ namespace Charactr.VoiceSDK.Audio
 
 		public float BufferData(PcmFrame frame)
 		{
-			_lastBytesReadCount += PcmFrame.ByteSize;
+			_lastBytesReadCount += frame.ByteSize;
 			_processedSamplesCount += frame.Samples.Length;
 			_samplesBuffer.AddRange(frame.Samples);
 			var length = _processedSamplesCount / (_header.SampleRate * 1f);
 			
-			Debug.Log("Loaded bytes: "+ _lastBytesReadCount + " audioSamples: "+ _processedSamplesCount + " length:"+length);
+			Debug.Log($"BufferAdd: [{frame.ByteSize}/{_lastBytesReadCount}]bytes [{frame.Samples.Length}/{_processedSamplesCount}]samples [{length}s]");
 			return length;
 		}
 		

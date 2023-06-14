@@ -41,18 +41,14 @@ var AmplitudeLib = {
    
     WebGL_FillBuffer: function (array, size, index) {
 
-        var buffer = new Uint8Array(Module.HEAPU8.buffer, array, Float32Array.BYTES_PER_ELEMENT * size);
-
-        if (typeof pcmFramesBuffer.frames == "undefined")
+        if (typeof pcmFramesBuffer.buffers == "undefined")
         {
-            pcmFramesBuffer.frames = [];
+            pcmFramesBuffer.buffers = []
             console.log("PCM frames buffer ready")
         }
-    
-        var floatArray = new Float32Array(buffer.buffer, buffer.byteOffset, size);
-
-        pcmFramesBuffer.frames[index] = floatArray;
-        console.log("FillBuffer []: "+ index + " -  length: "+ pcmFramesBuffer.frames[index].length)
+        
+        var buffer = new Uint8Array(Module.HEAPU8.buffer, array, Float32Array.BYTES_PER_ELEMENT * size);
+        pcmFramesBuffer.buffers[index] = new Float32Array(buffer.buffer, buffer.byteOffset, size);
     },
    
     /** Create an analyzer and connect it to the audio source
@@ -66,11 +62,9 @@ var AmplitudeLib = {
         var audioInstance = null;
         var source = null;
         var stream = {
-            pcmBufferSize: 4096,
+            pcmBufferSize: 1024,
             currentBufferIndex: 0,
             bufferPosition: 0,
-            buffer: new Float32Array(4096),
-            frames: pcmFramesBuffer.frames
         };
 
         var count = WEBAudio.audioInstanceIdCounter;
@@ -123,14 +117,13 @@ var AmplitudeLib = {
                 return;
             }
 
-
             if (outputArray.length < stream.pcmBufferSize)
             {
                 console.log("No output size...")
                 return;
             }
 
-            var framesLoadedCount = stream.frames.length - 1;
+            var framesLoadedCount =  pcmFramesBuffer.buffers.length - 1;
              
             if (framesLoadedCount < stream.currentBufferIndex)
             {
@@ -140,10 +133,13 @@ var AmplitudeLib = {
             }
             else 
             {
-                stream.buffer = stream.frames[stream.currentBufferIndex];
+                var buffer = pcmFramesBuffer.buffers[stream.currentBufferIndex];
+                stream.buffer = buffer;
                 stream.currentBufferIndex++;
             }
         
+            console.log("OutputBuffer F:"+ stream.buffer[0]+" L:"+ stream.buffer[stream.buffer.length-1]+" S:"+  stream.buffer.length)
+            
             for (let index = 0; index < stream.pcmBufferSize; index++) {
 
                 if (stream.buffer.length < index)

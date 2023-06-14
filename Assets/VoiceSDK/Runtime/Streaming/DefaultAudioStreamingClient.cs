@@ -21,7 +21,7 @@ namespace Charactr.VoiceSDK.Streaming
 			_socket.OnData += OnData;
 		}
 
-		protected override void OnPcmData(int frameIndex, float[] buffer) { }
+		protected override void OnPcmFrame(int frameIndex, PcmFrame pcmFrame) { }
 		
 		public override void Connect()
 		{

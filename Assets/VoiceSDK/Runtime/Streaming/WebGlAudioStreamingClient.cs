@@ -37,10 +37,10 @@ namespace Charactr.VoiceSDK.Streaming
 			_bufferProcessor.StartSampling(AudioClip);
 		}
 
-		protected override void OnPcmData(int frameIndex, float[] buffer)
+		protected override void OnPcmFrame(int frameIndex, PcmFrame frame)
 		{
 			//Send buffer in with zero based index (Wav Header is frameIndex = 0)
-			_bufferProcessor.OnPcmBuffer(frameIndex - 1, buffer);
+			_bufferProcessor.OnPcmBuffer(frameIndex - 1, frame.Samples);
 		}
 
 		public override void Connect()

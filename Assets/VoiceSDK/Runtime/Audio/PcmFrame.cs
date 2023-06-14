@@ -1,21 +1,22 @@
 using System;
-using System.Buffers.Binary;
 using System.IO;
-
 namespace Charactr.VoiceSDK.Audio
 {
 	public class PcmFrame
 	{
-		public const int ByteSize = 8192;
+		public static int BlockSize = sizeof(short);//16bit per sample 
+		public int ByteSize => _bytesSize;
 		public float[] Samples => _samples;
 		public bool HasData => _bytes?.Length > 0 && _samples == null;
 		
 		private readonly MemoryStream _bytes;
-		private Memory<byte> _frameBytes;
+	
 		private float[] _samples;
+		private readonly int _bytesSize;
 
-		public PcmFrame()
+		public PcmFrame(int samplesCount = 4096)
 		{
+			_bytesSize = samplesCount * BlockSize;
 			_bytes = new MemoryStream();
 		}
 			
@@ -24,7 +25,7 @@ namespace Charactr.VoiceSDK.Audio
 			if (_bytes.Length < ByteSize)
 				_bytes.Write(data);
 				
-			if (_bytes.Length >= ByteSize)
+			if (_bytes.Length > ByteSize)
 			{
 				overflow = WriteSamples();
 				return true;
@@ -42,38 +43,31 @@ namespace Charactr.VoiceSDK.Audio
 			if (!_bytes.TryGetBuffer(out var segment))
 				return null;
 			
-			_frameBytes = segment.Slice(0, bytesCount);
+			var frameBytes = segment.Slice(0, bytesCount);
 				
-			ConvertByteToFloat(_frameBytes.ToArray(), out _samples);
+			ConvertByteToFloat(frameBytes.ToArray(), out _samples);
 
-			return endOfData ? null : segment.Slice(ByteSize).ToArray();
+			var overflow = segment.Slice(bytesCount).ToArray();
+			
+			_bytes.Dispose();
+
+			return endOfData ? null : overflow;
 		}
 		
-		public static int ConvertByteToFloat(Span<byte> data, out float[] waveData, int offset = 0)
+		public static void ConvertByteToFloat(byte[] data, out float[] waveData, int offset = 0)
 		{
-			var pos = 0;
-			var size = data.Length;
-			var blockSize = sizeof(short);
+			var i = 0;
 			
-			byte[] audioData = data.ToArray();
+			var samplesSize = data.Length / BlockSize;
+			waveData = new float[samplesSize];
 
-			waveData = new float[size / blockSize];
-
-			for (int i = 0; i < waveData.Length; i++)
+			while (i < samplesSize)
 			{
-				pos = (i * blockSize) + offset;
-				
-				waveData[i] = ConvertBytes(audioData,pos, blockSize);
+				var pos = (i * BlockSize) + offset;
+				var v = (float)BitConverter.ToInt16(data, pos) / short.MaxValue;
+				waveData[i] = v;
+				++i;
 			}
-			
-			return size;
-		}
-
-		private static float ConvertBytes(byte[] data, int index, int size)
-		{
-			var mem = new ReadOnlySpan<byte>(data, index, size);
-			
-			return BinaryPrimitives.ReadInt16LittleEndian(mem) / 32768f;
 		}
 	}
 }

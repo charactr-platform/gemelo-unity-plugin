@@ -85,8 +85,7 @@ namespace Charactr.VoiceSDK.Streaming
 			
 			_pcmFrames.Enqueue(_currentPcmFrame);
 			
-			_currentPcmFrame = new PcmFrame();
-
+			CreateNewPcmFrame();
 			CreateFrameData(overflow);
 		}
 		
@@ -96,7 +95,7 @@ namespace Charactr.VoiceSDK.Streaming
 			TimeSamples = WavBuilder.ProcessedSamplesCount + WavBuilder.EmptySamples;
 			
 			//WebGL needs first buffer before start of sampling
-			OnPcmData(_frameCount, frame.Samples);
+			OnPcmFrame(_frameCount, frame);
 			
 			//Buffer some data before we start audio play
 			if (_frameCount == 5)
@@ -113,15 +112,24 @@ namespace Charactr.VoiceSDK.Streaming
 			BufferingCompleted = false;
 			AudioLength = 0f;
 			TimeSamples = 0;
-			_currentPcmFrame = new PcmFrame();
+
+			CreateNewPcmFrame();
 			
-			#if UNITY_EDITOR
+#if UNITY_EDITOR
 			WavBuilder = new WavBuilder(header, true);
 			#else
 			WavBuilder = new WavBuilder(header);
 			#endif
 		}
 
+		private void CreateNewPcmFrame()
+		{
+#if UNITY_WEBGL && !UNITY_EDITOR
+			_currentPcmFrame = new PcmFrame(256);
+#else
+			_currentPcmFrame = new PcmFrame();
+#endif
+		}
 		private void CreateAudioClip()
 		{
 			var clip = WavBuilder.CreateAudioClipStream("test");
@@ -142,13 +150,12 @@ namespace Charactr.VoiceSDK.Streaming
 				{
 					_currentPcmFrame.WriteSamples(true);
 					BufferPcmFrameData(_currentPcmFrame);
-					_currentPcmFrame = new PcmFrame();
+					CreateNewPcmFrame();
 				}
 
 				Debug.Log($"Buffer loaded [{_totalFramesRead}]: {AudioLength}s");
 				_totalFramesRead = 0;
 				BufferingCompleted = true;
-				WavBuilder.WriteAudioClipDataToFile();
 			}
 		}
 
@@ -180,7 +187,7 @@ namespace Charactr.VoiceSDK.Streaming
 			return _averageProvider.GetSampleAverage(sample);
 		}
 		protected abstract void Send(string text);
-		protected abstract void OnPcmData(int frameIndex, float[] buffer);
+		protected abstract void OnPcmFrame(int frameIndex, PcmFrame pcmFrame);
 		
 		public virtual void SendConvertCommand(string text) => Send(GetConvertCommand(text));
 		protected virtual void OnError(string obj) => Debug.LogError("Error: " + obj);

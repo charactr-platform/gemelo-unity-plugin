@@ -1,4 +1,5 @@
 ﻿using System;
+using Charactr.VoiceSDK.Audio;
 using UnityEngine;
 
 namespace Charactr.VoiceSDK.Streaming
@@ -25,6 +26,6 @@ namespace Charactr.VoiceSDK.Streaming
 		}
 
 		protected override void Send(string text) { }
-		protected override void OnPcmData(int frameIndex, float[] buffer) { }
+		protected override void OnPcmFrame(int frameIndex, PcmFrame pcmFrame) { }
 	}
 }
