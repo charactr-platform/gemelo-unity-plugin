@@ -125,7 +125,7 @@ namespace Charactr.VoiceSDK.Streaming
 		private void CreateNewPcmFrame()
 		{
 #if UNITY_WEBGL && !UNITY_EDITOR
-			_currentPcmFrame = new PcmFrame(256);
+			_currentPcmFrame = new PcmFrame(WebGlAudioBufferProcessor.BufferSize);
 #else
 			_currentPcmFrame = new PcmFrame();
 #endif

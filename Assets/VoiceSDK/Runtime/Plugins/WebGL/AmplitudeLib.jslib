@@ -38,17 +38,36 @@ var AmplitudeLib = {
             console.dir(object)
         }
     },
-   
-    WebGL_FillBuffer: function (array, size, index) {
 
-        if (typeof pcmFramesBuffer.buffers == "undefined")
-        {
-            pcmFramesBuffer.buffers = []
-            console.log("PCM frames buffer ready")
-        }
+    WebGL_Initialize: function (bufferSize, allocationSize) {
         
+        if (typeof pcmFramesBuffer.buffer == "undefined")
+        {
+            pcmFramesBuffer.buffer = _malloc(allocationSize);
+        }
+        else
+        {
+           _free(pcmFramesBuffer.buffer);
+            pcmFramesBuffer.buffer = _malloc(allocationSize);
+        }
+       
+        var bytes = new Uint8Array(pcmFramesBuffer.buffer, pcmFramesBuffer.buffer .byteOffset, Float32Array.BYTES_PER_ELEMENT * allocationSize);
+        pcmFramesBuffer.stream = new Float32Array(bytes);
+        pcmFramesBuffer.size = bufferSize;
+        pcmFramesBuffer.samplesLength = 0;
+
+        console.log("PCM frames buffer ready, size: "+bufferSize+", heap size: "+Module.HEAPU8.buffer.byteLength)
+    },
+
+    WebGL_FillBuffer: function (array, size, index) {
+      
         var buffer = new Uint8Array(Module.HEAPU8.buffer, array, Float32Array.BYTES_PER_ELEMENT * size);
-        pcmFramesBuffer.buffers[index] = new Float32Array(buffer.buffer, buffer.byteOffset, size);
+        var samples = new Float32Array(buffer.buffer, buffer.byteOffset, size);
+
+        pcmFramesBuffer.stream.set(samples, pcmFramesBuffer.samplesLength);
+        pcmFramesBuffer.samplesLength += samples.length;
+
+        console.log("Added buffer, total length: "+pcmFramesBuffer.samplesLength);
     },
    
     /** Create an analyzer and connect it to the audio source
@@ -62,9 +81,8 @@ var AmplitudeLib = {
         var audioInstance = null;
         var source = null;
         var stream = {
-            pcmBufferSize: 1024,
-            currentBufferIndex: 0,
-            bufferPosition: 0,
+            bufferIndex: 0,
+            position: 0,
         };
 
         var count = WEBAudio.audioInstanceIdCounter;
@@ -96,19 +114,21 @@ var AmplitudeLib = {
             return;
         }
     
-       
+
         if (channel != null) {
             audioInstance = channel;
             source = ctx.createBufferSource();
             source.buffer = sound.buffer;
+            console.dir(ctx);
         }
         
         if (source == null)
             return false;
 
-        stream.processorNode = ctx.createScriptProcessor(stream.pcmBufferSize, 1, 1);
+        stream.processorNode = ctx.createScriptProcessor(pcmFramesBuffer.size, 1, 1);
         stream.processorNode.onaudioprocess = function(event) {
 
+            var size = pcmFramesBuffer.size;
             var outputArray = event.outputBuffer.getChannelData(0);
 
             if (!streaming) {
@@ -117,45 +137,32 @@ var AmplitudeLib = {
                 return;
             }
 
-            if (outputArray.length < stream.pcmBufferSize)
+            if (outputArray.length < size)
             {
                 console.log("No output size...")
                 return;
             }
 
-            var framesLoadedCount =  pcmFramesBuffer.buffers.length - 1;
-             
-            if (framesLoadedCount < stream.currentBufferIndex)
+            if (pcmFramesBuffer.samplesLength <= stream.position)
             {
-                outputArray = new Float32Array(stream.pcmBufferSize);
+                outputArray = new Float32Array(size);
                 console.log("No more data...");
                 return;
             }
-            else 
-            {
-                var buffer = pcmFramesBuffer.buffers[stream.currentBufferIndex];
-                stream.buffer = buffer;
-                stream.currentBufferIndex++;
-            }
         
-            console.log("OutputBuffer F:"+ stream.buffer[0]+" L:"+ stream.buffer[stream.buffer.length-1]+" S:"+  stream.buffer.length)
-            
-            for (let index = 0; index < stream.pcmBufferSize; index++) {
+            stream.buffer = pcmFramesBuffer.stream.slice(stream.position, stream.position + size);
+      
+            for (let index = 0; index < size; index++) {
 
-                if (stream.buffer.length < index)
-                    outputArray[index] = 0.0;
-                else
-                    outputArray[index] = stream.buffer[index]; 
-
+                outputArray[index] = stream.buffer[index]; 
             }
 
-            console.log("Processed samples [" +stream.buffer.length + " / " + outputArray.length +"] ["+stream.currentBufferIndex + " / "  + framesLoadedCount + "]");
+            stream.position += size;
+            console.log("Processed samples ["+ stream.position + " / " + pcmFramesBuffer.stream.length + "]");
         }
         
         source.connect(stream.processorNode);
         
-        source.playbackRate.value = 0.72;
-
         console.dir(source);
 
         stream.processorNode.connect(ctx.destination);
