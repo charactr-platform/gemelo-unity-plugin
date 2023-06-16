@@ -8,6 +8,7 @@ namespace Charactr.VoiceSDK.Audio
 	{
 		public int EmptySamples => _silenceSamplesCount;
 		public int ProcessedSamplesCount => _processedSamplesCount;
+		public int SampleRate => _header.SampleRate;
 		
 		private readonly Memory<byte> _data;
 		private readonly WavHeaderData _header;

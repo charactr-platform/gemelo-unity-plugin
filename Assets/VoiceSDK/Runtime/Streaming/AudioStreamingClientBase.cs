@@ -117,9 +117,11 @@ namespace Charactr.VoiceSDK.Streaming
 			
 #if UNITY_EDITOR
 			WavBuilder = new WavBuilder(header, true);
-			#else
+#else
 			WavBuilder = new WavBuilder(header);
-			#endif
+#endif
+			
+			OnHeaderData(WavBuilder.SampleRate);
 		}
 
 		private void CreateNewPcmFrame()
@@ -188,7 +190,7 @@ namespace Charactr.VoiceSDK.Streaming
 		}
 		protected abstract void Send(string text);
 		protected abstract void OnPcmFrame(int frameIndex, PcmFrame pcmFrame);
-		
+		protected abstract void OnHeaderData(int sampleRate);
 		public virtual void SendConvertCommand(string text) => Send(GetConvertCommand(text));
 		protected virtual void OnError(string obj) => Debug.LogError("Error: " + obj);
 

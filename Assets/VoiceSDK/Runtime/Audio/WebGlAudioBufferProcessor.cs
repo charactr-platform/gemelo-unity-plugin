@@ -8,12 +8,15 @@ namespace Charactr.VoiceSDK.Audio
 		public const int BufferSize = 4096;
 		
 		[DllImport("__Internal")]
-		private static extern bool WebGL_Initialize(int bufferSize, int allocationSize);
+		private static extern bool WebGL_Initialize(int bufferSize, int allocationSize, int sampleRate);
 		[DllImport("__Internal")]
 		private static extern bool WebGL_StartSampling(string uniqueName, int bufferIndex, int sampleSize, bool streaming = false);
 
 		[DllImport("__Internal")]
 		private static extern bool WebGL_StopSampling(string uniqueName);
+
+		[DllImport("__Internal")]
+		private static extern int WebGL_GetChannelIndex();
 		
 		[DllImport("__Internal")]
 		private static extern bool WebGL_Stats();
@@ -28,15 +31,17 @@ namespace Charactr.VoiceSDK.Audio
 		private string _clipId;
 		private readonly int _sampleSize;
 		private readonly float[] _sample;
-		public WebGlAudioBufferProcessor(int sampleSize)
+		public WebGlAudioBufferProcessor(int sampleSize, int sampleRate)
 		{
 			_sampleSize = sampleSize;
 			_sample = new float[sampleSize];
 			
 			//Allocate heap memory buffer to fix buffer growth
 			//BUG: https://github.com/emscripten-core/emscripten/issues/6747
-			var memAllocSize = int.MaxValue / 4; //~50mb
-			WebGL_Initialize(BufferSize, memAllocSize);
+			//TODO: Calculate approximate buffer size from letters used in text 
+			
+			var memAllocSize = int.MaxValue / 8; //~20mb
+			WebGL_Initialize(BufferSize, memAllocSize, sampleRate);
 		}
 
 		public void StartSampling(AudioClip clip, bool streaming = true)

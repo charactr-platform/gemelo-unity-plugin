@@ -27,5 +27,6 @@ namespace Charactr.VoiceSDK.Streaming
 
 		protected override void Send(string text) { }
 		protected override void OnPcmFrame(int frameIndex, PcmFrame pcmFrame) { }
+		protected override void OnHeaderData(int sampleRate) { }
 	}
 }

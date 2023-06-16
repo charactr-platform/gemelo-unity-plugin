@@ -22,7 +22,8 @@ namespace Charactr.VoiceSDK.Streaming
 		}
 
 		protected override void OnPcmFrame(int frameIndex, PcmFrame pcmFrame) { }
-		
+		protected override void OnHeaderData(int sampleRate) { }
+
 		public override void Connect()
 		{
 			EnqueueCommand(GetAuthCommand());

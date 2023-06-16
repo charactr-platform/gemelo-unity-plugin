@@ -39,11 +39,11 @@ var AmplitudeLib = {
         }
     },
 
-    WebGL_Initialize: function (bufferSize, allocationSize) {
+    WebGL_Initialize: function (bufferSize, allocationSize, sampleRate) {
         
         if (typeof pcmFramesBuffer.buffer == "undefined")
         {
-            pcmFramesBuffer.buffer = _malloc(allocationSize);
+            pcmFramesBuffer.buffer = _malloc(allocationSize);       
         }
         else
         {
@@ -51,7 +51,16 @@ var AmplitudeLib = {
             pcmFramesBuffer.buffer = _malloc(allocationSize);
         }
        
-        var bytes = new Uint8Array(pcmFramesBuffer.buffer, pcmFramesBuffer.buffer .byteOffset, Float32Array.BYTES_PER_ELEMENT * allocationSize);
+        //Create new instance of audio context with proper sampleRate      
+        WEBAudio.audioContext.close().then(()=>{
+            WEBAudio.audioContext = new AudioContext({
+            latencyHint: "interactive",
+            sampleRate: sampleRate});
+
+            console.log("Audio Context created, SampleRate: "+ sampleRate);
+        });
+
+        var bytes = new Uint8Array(pcmFramesBuffer.buffer, pcmFramesBuffer.buffer.byteOffset, Float32Array.BYTES_PER_ELEMENT * allocationSize);
         pcmFramesBuffer.stream = new Float32Array(bytes);
         pcmFramesBuffer.size = bufferSize;
         pcmFramesBuffer.samplesLength = 0;
@@ -70,6 +79,20 @@ var AmplitudeLib = {
         console.log("Added buffer, total length: "+pcmFramesBuffer.samplesLength);
     },
    
+    WebGL_GetChannelIndex: function() {
+        var channelIndex = 0;
+
+         for (let index = WEBAudio.audioInstanceIdCounter; index > 0; --index) {
+                 var object = WEBAudio.audioInstances[index];
+                 if (object.gain) {
+                    channelIndex = index;
+                    break;
+                 }      
+            }
+
+        return channelIndex;
+    },
+
     /** Create an analyzer and connect it to the audio source
      * @param uniqueName Analyzer name
      * @param sampleSize Float array sample size
@@ -85,26 +108,18 @@ var AmplitudeLib = {
             position: 0,
         };
 
-        var count = WEBAudio.audioInstanceIdCounter;
-        
         var ctx = WEBAudio.audioContext;
-
+        var count = WEBAudio.audioInstanceIdCounter;
+         
         if (count < 2)
         {
             console.log("AudioInstances must contains 2 or more items, count = " + count);
             return false;
         }
         
-        //Channel - Audio Source instance
-        var channelIndex = 1;
-        for (let index = WEBAudio.audioInstanceIdCounter; index > 0; --index) {
-                 var object = WEBAudio.audioInstances[index];
-                 if (object.gain) {
-                    channelIndex = index;
-                    break;
-                 }      
-            }
-      
+        //Channel - Unity Audio Source
+        var channelIndex = WebGL_GetChannelIndex();
+       
         var sound = WEBAudio.audioInstances[bufferInstance];
         var channel = WEBAudio.audioInstances[channelIndex];
         
@@ -113,18 +128,17 @@ var AmplitudeLib = {
             console.dir(sound);
             return;
         }
-    
 
         if (channel != null) {
             audioInstance = channel;
+            audioInstance.gain = ctx.createGain();
+            audioInstance.panner = ctx.createPanner();
             source = ctx.createBufferSource();
             source.buffer = sound.buffer;
             console.dir(ctx);
+            console.dir(audioInstance);
         }
         
-        if (source == null)
-            return false;
-
         stream.processorNode = ctx.createScriptProcessor(pcmFramesBuffer.size, 1, 1);
         stream.processorNode.onaudioprocess = function(event) {
 
@@ -158,21 +172,21 @@ var AmplitudeLib = {
             }
 
             stream.position += size;
-            console.log("Processed samples ["+ stream.position + " / " + pcmFramesBuffer.stream.length + "]");
+            console.log("Processed samples ["+ stream.position + " / " + pcmFramesBuffer.samplesLength + "]");
         }
         
         source.connect(stream.processorNode);
         
         console.dir(source);
 
-        stream.processorNode.connect(ctx.destination);
-        
         analyzer = ctx.createAnalyser();
             
         analyzer.fftSize = sampleSize;
         
-        audioInstance.gain.connect(analyzer);
-        
+        stream.processorNode.connect(analyzer);
+    
+        analyzer.connect(ctx.destination);
+
         analyzers[analyzerName] = { analyzer: analyzer, source: source, stream: stream };
         
         //source.onended = () => onAudioPlayed();
@@ -234,35 +248,6 @@ var AmplitudeLib = {
         }
         return false;
     },
-
-    /** Fill the sample array with frequency data
-     * @param uniqueName Analyzer name
-     * @param sample Float array pointer to hold amplitude data
-     * @param sampleSize Float array sample size
-     * @returns true on success, false on failure */
-    WebGL_GetFrequency: function (uniqueName, sample) {
-        try {
-             var analyzerName = UTF8ToString(uniqueName);
-             var analyzerObj = analyzers[analyzerName];
-             if (analyzerObj == null) {
-               
-                console.log("Could not find analyzer (" + analyzerName + ")");
-                return false;
-             }
-
-            var bufferLength = analyzerObj.analyzer.frequencyBinCount;
-            var buffer = new Uint8Array(Module.HEAPU8.buffer, sample, Float32Array.BYTES_PER_ELEMENT * bufferLength);
-            buffer = new Float32Array(buffer.buffer, buffer.byteOffset, bufferLength);
-            analyzerObj.analyzer.smoothingTimeConstant = 0;
-
-            analyzerObj.analyzer.getFloatFrequencyData(buffer);
-            return true;
-        }
-        catch (e) {
-            console.log("Failed to get sample data " + e);
-        }
-        return false;
-    }
 };
 autoAddDeps(AmplitudeLib, '$pcmFramesBuffer');
 autoAddDeps(AmplitudeLib, '$analyzers');

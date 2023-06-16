@@ -12,14 +12,13 @@ namespace Charactr.VoiceSDK.Streaming
 		private readonly NativeWebSocket.WebSocket _socket;
 		private readonly AudioSource _audioSource;
 		private readonly GameObject _gameObject;
-		private readonly WebGlAudioBufferProcessor _bufferProcessor;
+		private WebGlAudioBufferProcessor _bufferProcessor;
 		
 		public WebGlAudioStreamingClient(string url, Configuration configuration, AudioSource audioSource) : base(configuration)
 		{
 			_audioSource = audioSource;
 			
 			_socket = new NativeWebSocket.WebSocket(url);
-			_bufferProcessor = new WebGlAudioBufferProcessor(AverageProvider.SampleSize);
 			
 			_socket.OnOpen += OnOpen;
 			_socket.OnClose += code => OnClose(code.ToString());
@@ -41,6 +40,11 @@ namespace Charactr.VoiceSDK.Streaming
 		{
 			//Send buffer in with zero based index (Wav Header is frameIndex = 0)
 			_bufferProcessor.OnPcmBuffer(frameIndex - 1, frame.Samples);
+		}
+
+		protected override void OnHeaderData(int sampleRate)
+		{
+			_bufferProcessor = new WebGlAudioBufferProcessor(AverageProvider.SampleSize, sampleRate);
 		}
 
 		public override void Connect()
