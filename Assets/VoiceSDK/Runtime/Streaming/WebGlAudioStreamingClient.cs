@@ -44,7 +44,7 @@ namespace Charactr.VoiceSDK.Streaming
 
 		protected override void OnHeaderData(int sampleRate)
 		{
-			_bufferProcessor = new WebGlAudioBufferProcessor(AverageProvider.SampleSize, sampleRate);
+			_bufferProcessor = new WebGlAudioBufferProcessor(AverageProvider.SampleSize);
 		}
 
 		public override void Connect()

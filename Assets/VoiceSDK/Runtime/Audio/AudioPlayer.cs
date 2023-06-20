@@ -27,7 +27,7 @@ namespace Charactr.VoiceSDK.Audio
 		{
 			_sample = new float[AverageProvider.SampleSize];
 			_averageProvider = new AverageProvider();
-			_bufferProcessor = new WebGlAudioBufferProcessor(AverageProvider.SampleSize, 44100);
+			_bufferProcessor = new WebGlAudioBufferProcessor(AverageProvider.SampleSize);
 		}
 		
 		public static void PlayClip(AudioClip clip)

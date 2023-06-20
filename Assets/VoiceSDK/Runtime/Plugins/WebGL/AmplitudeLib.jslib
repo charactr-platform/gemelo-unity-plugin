@@ -51,15 +51,6 @@ var AmplitudeLib = {
             pcmFramesBuffer.buffer = _malloc(allocationSize);
         }
        
-        //Create new instance of audio context with proper sampleRate      
-        WEBAudio.audioContext.close().then(()=>{
-            WEBAudio.audioContext = new AudioContext({
-            latencyHint: "interactive",
-            sampleRate: sampleRate});
-
-            console.log("Audio Context created, SampleRate: "+ sampleRate);
-        });
-
         var bytes = new Uint8Array(pcmFramesBuffer.buffer, pcmFramesBuffer.buffer.byteOffset, Float32Array.BYTES_PER_ELEMENT * allocationSize);
         pcmFramesBuffer.stream = new Float32Array(bytes);
         pcmFramesBuffer.size = bufferSize;
@@ -79,20 +70,6 @@ var AmplitudeLib = {
         console.log("Added buffer, total length: "+pcmFramesBuffer.samplesLength);
     },
    
-    WebGL_GetChannelIndex: function() {
-        var channelIndex = 0;
-
-         for (let index = WEBAudio.audioInstanceIdCounter; index > 0; --index) {
-                 var object = WEBAudio.audioInstances[index];
-                 if (object.gain) {
-                    channelIndex = index;
-                    break;
-                 }      
-            }
-
-        return channelIndex;
-    },
-
     /** Create an analyzer and connect it to the audio source
      * @param uniqueName Analyzer name
      * @param sampleSize Float array sample size
@@ -118,7 +95,14 @@ var AmplitudeLib = {
         }
         
         //Channel - Unity Audio Source
-        var channelIndex = WebGL_GetChannelIndex();
+        var channelIndex = 1;
+        for (let index = WEBAudio.audioInstanceIdCounter; index > 0; --index) {
+            var object = WEBAudio.audioInstances[index];
+            if (object.gain) {
+               channelIndex = index;
+               break;
+            }      
+       }
        
         var sound = WEBAudio.audioInstances[bufferInstance];
         var channel = WEBAudio.audioInstances[channelIndex];
@@ -131,8 +115,6 @@ var AmplitudeLib = {
 
         if (channel != null) {
             audioInstance = channel;
-            audioInstance.gain = ctx.createGain();
-            audioInstance.panner = ctx.createPanner();
             source = ctx.createBufferSource();
             source.buffer = sound.buffer;
             console.dir(ctx);

@@ -8,15 +8,12 @@ namespace Charactr.VoiceSDK.Audio
 		public const int BufferSize = 4096;
 		
 		[DllImport("__Internal")]
-		private static extern bool WebGL_Initialize(int bufferSize, int allocationSize, int sampleRate);
+		private static extern bool WebGL_Initialize(int bufferSize, int allocationSize);
 		[DllImport("__Internal")]
 		private static extern bool WebGL_StartSampling(string uniqueName, int bufferIndex, int sampleSize, bool streaming = false);
 
 		[DllImport("__Internal")]
 		private static extern bool WebGL_StopSampling(string uniqueName);
-
-		[DllImport("__Internal")]
-		private static extern int WebGL_GetChannelIndex();
 		
 		[DllImport("__Internal")]
 		private static extern bool WebGL_Stats();
@@ -31,7 +28,7 @@ namespace Charactr.VoiceSDK.Audio
 		private string _clipId;
 		private readonly int _sampleSize;
 		private readonly float[] _sample;
-		public WebGlAudioBufferProcessor(int sampleSize, int sampleRate)
+		public WebGlAudioBufferProcessor(int sampleSize)
 		{
 			_sampleSize = sampleSize;
 			_sample = new float[sampleSize];
@@ -41,7 +38,7 @@ namespace Charactr.VoiceSDK.Audio
 			//TODO: Calculate approximate buffer size from letters used in text 
 			
 			var memAllocSize = int.MaxValue / 8; //~20mb
-			WebGL_Initialize(BufferSize, memAllocSize, sampleRate);
+			WebGL_Initialize(BufferSize, memAllocSize);
 		}
 
 		public void StartSampling(AudioClip clip, bool streaming = true)
