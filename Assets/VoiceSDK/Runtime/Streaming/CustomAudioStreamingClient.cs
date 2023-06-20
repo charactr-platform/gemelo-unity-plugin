@@ -1,4 +1,5 @@
 ﻿using System;
+using Charactr.VoiceSDK.Audio;
 using UnityEngine;
 
 namespace Charactr.VoiceSDK.Streaming
@@ -6,7 +7,7 @@ namespace Charactr.VoiceSDK.Streaming
 	public class CustomAudioStreamingClient : AudioStreamingClientBase
 	{
 		private readonly AudioSource _audioSource;
-		public CustomAudioStreamingClient(AudioSource audioSource) : base(null, audioSource.gameObject)
+		public CustomAudioStreamingClient(AudioSource audioSource) : base(null)
 		{
 			_audioSource = audioSource;
 		}
@@ -25,6 +26,7 @@ namespace Charactr.VoiceSDK.Streaming
 		}
 
 		protected override void Send(string text) { }
-		protected override void OnPcmData(int frameIndex, float[] buffer) { }
+		protected override void OnPcmFrame(int frameIndex, PcmFrame pcmFrame) { }
+		protected override void OnHeaderData(int sampleRate) { }
 	}
 }

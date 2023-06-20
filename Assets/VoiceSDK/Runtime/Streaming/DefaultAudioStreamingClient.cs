@@ -11,7 +11,7 @@ namespace Charactr.VoiceSDK.Streaming
 
 		private readonly NativeSocketWrapper _socket;
 		private readonly AudioSource _audioSource;
-		public DefaultAudioStreamingClient(string url, Configuration configuration, AudioSource audioSource): base(configuration, audioSource.gameObject)
+		public DefaultAudioStreamingClient(string url, Configuration configuration, AudioSource audioSource): base(configuration)
 		{
 			_audioSource = audioSource;
 			_socket = new NativeSocketWrapper(url);
@@ -21,8 +21,9 @@ namespace Charactr.VoiceSDK.Streaming
 			_socket.OnData += OnData;
 		}
 
-		protected override void OnPcmData(int frameIndex, float[] buffer) { }
-		
+		protected override void OnPcmFrame(int frameIndex, PcmFrame pcmFrame) { }
+		protected override void OnHeaderData(int sampleRate) { }
+
 		public override void Connect()
 		{
 			EnqueueCommand(GetAuthCommand());

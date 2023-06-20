@@ -99,7 +99,7 @@ namespace Charactr.VoiceSDK.Streaming
                 return false;
 
             var playbackSamples = client.AudioSource.timeSamples;
-            var clipSamples = client.AudioSamples;
+            var clipSamples = client.TimeSamples;
 
             if (playbackSamples < clipSamples)
                 return false;

@@ -8,19 +8,17 @@ namespace Charactr.VoiceSDK.Streaming
 	public class WebGlAudioStreamingClient : AudioStreamingClientBase, IAudioStreamingClient
 	{
 		public AudioSource AudioSource => _audioSource;
-		
+
 		private readonly NativeWebSocket.WebSocket _socket;
 		private readonly AudioSource _audioSource;
 		private readonly GameObject _gameObject;
-		private readonly WebGlAudioBufferProcessor _bufferProcessor;
+		private WebGlAudioBufferProcessor _bufferProcessor;
 		
-		public WebGlAudioStreamingClient(string url, Configuration configuration, AudioSource audioSource) :
-					base(configuration, audioSource.gameObject)
+		public WebGlAudioStreamingClient(string url, Configuration configuration, AudioSource audioSource) : base(configuration)
 		{
 			_audioSource = audioSource;
 			
 			_socket = new NativeWebSocket.WebSocket(url);
-			_bufferProcessor = new WebGlAudioBufferProcessor(AverageProvider.SampleSize);
 			
 			_socket.OnOpen += OnOpen;
 			_socket.OnClose += code => OnClose(code.ToString());
@@ -38,10 +36,15 @@ namespace Charactr.VoiceSDK.Streaming
 			_bufferProcessor.StartSampling(AudioClip);
 		}
 
-		protected override void OnPcmData(int frameIndex, float[] buffer)
+		protected override void OnPcmFrame(int frameIndex, PcmFrame frame)
 		{
 			//Send buffer in with zero based index (Wav Header is frameIndex = 0)
-			_bufferProcessor.OnPcmBuffer(frameIndex - 1, buffer);
+			_bufferProcessor.OnPcmBuffer(frameIndex - 1, frame.Samples);
+		}
+
+		protected override void OnHeaderData(int sampleRate)
+		{
+			_bufferProcessor = new WebGlAudioBufferProcessor(AverageProvider.SampleSize);
 		}
 
 		public override void Connect()

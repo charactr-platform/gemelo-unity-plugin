@@ -71,17 +71,22 @@ namespace Charactr.VoiceSDK.Tests
 		
 		private async Task Dispatch()
 		{
-			var rcvBytes = new byte[1024 * 1024];
+			var rcvBytes = new byte[1024 * 1024 * 1024];
 			var rcvBuffer = new ArraySegment<byte>(rcvBytes);
 			WebSocketReceiveResult result = null;
 			
 			do
 			{
 				result = await _ws.ReceiveAsync(rcvBuffer, _token.Token);
-				if (result.Count > 0)
+				
+				if (result.MessageType == WebSocketMessageType.Binary)
 				{
 					var msgBytes = rcvBuffer.Skip(rcvBuffer.Offset).Take(result.Count).ToArray();
 					OnData?.Invoke(msgBytes);
+				}
+				else
+				{
+					Debug.LogWarning("Bad data:"+ result.MessageType);
 				}
 			} 
 			while (result.CloseStatus == null);

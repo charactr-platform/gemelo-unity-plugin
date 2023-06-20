@@ -7,7 +7,7 @@ namespace Charactr.VoiceSDK.Streaming
 		public AudioSource AudioSource { get; }
 		public AudioClip AudioClip { get; }
 		public float AudioLength { get; }
-		public int AudioSamples { get; }
+		public int TimeSamples { get; }
 		public bool BufferingCompleted { get; }
 		public bool Initialized { get; }
 		public void Connect();
