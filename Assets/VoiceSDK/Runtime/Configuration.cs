@@ -41,10 +41,18 @@ namespace Charactr.VoiceSDK
 		{
 			var instance = CreateInstance<Configuration>();
 			instance.Create(apiClient, apiKey, audioSavePath);
-			AssetDatabase.CreateFolder("Assets", "Resources");
+			CheckForResourcesDir();
 			AssetDatabase.CreateAsset(instance, SAVE_PATH);
 		}
 		
+		public static void CheckForResourcesDir()
+		{
+			if (!AssetDatabase.IsValidFolder($"Assets/Resources"))
+			{
+				AssetDatabase.CreateFolder("Assets", "Resources");
+				Debug.Log("Created default Resources folder in Assets/Resources");
+			}
+		}
 #endif
 
 		public void Create(string apiClientString, string apiKeyString, string savePathString)

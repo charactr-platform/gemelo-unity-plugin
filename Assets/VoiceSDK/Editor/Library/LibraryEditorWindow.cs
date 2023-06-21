@@ -26,10 +26,10 @@ namespace Charactr.VoiceSDK.Editor.Library
         {
             // Each editor window contains a root VisualElement object
             _root = rootVisualElement;
-            var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Charactr/Editor/Library/LibraryEditorWindow.uss");
+         
             // Import UXML
-            var labelFromUXML = visualTreeAsset.Instantiate();
-            _root.Add(labelFromUXML);
+            var labelFromUxml = visualTreeAsset.Instantiate();
+            _root.Add(labelFromUxml);
 
             _root.Q<Button>("createButton").RegisterCallback<ClickEvent>((e) => OnCreateButton());
 
@@ -39,6 +39,7 @@ namespace Charactr.VoiceSDK.Editor.Library
         private void OnCreateButton()
         {
             var instance = CreateInstance<VoiceLibrary>();
+            VoiceSDK.Configuration.CheckForResourcesDir();
             var path = AssetDatabase.GenerateUniqueAssetPath($"Assets/{VoiceLibrary.SAVE_PATH}/VoiceLibrary.asset");
             AssetDatabase.CreateAsset(instance, path);
             LoadItems();
