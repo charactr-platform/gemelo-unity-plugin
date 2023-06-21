@@ -1,6 +1,6 @@
 {
   "name": "com.charactr.voicesdk",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "displayName": "Charactr Voice SDK for Unity",
   "description": "Voice SDK allows to convert and stream text-to-speech",
   "unity": "2021.3",
