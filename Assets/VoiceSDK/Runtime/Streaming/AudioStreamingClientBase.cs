@@ -116,7 +116,7 @@ namespace Charactr.VoiceSDK.Streaming
 			CreateNewPcmFrame();
 			
 #if UNITY_EDITOR
-			WavBuilder = new WavBuilder(header, true);
+			WavBuilder = new WavBuilder(header);
 #else
 			WavBuilder = new WavBuilder(header);
 #endif
