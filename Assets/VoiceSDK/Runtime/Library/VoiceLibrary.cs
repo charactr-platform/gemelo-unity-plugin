@@ -9,7 +9,7 @@ namespace Charactr.VoiceSDK.Library
 	[CreateAssetMenu(menuName = "VoiceSDK/Create VoiceLibrary", fileName = "VoiceLibrary", order = 0)]
 	public class VoiceLibrary : ScriptableObject
 	{
-		public const string SAVE_PATH = "Charactr/Resources";
+		public const string SAVE_PATH = "Resources";
 		
 		public bool IsEmpty
 		{
