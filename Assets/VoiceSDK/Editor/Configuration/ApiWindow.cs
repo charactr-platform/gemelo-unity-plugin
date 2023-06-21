@@ -9,7 +9,8 @@ namespace Charactr.VoiceSDK.Editor.Configuration
         public VisualTreeAsset visualTreeAsset;
         private const string API_URL = "https://api.charactr.com";
         private TextField _keyField, _clientField;
-
+        private IMGUIContainer _logoContainer;
+        
         [MenuItem("Charactr/Configuration")]
         public static void ShowWindow()
         {
@@ -26,7 +27,10 @@ namespace Charactr.VoiceSDK.Editor.Configuration
 
             _clientField = root.Q<TextField>("ClientText");
             _keyField = root.Q<TextField>("ApiText");
-
+            _logoContainer = root.Q<IMGUIContainer>("LogoContainer");
+            var path = AssetDatabase.GUIDToAssetPath("598fe54de0312494ab36c4a8e2148e0e");
+            _logoContainer.style.backgroundImage = new StyleBackground(AssetDatabase.LoadAssetAtPath<Texture2D>(path));
+            
             var saveButton = root.Q<Button>("SaveButton");
             saveButton.RegisterCallback<MouseUpEvent>((e)=> SaveConfiguration());
             
