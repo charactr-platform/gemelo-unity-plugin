@@ -144,7 +144,7 @@ namespace Charactr.VoiceSDK.Editor.Library
         private void PlayAudioClip(AudioClip clip)
         {
             Debug.Log($"Playing:{clip.name}");
-            AudioPlayer.PlayClip(clip);
+            AudioPlayer.PlayClipStatic(clip);
             EditorApplication.RepaintProjectWindow();
         }
 
