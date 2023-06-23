@@ -1,19 +1,8 @@
 ﻿using System;
-using System.Collections;
 using UnityEngine;
 
 namespace Charactr.VoiceSDK.Audio
 {
-	public interface IAudioPlayer
-	{
-		void Initialize(int sampleSize = 0);
-		void PlayClip(AudioClip clip);
-		IEnumerator PlayClipRoutine(AudioClip clip);
-		
-		void Stop();
-		float GetSampleAverage();
-	}
-
 	[RequireComponent(typeof(AudioSource))]
 	public abstract class AudioPlayerBase: MonoBehaviour, IDisposable 
 	{
@@ -24,7 +13,6 @@ namespace Charactr.VoiceSDK.Audio
 		private AverageProvider _averageProvider;
 		private float[] _sample;
 		private AudioClip _clip;
-		
 		protected void Initialize(int samplesSize = 0)
 		{
 			var size = samplesSize == 0 ? AverageProvider.SampleSize : samplesSize;
@@ -56,15 +44,7 @@ namespace Charactr.VoiceSDK.Audio
 #endif
 			_isPlaying = clip.length > Mathf.Epsilon;
 		}
-
-		private void Update()
-		{
-			if (_isPlaying)
-			{
-				CheckAudioSource();
-			}
-		}
-
+		
 		protected float GetSampleAverage()
 		{
 			if (!_isPlaying)
@@ -92,17 +72,19 @@ namespace Charactr.VoiceSDK.Audio
 			_source.Stop();
 			
 #if UNITY_WEBGL && !UNITY_EDITOR
-				_bufferProcessor.StopSampling();
+			_bufferProcessor.StopSampling();
 #endif
-			Dispose();
+			
 		}
+		
 		public void Dispose()
 		{
 			_isPlaying = false;
 			
-			//Called from static method, destroy gameobject
-			if (name.StartsWith("~"))
+			//Called from static method, destroy gameobject on Dispose
+			if (gameObject.hideFlags == HideFlags.HideAndDontSave)
 			{
+				Debug.Log($"Destroying AudioPlayer game object:{name}");
 				DestroyImmediate(gameObject, false);
 			}
 		}

@@ -45,8 +45,7 @@ namespace Charactr.VoiceSDK.Tests
 			Assert.AreEqual(32000, clip.frequency);
 			Assert.AreEqual(4.08f, clip.length);
 			
-			AudioPlayer.PlayClipStatic(clip);
-			await Task.Delay((int)clip.length * 1000);
+			await AudioPlayer.PlayClipStatic(clip);
 		}
 
 		[UnityTest]

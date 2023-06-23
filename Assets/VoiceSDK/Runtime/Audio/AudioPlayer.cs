@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Charactr.VoiceSDK.Audio
@@ -23,20 +25,23 @@ namespace Charactr.VoiceSDK.Audio
 			yield return new WaitForSecondsRealtime(clip.length);
 		}
 		
-		public static void PlayClipStatic(AudioClip clip)
+		public static async Task PlayClipStatic(AudioClip clip, float playbackTime = 0f)
 		{
+			var length = playbackTime > Mathf.Epsilon ? playbackTime : clip.length; 
 			using (var player = CreateInstance<AudioPlayer>(clip.name))
 			{
 				player.Play(clip);
+				await Task.Delay(TimeSpan.FromSeconds(length));
 			}
 		}
 		
-		public static IEnumerator PlayClipRoutineStatic(AudioClip clip)
+		public static IEnumerator PlayClipRoutineStatic(AudioClip clip, float playbackTime = 0f)
 		{
+			var length = playbackTime > Mathf.Epsilon ? playbackTime : clip.length; 
 			using (var player = CreateInstance<AudioPlayer>(clip.name))
 			{
 				player.Play(clip);
-				yield return new WaitForSecondsRealtime(clip.length);
+				yield return new WaitForSecondsRealtime(length);
 			}
 		}
 	}
