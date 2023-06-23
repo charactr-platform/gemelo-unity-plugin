@@ -21,7 +21,7 @@ namespace Charactr.VoiceSDK
         {
             if (voiceLibrary.GetAudioClipById(id, out var clip))
             {
-                AudioPlayer.PlayClip(clip);
+                AudioPlayer.PlayClipStatic(clip);
             }
         }
     }

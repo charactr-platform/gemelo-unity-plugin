@@ -58,7 +58,7 @@ namespace Charactr.VoiceSDK.Audio
 		{
 			var i = 0;
 			
-			var samplesSize = data.Length / BlockSize;
+			var samplesSize = (data.Length - offset) / BlockSize;
 			waveData = new float[samplesSize];
 
 			while (i < samplesSize)
