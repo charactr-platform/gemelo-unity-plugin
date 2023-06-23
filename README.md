@@ -5,7 +5,7 @@ This is the UPM package for the Voice SDK.
 
 Install it via `Window/Package Manager` in Unity:
 ```
-https://github.com/charactr-platform/charactr-api-sdk-unity.git#v0.1.7
+https://github.com/charactr-platform/charactr-api-sdk-unity.git#v0.1.8
 ```
 
 ## Notice
