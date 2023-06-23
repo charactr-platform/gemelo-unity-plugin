@@ -28,7 +28,7 @@ namespace Charactr.VoiceSDK.Audio
 		protected static T CreateInstance<T>(string clipId) where T : Component, IAudioPlayer
 		{
 			var player = new GameObject($"~TempPlayer_{clipId}").AddComponent<T>();
-			player.hideFlags = HideFlags.HideAndDontSave;
+			player.gameObject.hideFlags = HideFlags.HideAndDontSave;
 			player.Initialize();
 			return player;
 		}
@@ -82,7 +82,7 @@ namespace Charactr.VoiceSDK.Audio
 			_isPlaying = false;
 			
 			//Called from static method, destroy gameobject on Dispose
-			if (hideFlags == HideFlags.HideAndDontSave)
+			if (gameObject.hideFlags == HideFlags.HideAndDontSave)
 			{
 				Debug.Log($"Destroying AudioPlayer game object:{name}");
 				DestroyImmediate(gameObject, false);
