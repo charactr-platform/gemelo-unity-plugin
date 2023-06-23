@@ -4,16 +4,18 @@ using UnityEngine;
 namespace Charactr.VoiceSDK.Audio
 {
 	[RequireComponent(typeof(AudioSource))]
-	public abstract class AudioPlayerBase: MonoBehaviour, IDisposable 
+	public abstract class AudioPlayerBase: MonoBehaviour, IDisposable
 	{
+		public bool IsPlaying => _source.isPlaying;
+		
 		private AudioListener _listener;
 		private AudioSource _source;
-		private bool _isPlaying;
 		private WebGlAudioBufferProcessor _bufferProcessor;
 		private AverageProvider _averageProvider;
 		private float[] _sample;
 		private AudioClip _clip;
-		protected void Initialize(int samplesSize = 0)
+		
+		public void Initialize(int samplesSize = 0)
 		{
 			var size = samplesSize == 0 ? AverageProvider.SampleSize : samplesSize;
 			_sample = new float[size];
@@ -42,12 +44,11 @@ namespace Charactr.VoiceSDK.Audio
 #if UNITY_WEBGL && !UNITY_EDITOR
 			_bufferProcessor.StartSampling(clip, false);
 #endif
-			_isPlaying = clip.length > Mathf.Epsilon;
 		}
 		
-		protected float GetSampleAverage()
+		public float GetSampleAverage()
 		{
-			if (!_isPlaying)
+			if (!IsPlaying)
 				return 0;
 			
 		#if UNITY_WEBGL && !UNITY_EDITOR
@@ -58,15 +59,7 @@ namespace Charactr.VoiceSDK.Audio
 			
 			return _averageProvider.GetSampleAverage(_sample);
 		}
-
-		private void CheckAudioSource()
-		{
-			if (!_source.isPlaying)
-			{
-				Stop();
-			}
-		}
-
+		
 		public void Stop()
 		{
 			_source.Stop();
@@ -74,14 +67,14 @@ namespace Charactr.VoiceSDK.Audio
 #if UNITY_WEBGL && !UNITY_EDITOR
 			_bufferProcessor.StopSampling();
 #endif
-			
 		}
 		
 		public void Dispose()
 		{
-			_isPlaying = false;
+			if (IsPlaying)
+				Stop();
 			
-			//Called from static method, destroy gameobject on Dispose
+			//Called from static method, destroy GameObject on Dispose
 			if (gameObject.hideFlags == HideFlags.HideAndDontSave)
 			{
 				Debug.Log($"Destroying AudioPlayer game object:{name}");
