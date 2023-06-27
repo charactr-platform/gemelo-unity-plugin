@@ -11,15 +11,17 @@ namespace Charactr.VoiceSDK.Audio
 		private AudioListener _listener;
 		private AudioSource _source;
 		private WebGlAudioBufferProcessor _bufferProcessor;
-		private AverageProvider _averageProvider;
+		private IAverageProvider _averageProvider;
 		private float[] _sample;
 		private AudioClip _clip;
 		
-		public void Initialize(int samplesSize = 0)
+		public void Initialize(int samplesSize = 0, IAverageProvider averageProvider = null)
 		{
-			var size = samplesSize == 0 ? AverageProvider.SampleSize : samplesSize;
+			var size = samplesSize == 0 ? IAverageProvider.SampleSize : samplesSize;
 			_sample = new float[size];
-			_averageProvider = new AverageProvider();
+			
+			SetDefaultAverageProvider(averageProvider);
+			
 #if UNITY_WEBGL && !UNITY_EDITOR
 			_bufferProcessor = new WebGlAudioBufferProcessor(size);
 #endif
@@ -27,6 +29,14 @@ namespace Charactr.VoiceSDK.Audio
 				gameObject.AddComponent<AudioListener>();
 		}
 
+		private void SetDefaultAverageProvider(IAverageProvider averageProvider)
+		{
+			if (averageProvider == null)
+				_averageProvider = new AverageProvider();
+			else
+				_averageProvider = averageProvider;
+		}
+		
 		protected static T CreateInstance<T>(string clipId) where T : Component, IAudioPlayer
 		{
 			var player = new GameObject($"~TempPlayer_{clipId}").AddComponent<T>();
