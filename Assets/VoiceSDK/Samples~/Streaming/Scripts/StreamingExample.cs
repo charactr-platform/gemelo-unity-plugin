@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Charactr.VoiceSDK.Audio;
 using Charactr.VoiceSDK.Streaming;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,10 +15,15 @@ public class StreamingExample : MonoBehaviour
         public int VoiceId;
     }
 
+    [Header("Analysis")] 
+    [SerializeField, Range(0.2f, 1f)] private float boost = 0.75f;
+    [SerializeField] private int samplesPerFrame = 256;
+    [Header("UI references")]
     [SerializeField] private Text textToSpeechText;
     [SerializeField] private Text voiceIdText;
     [SerializeField] private Button startButton;
     [SerializeField] private Toggle autoplayToggle;
+    [SerializeField] private Slider analyzerSlider;
     
     [SerializeField] AudioStreamingManager streamingManager;
     [SerializeField] private List<VoiceDb> texts = new List<VoiceDb>()
@@ -29,6 +35,7 @@ public class StreamingExample : MonoBehaviour
         },
     };
 
+    private IAudioPlayer _audioPlayer;
     private void Awake()
     {
         startButton.onClick.AddListener(()=>StartCoroutine(StartVoiceStreaming()));
@@ -36,12 +43,32 @@ public class StreamingExample : MonoBehaviour
 
     IEnumerator StartVoiceStreaming()
     {
+        _audioPlayer = streamingManager.AudioPlayer;
+        _audioPlayer.Initialize(new AverageProvider(boost), samplesPerFrame);
+        
+        var buttonText = startButton.GetComponentInChildren<Text>();
         var count = autoplayToggle.isOn ? texts.Count : 1;
+        
+        buttonText.text = "STOP";
         
         for (int i = 0; i < count; i++)
         {
             Debug.Log("Play next: "+i);
             yield return PlayNext(i);
+        }
+        
+        buttonText.text = "START";
+    }
+
+    private void Update()
+    {
+        if (_audioPlayer != null && _audioPlayer.IsPlaying)
+        {
+            analyzerSlider.value = _audioPlayer.GetSampleAverage();
+        }
+        else
+        {
+            analyzerSlider.value = 0f;
         }
     }
 
