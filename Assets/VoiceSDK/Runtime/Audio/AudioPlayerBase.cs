@@ -7,6 +7,7 @@ namespace Charactr.VoiceSDK.Audio
 	public abstract class AudioPlayerBase: MonoBehaviour, IDisposable
 	{
 		public bool IsPlaying => _source.isPlaying;
+		public int TimeSamples => _source.timeSamples;
 		
 		private AudioListener _listener;
 		private AudioSource _source;
@@ -15,11 +16,12 @@ namespace Charactr.VoiceSDK.Audio
 		private float[] _sample;
 		private AudioClip _clip;
 		
-		public void Initialize(int samplesSize = 0, IAverageProvider averageProvider = null)
+		public void Initialize(IAverageProvider averageProvider = null, int samplesSize = 0)
 		{
 			var size = samplesSize == 0 ? IAverageProvider.SampleSize : samplesSize;
 			_sample = new float[size];
 			
+			TryGetComponent(out _source);
 			SetDefaultAverageProvider(averageProvider);
 			
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -45,15 +47,19 @@ namespace Charactr.VoiceSDK.Audio
 			return player;
 		}
 		
-		protected void Play(AudioClip clip)
+		protected void Play(AudioClip clip, bool stream = false)
 		{
-			TryGetComponent(out _source);
 			_source.clip = clip;
 			_source.Play();
 		
 #if UNITY_WEBGL && !UNITY_EDITOR
-			_bufferProcessor.StartSampling(clip, false);
+			_bufferProcessor.StartSampling(clip, stream);
 #endif
+		}
+
+		protected void PlayStream(AudioClip clip)
+		{
+			Play(clip, true);
 		}
 		
 		public float GetSampleAverage()

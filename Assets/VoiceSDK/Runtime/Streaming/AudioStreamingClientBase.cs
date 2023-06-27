@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Charactr.VoiceSDK.Audio;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -24,8 +22,6 @@ namespace Charactr.VoiceSDK.Streaming
 		private int _frameCount, _totalFramesRead;
 		private readonly Configuration _configuration;
 		private readonly WavDebugSave _debugSave;
-		private readonly AverageProvider _averageProvider;
-
 		private readonly Queue<PcmFrame> _pcmFrames;
 		private PcmFrame _currentPcmFrame;
 		
@@ -34,7 +30,6 @@ namespace Charactr.VoiceSDK.Streaming
 			_commands = new Queue<string>();
 			_dataQueue = new Queue<byte[]>();
 			_pcmFrames = new Queue<PcmFrame>();
-			_averageProvider = new AverageProvider();
 			_configuration = configuration;
 		}
 		protected void EnqueueCommand(string command)
@@ -121,7 +116,6 @@ namespace Charactr.VoiceSDK.Streaming
 			WavBuilder = new WavBuilder(header);
 #endif
 			
-			OnHeaderData(WavBuilder.SampleRate);
 		}
 
 		private void CreateNewPcmFrame()
@@ -182,17 +176,10 @@ namespace Charactr.VoiceSDK.Streaming
 		
 		public abstract void Connect();
 		protected abstract bool IsConnected();
-		public abstract void Play();
-
-		protected float GetSampleAverage(float[] sample)
-		{
-			return _averageProvider.GetSampleAverage(sample);
-		}
 		protected abstract void Send(string text);
-		protected abstract void OnPcmFrame(int frameIndex, PcmFrame pcmFrame);
-		protected abstract void OnHeaderData(int sampleRate);
 		public virtual void SendConvertCommand(string text) => Send(GetConvertCommand(text));
 		protected virtual void OnError(string obj) => Debug.LogError("Error: " + obj);
+		protected virtual void OnPcmFrame(int frameIndex, PcmFrame pcmFrame) { }
 
 		protected virtual void OnClose(string obj)
 		{

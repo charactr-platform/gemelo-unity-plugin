@@ -14,6 +14,16 @@ namespace Charactr.VoiceSDK.Audio
 			Play(clip);
 		}
 		
+		public void PlayClip(AudioClip clip, bool stream = false, IAverageProvider averageProvider = null, int samplesSize = 0 )
+		{
+			Initialize(averageProvider, samplesSize);
+			
+			if (stream)
+				PlayStream(clip);
+			else
+				Play(clip);
+		}
+		
 		public IEnumerator PlayClipRoutine(AudioClip clip,  float playbackTime = 0f)
 		{
 			var length = playbackTime > Mathf.Epsilon ? playbackTime : clip.length; 
