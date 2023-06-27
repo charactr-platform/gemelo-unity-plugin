@@ -8,15 +8,17 @@ namespace Charactr.VoiceSDK.Audio
 	[ExecuteInEditMode]
 	public class AudioPlayer : AudioPlayerBase, IAudioPlayer
 	{
+
 		public void PlayClip(AudioClip clip)
 		{
 			Initialize();
 			Play(clip);
 		}
 		
-		public void PlayClip(AudioClip clip, bool stream = false, IAverageProvider averageProvider = null, int samplesSize = 0 )
+		public void PlayClip(AudioClip clip, bool stream = false)
 		{
-			Initialize(averageProvider, samplesSize);
+			if (!IsInitialized)
+				throw new Exception("Please Initialize() player first");
 			
 			if (stream)
 				PlayStream(clip);

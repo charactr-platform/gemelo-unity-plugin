@@ -10,15 +10,16 @@ namespace Charactr.VoiceSDK.Streaming
     public class AudioStreamingManager: MonoBehaviour
     {
         public const string URL = "wss://api.charactr.com/v1/tts/stream/simplex/ws";
+        public IAudioPlayer AudioPlayer { get; private set; }
         public AudioClip AudioClip { get; private set; }
         public bool AudioEnd { get; private set; }
+        
         public event Action OnAudioEnd;
         public event Action OnAudioReady;
       
         [SerializeField] private int voiceId = 151;
 
         private IAudioStreamingClient _streamingClient;
-        private IAudioPlayer _audioPlayer;
         private Configuration _configuration;
         private Queue<Action> _actions;
 
@@ -28,8 +29,14 @@ namespace Charactr.VoiceSDK.Streaming
             
             if (_configuration == null)
                 throw new Exception("Can't load Configuration data");
+
+            AudioPlayer = GetComponent<AudioPlayer>();
+
+            if (AudioPlayer == null)
+                throw new Exception("Can't find required AudioPlayer component");
             
-            _audioPlayer = GetComponent<IAudioPlayer>();
+            //Default initialization for player voice analysis
+            AudioPlayer.Initialize();
         }
 
         public void SetVoiceId(int voice)
@@ -83,9 +90,9 @@ namespace Charactr.VoiceSDK.Streaming
 
         public IEnumerator Play()
         {
-            AudioEnd = false;
-            _audioPlayer.Initialize();
-            _audioPlayer.PlayClip(AudioClip);
+            AudioEnd = false; 
+            //Needs to be initialized before playing streams
+            AudioPlayer.PlayClip(AudioClip, true);
             yield return new WaitUntil(() => AudioEnd);
         }
 
@@ -100,13 +107,13 @@ namespace Charactr.VoiceSDK.Streaming
             if (!client.BufferingCompleted)
                 return false;
 
-            var playbackSamples = _audioPlayer.TimeSamples;
+            var playbackSamples = AudioPlayer.TimeSamples;
             var clipSamples = client.TimeSamples;
 
             if (playbackSamples < clipSamples)
                 return false;
             
-            _audioPlayer.Stop();
+            AudioPlayer.Stop();
             DisposeClient();
             OnAudioEnd?.Invoke();
             Debug.Log($"Playback finished [{playbackSamples}/{clipSamples}]");

@@ -6,8 +6,9 @@ namespace Charactr.VoiceSDK.Audio
 	[RequireComponent(typeof(AudioSource))]
 	public abstract class AudioPlayerBase: MonoBehaviour, IDisposable
 	{
-		public bool IsPlaying => _source.isPlaying;
-		public int TimeSamples => _source.timeSamples;
+		public bool IsInitialized => _source != null;
+		public bool IsPlaying => IsInitialized && _source.isPlaying;
+		public int TimeSamples => IsInitialized ? _source.timeSamples : 0;
 		
 		private AudioListener _listener;
 		private AudioSource _source;
@@ -16,19 +17,20 @@ namespace Charactr.VoiceSDK.Audio
 		private float[] _sample;
 		private AudioClip _clip;
 		
-		public void Initialize(IAverageProvider averageProvider = null, int samplesSize = 0)
+		public void Initialize(IAverageProvider averageProvider = null, int samplesSize = IAverageProvider.SampleSize)
 		{
-			var size = samplesSize == 0 ? IAverageProvider.SampleSize : samplesSize;
-			_sample = new float[size];
-			
-			TryGetComponent(out _source);
+			_sample = new float[samplesSize];
+		
 			SetDefaultAverageProvider(averageProvider);
 			
 #if UNITY_WEBGL && !UNITY_EDITOR
 			_bufferProcessor = new WebGlAudioBufferProcessor(size);
 #endif
+			
 			if (FindObjectOfType<AudioListener>() == null)
 				gameObject.AddComponent<AudioListener>();
+			
+			TryGetComponent(out _source);
 		}
 
 		private void SetDefaultAverageProvider(IAverageProvider averageProvider)
