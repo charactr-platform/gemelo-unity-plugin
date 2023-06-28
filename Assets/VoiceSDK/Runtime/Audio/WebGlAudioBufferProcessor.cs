@@ -28,7 +28,7 @@ namespace Charactr.VoiceSDK.Audio
 		private string _clipId;
 		private readonly int _sampleSize;
 		private readonly float[] _sample;
-		private bool _streaming;
+		private readonly bool _streaming;
 		public WebGlAudioBufferProcessor(int sampleSize, bool streaming)
 		{
 			_streaming = streaming;

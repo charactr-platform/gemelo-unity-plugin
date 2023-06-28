@@ -49,7 +49,7 @@ public class StreamingExample : MonoBehaviour
         var buttonText = startButton.GetComponentInChildren<Text>();
         var count = autoplayToggle.isOn ? texts.Count : 1;
         
-        buttonText.text = "STOP";
+        buttonText.text = "Playing...";
         
         for (int i = 0; i < count; i++)
         {
@@ -57,7 +57,7 @@ public class StreamingExample : MonoBehaviour
             yield return PlayNext(i);
         }
         
-        buttonText.text = "START";
+        buttonText.text = "Start";
     }
 
     private void Update()

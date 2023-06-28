@@ -47,7 +47,7 @@ var AmplitudeLib = {
         }
         else
         {
-           _free(pcmFramesBuffer.buffer);
+            _free(pcmFramesBuffer.buffer);
             pcmFramesBuffer.buffer = _malloc(allocationSize);
         }
        
@@ -55,7 +55,7 @@ var AmplitudeLib = {
         pcmFramesBuffer.stream = new Float32Array(bytes);
         pcmFramesBuffer.size = bufferSize;
         pcmFramesBuffer.samplesLength = 0;
-
+        pcmFramesBuffer.allocationSize = allocationSize;
         console.log("Streaming PCM frames buffer, size: "+bufferSize+", heap size: "+Module.HEAPU8.buffer.byteLength)
     },
 
@@ -183,8 +183,12 @@ var AmplitudeLib = {
         var analyzerName = UTF8ToString(uniqueName);
         var analyzerObj = analyzers[analyzerName];
         
-        if (typeof pcmFramesBuffer.frames != "undefined"){
-            delete pcmFramesBuffer.frames;
+        if (typeof pcmFramesBuffer.buffer != "undefined"){
+
+            var bytes = new Uint8Array(pcmFramesBuffer.buffer, pcmFramesBuffer.buffer.byteOffset, Float32Array.BYTES_PER_ELEMENT * pcmFramesBuffer.allocationSize);
+            pcmFramesBuffer.stream = new Float32Array(bytes);
+            pcmFramesBuffer.samplesLength = 0;
+      
             console.log("Cleared PcmFramesBuffer")
         }
 

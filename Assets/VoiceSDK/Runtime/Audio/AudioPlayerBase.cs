@@ -21,9 +21,8 @@ namespace Charactr.VoiceSDK.Audio
 		{
 			
 #if UNITY_WEBGL && !UNITY_EDITOR
-			_bufferProcessor = new WebGlAudioBufferProcessor(_sample.Length, streaming);
+			_bufferProcessor = new WebGlAudioBufferProcessor(samplesSize, streaming);
 #endif
-			
 			_sample = new float[samplesSize];
 			
 			SetDefaultAverageProvider(averageProvider);
@@ -56,13 +55,13 @@ namespace Charactr.VoiceSDK.Audio
 				throw new Exception("Player not initialized, Initialize() first");
 			
 			_source.clip = clip;
-			_source.clip.LoadAudioData();
+			
+			_source.Play();
+			
 #if UNITY_WEBGL && !UNITY_EDITOR
 			_bufferProcessor.StartSampling(clip);
 #endif
-			_source.Play();
 		}
-		
 		
 		public float GetSampleAverage()
 		{

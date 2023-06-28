@@ -97,9 +97,7 @@ namespace Charactr.VoiceSDK.Streaming
 
         public IEnumerator Play()
         {
-            AudioEnd = false; 
-            //Needs to be initialized before playing each stream
-            AudioPlayer.Initialize(true, _averageProvider, _samplesSize);
+            AudioEnd = false;
             AudioPlayer.Play(AudioClip);
             yield return new WaitUntil(() => AudioEnd);
         }

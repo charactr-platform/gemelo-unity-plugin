@@ -91,11 +91,16 @@ namespace Charactr.VoiceSDK.Streaming
 			
 			//WebGL needs first buffer before start of sampling
 			OnPcmFrame(_frameCount, frame);
+
+			//Buffer some data before we start audio play, 1 sec approx.
+			var startFrame = Mathf.RoundToInt((float) WavBuilder.SampleRate / frame.Samples.Length);
 			
-			//Buffer some data before we start audio play
-			if (_frameCount == 3)
+			if (_frameCount == startFrame)
+			{
+				Debug.Log($"Creating audio clip, buffered length: {AudioLength}sec.");
 				CreateAudioClip();
-			
+			}
+
 			_frameCount++;
 		}
 
