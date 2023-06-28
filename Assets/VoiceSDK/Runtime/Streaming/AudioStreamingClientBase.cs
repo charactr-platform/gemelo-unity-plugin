@@ -93,7 +93,7 @@ namespace Charactr.VoiceSDK.Streaming
 			OnPcmFrame(_frameCount, frame);
 			
 			//Buffer some data before we start audio play
-			if (_frameCount == 5)
+			if (_frameCount == 3)
 				CreateAudioClip();
 			
 			_frameCount++;

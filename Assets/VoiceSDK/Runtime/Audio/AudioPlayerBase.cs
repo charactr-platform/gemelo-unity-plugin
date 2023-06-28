@@ -17,15 +17,16 @@ namespace Charactr.VoiceSDK.Audio
 		private float[] _sample;
 		private AudioClip _clip;
 		
-		public void Initialize(IAverageProvider averageProvider = null, int samplesSize = IAverageProvider.SampleSize)
+		public void Initialize(bool streaming, IAverageProvider averageProvider = null, int samplesSize = IAverageProvider.SampleSize)
 		{
-			_sample = new float[samplesSize];
-		
-			SetDefaultAverageProvider(averageProvider);
 			
 #if UNITY_WEBGL && !UNITY_EDITOR
-			_bufferProcessor = new WebGlAudioBufferProcessor(size);
+			_bufferProcessor = new WebGlAudioBufferProcessor(_sample.Length, streaming);
 #endif
+			
+			_sample = new float[samplesSize];
+			
+			SetDefaultAverageProvider(averageProvider);
 			
 			if (FindObjectOfType<AudioListener>() == null)
 				gameObject.AddComponent<AudioListener>();
@@ -45,24 +46,23 @@ namespace Charactr.VoiceSDK.Audio
 		{
 			var player = new GameObject($"~TempPlayer_{clipId}").AddComponent<T>();
 			player.gameObject.hideFlags = HideFlags.HideAndDontSave;
-			player.Initialize();
+			player.Initialize(false);
 			return player;
 		}
 		
-		protected void Play(AudioClip clip, bool stream = false)
+		protected void Play(AudioClip clip)
 		{
+			if (!IsInitialized)
+				throw new Exception("Player not initialized, Initialize() first");
+			
 			_source.clip = clip;
-			_source.Play();
-		
+			_source.clip.LoadAudioData();
 #if UNITY_WEBGL && !UNITY_EDITOR
-			_bufferProcessor.StartSampling(clip, stream);
+			_bufferProcessor.StartSampling(clip);
 #endif
+			_source.Play();
 		}
-
-		protected void PlayStream(AudioClip clip)
-		{
-			Play(clip, true);
-		}
+		
 		
 		public float GetSampleAverage()
 		{

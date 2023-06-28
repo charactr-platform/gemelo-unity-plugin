@@ -43,8 +43,8 @@ public class StreamingExample : MonoBehaviour
 
     IEnumerator StartVoiceStreaming()
     {
-        _audioPlayer = streamingManager.AudioPlayer;
-        _audioPlayer.Initialize(new AverageProvider(boost), samplesPerFrame);
+        //Cache average provider settings, and sample size (smaller == faster update)
+        _audioPlayer = streamingManager.InitializePlayer(new AverageProvider(boost), samplesPerFrame);
         
         var buttonText = startButton.GetComponentInChildren<Text>();
         var count = autoplayToggle.isOn ? texts.Count : 1;
@@ -78,7 +78,7 @@ public class StreamingExample : MonoBehaviour
         
         textToSpeechText.text = $"Text: {current.Text}";
         voiceIdText.text = $"VoiceID: {current.VoiceId}";
-        
+     
         yield return StreamTextToSpeech(current.Text, current.VoiceId);
     }
 

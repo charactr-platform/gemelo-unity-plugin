@@ -21,31 +21,36 @@ namespace Charactr.VoiceSDK.Audio
 		public static extern int WebGL_GetBufferInstanceOfLastAudioClip();
 		
 		[DllImport("__Internal")]
-		private static extern void WebGL_FillBuffer(float[] array, int size, int index);
+		private static extern void WebGL_FillBuffer(float[] array, int size);
 		[DllImport("__Internal")]
 		private static extern bool WebGL_GetAmplitude(string uniqueName, float[] sample, int sampleSize);
 
 		private string _clipId;
 		private readonly int _sampleSize;
 		private readonly float[] _sample;
-		public WebGlAudioBufferProcessor(int sampleSize)
+		private bool _streaming;
+		public WebGlAudioBufferProcessor(int sampleSize, bool streaming)
 		{
+			_streaming = streaming;
 			_sampleSize = sampleSize;
 			_sample = new float[sampleSize];
 			
 			//Allocate heap memory buffer to fix buffer growth
 			//BUG: https://github.com/emscripten-core/emscripten/issues/6747
 			//TODO: Calculate approximate buffer size from letters used in text 
-			
-			var memAllocSize = int.MaxValue / 8; //~20mb
-			WebGL_Initialize(BufferSize, memAllocSize);
+
+			if (streaming)
+			{
+				var memAllocSize = int.MaxValue / 8; //~30mb
+				WebGL_Initialize(BufferSize, memAllocSize);
+			}
 		}
 
-		public void StartSampling(AudioClip clip, bool streaming = true)
+		public void StartSampling(AudioClip clip)
 		{
 			_clipId = clip.GetInstanceID().ToString();
 			var bufferIndex = WebGL_GetBufferInstanceOfLastAudioClip();
-			WebGL_StartSampling(_clipId, bufferIndex, _sampleSize, streaming);
+			WebGL_StartSampling(_clipId, bufferIndex, _sampleSize, _streaming);
 		}
 		public float[] GetSample()
 		{
@@ -53,9 +58,9 @@ namespace Charactr.VoiceSDK.Audio
 			return _sample;
 		}
 		
-		public static void OnPcmBuffer(int index, float[] buffer)
+		public static void OnPcmBuffer(float[] buffer)
 		{
-			WebGL_FillBuffer(buffer,  buffer.Length, index);
+			WebGL_FillBuffer(buffer,  buffer.Length);
 		}
 
 		public void StopSampling()
