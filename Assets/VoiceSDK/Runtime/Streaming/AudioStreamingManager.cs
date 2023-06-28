@@ -1,16 +1,19 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Charactr.VoiceSDK.Audio;
 using UnityEngine;
 
 namespace Charactr.VoiceSDK.Streaming
 {
-    [RequireComponent(typeof(AudioSource))]
+    [RequireComponent(typeof(AudioPlayer))]
     public class AudioStreamingManager: MonoBehaviour
     {
         public const string URL = "wss://api.charactr.com/v1/tts/stream/simplex/ws";
+        public IAudioPlayer AudioPlayer { get; private set; }
         public AudioClip AudioClip { get; private set; }
         public bool AudioEnd { get; private set; }
+        
         public event Action OnAudioEnd;
         public event Action OnAudioReady;
       
@@ -26,6 +29,14 @@ namespace Charactr.VoiceSDK.Streaming
             
             if (_configuration == null)
                 throw new Exception("Can't load Configuration data");
+
+            AudioPlayer = GetComponent<AudioPlayer>();
+
+            if (AudioPlayer == null)
+                throw new Exception("Can't find required AudioPlayer component");
+            
+            //Default initialization for player voice analysis
+            AudioPlayer.Initialize();
         }
 
         public void SetVoiceId(int voice)
@@ -48,13 +59,10 @@ namespace Charactr.VoiceSDK.Streaming
         {
             var url = URL + $"?voiceId={voiceId}";
             
-            var audioSource = GetComponent<AudioSource>();
-            audioSource.Stop();
-            
 #if UNITY_WEBGL && !UNITY_EDITOR
-            _streamingClient = new WebGlAudioStreamingClient(url, configuration, audioSource);
+            _streamingClient = new WebGlAudioStreamingClient(url, configuration);
 #else
-            _streamingClient = new DefaultAudioStreamingClient(url, configuration, audioSource);
+            _streamingClient = new DefaultAudioStreamingClient(url, configuration);
 #endif
             _streamingClient.Connect();
 
@@ -82,8 +90,9 @@ namespace Charactr.VoiceSDK.Streaming
 
         public IEnumerator Play()
         {
-            AudioEnd = false;
-            _streamingClient?.Play();
+            AudioEnd = false; 
+            //Needs to be initialized before playing streams
+            AudioPlayer.PlayClip(AudioClip, true);
             yield return new WaitUntil(() => AudioEnd);
         }
 
@@ -98,13 +107,13 @@ namespace Charactr.VoiceSDK.Streaming
             if (!client.BufferingCompleted)
                 return false;
 
-            var playbackSamples = client.AudioSource.timeSamples;
+            var playbackSamples = AudioPlayer.TimeSamples;
             var clipSamples = client.TimeSamples;
 
             if (playbackSamples < clipSamples)
                 return false;
             
-            client.AudioSource.Stop();
+            AudioPlayer.Stop();
             DisposeClient();
             OnAudioEnd?.Invoke();
             Debug.Log($"Playback finished [{playbackSamples}/{clipSamples}]");

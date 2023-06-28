@@ -53,7 +53,7 @@ namespace Charactr.VoiceSDK.Audio
 			return _sample;
 		}
 		
-		public void OnPcmBuffer(int index, float[] buffer)
+		public static void OnPcmBuffer(int index, float[] buffer)
 		{
 			WebGL_FillBuffer(buffer,  buffer.Length, index);
 		}

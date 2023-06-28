@@ -6,27 +6,41 @@ namespace Charactr.VoiceSDK.Audio
 	[RequireComponent(typeof(AudioSource))]
 	public abstract class AudioPlayerBase: MonoBehaviour, IDisposable
 	{
-		public bool IsPlaying => _source.isPlaying;
+		public bool IsInitialized => _source != null;
+		public bool IsPlaying => IsInitialized && _source.isPlaying;
+		public int TimeSamples => IsInitialized ? _source.timeSamples : 0;
 		
 		private AudioListener _listener;
 		private AudioSource _source;
 		private WebGlAudioBufferProcessor _bufferProcessor;
-		private AverageProvider _averageProvider;
+		private IAverageProvider _averageProvider;
 		private float[] _sample;
 		private AudioClip _clip;
 		
-		public void Initialize(int samplesSize = 0)
+		public void Initialize(IAverageProvider averageProvider = null, int samplesSize = IAverageProvider.SampleSize)
 		{
-			var size = samplesSize == 0 ? AverageProvider.SampleSize : samplesSize;
-			_sample = new float[size];
-			_averageProvider = new AverageProvider();
+			_sample = new float[samplesSize];
+		
+			SetDefaultAverageProvider(averageProvider);
+			
 #if UNITY_WEBGL && !UNITY_EDITOR
 			_bufferProcessor = new WebGlAudioBufferProcessor(size);
 #endif
+			
 			if (FindObjectOfType<AudioListener>() == null)
 				gameObject.AddComponent<AudioListener>();
+			
+			TryGetComponent(out _source);
 		}
 
+		private void SetDefaultAverageProvider(IAverageProvider averageProvider)
+		{
+			if (averageProvider == null)
+				_averageProvider = new AverageProvider();
+			else
+				_averageProvider = averageProvider;
+		}
+		
 		protected static T CreateInstance<T>(string clipId) where T : Component, IAudioPlayer
 		{
 			var player = new GameObject($"~TempPlayer_{clipId}").AddComponent<T>();
@@ -35,15 +49,19 @@ namespace Charactr.VoiceSDK.Audio
 			return player;
 		}
 		
-		protected void Play(AudioClip clip)
+		protected void Play(AudioClip clip, bool stream = false)
 		{
-			TryGetComponent(out _source);
 			_source.clip = clip;
 			_source.Play();
 		
 #if UNITY_WEBGL && !UNITY_EDITOR
-			_bufferProcessor.StartSampling(clip, false);
+			_bufferProcessor.StartSampling(clip, stream);
 #endif
+		}
+
+		protected void PlayStream(AudioClip clip)
+		{
+			Play(clip, true);
 		}
 		
 		public float GetSampleAverage()

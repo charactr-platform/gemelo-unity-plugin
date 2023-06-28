@@ -8,10 +8,22 @@ namespace Charactr.VoiceSDK.Audio
 	[ExecuteInEditMode]
 	public class AudioPlayer : AudioPlayerBase, IAudioPlayer
 	{
+
 		public void PlayClip(AudioClip clip)
 		{
 			Initialize();
 			Play(clip);
+		}
+		
+		public void PlayClip(AudioClip clip, bool stream = false)
+		{
+			if (!IsInitialized)
+				throw new Exception("Please Initialize() player first");
+			
+			if (stream)
+				PlayStream(clip);
+			else
+				Play(clip);
 		}
 		
 		public IEnumerator PlayClipRoutine(AudioClip clip,  float playbackTime = 0f)
