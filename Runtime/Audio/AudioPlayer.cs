@@ -8,17 +8,13 @@ namespace Charactr.VoiceSDK.Audio
 	[ExecuteInEditMode]
 	public class AudioPlayer : AudioPlayerBase, IAudioPlayer
 	{
-		public void PlayClip(AudioClip clip)
-		{
-			Initialize();
-			Play(clip);
-		}
-		
+		public new void Play(AudioClip clip) => base.Play(clip);
+
 		public IEnumerator PlayClipRoutine(AudioClip clip,  float playbackTime = 0f)
 		{
 			var length = playbackTime > Mathf.Epsilon ? playbackTime : clip.length; 
 			
-			PlayClip(clip);
+			Play(clip);
 			yield return new WaitForSecondsRealtime(length);
 		}
 		

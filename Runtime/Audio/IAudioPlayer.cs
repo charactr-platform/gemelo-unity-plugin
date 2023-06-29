@@ -5,9 +5,11 @@ namespace Charactr.VoiceSDK.Audio
 {
 	public interface IAudioPlayer
 	{
+		bool IsInitialized { get; }
 		bool IsPlaying { get; }
-		void Initialize(int sampleSize = 0);
-		void PlayClip(AudioClip clip);
+		int TimeSamples { get; }
+		void Initialize(bool streaming, IAverageProvider averageProvider = null, int sampleSize = IAverageProvider.SampleSize);
+		void Play(AudioClip clip);
 		IEnumerator PlayClipRoutine(AudioClip clip, float playbackLength = 0);
 		void Stop();
 		float GetSampleAverage();
