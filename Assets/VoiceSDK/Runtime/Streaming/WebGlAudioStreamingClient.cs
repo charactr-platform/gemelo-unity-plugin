@@ -22,8 +22,7 @@ namespace Charactr.VoiceSDK.Streaming
 		}
 		protected override void OnPcmFrame(int frameIndex, PcmFrame frame)
 		{
-			//Send buffer in with zero based index (Wav Header is frameIndex = 0)
-			WebGlAudioBufferProcessor.OnPcmBuffer(frameIndex - 1, frame.Samples);
+			WebGlAudioBufferProcessor.OnPcmBuffer(frame.Samples);
 		}
 		
 		public override void Connect()
@@ -33,11 +32,8 @@ namespace Charactr.VoiceSDK.Streaming
 		}
 
 		//Close stream manually
-
 		public override void Dispose()
 		{
-			_bufferProcessor.StopSampling();
-			
 			base.Dispose();
 			
 			if (Connected)

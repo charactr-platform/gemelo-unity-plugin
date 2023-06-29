@@ -20,6 +20,8 @@ namespace Charactr.VoiceSDK.Streaming
         [SerializeField] private int voiceId = 151;
 
         private IAudioStreamingClient _streamingClient;
+        private IAverageProvider _averageProvider;
+        private int _samplesSize;
         private Configuration _configuration;
         private Queue<Action> _actions;
 
@@ -34,14 +36,19 @@ namespace Charactr.VoiceSDK.Streaming
 
             if (AudioPlayer == null)
                 throw new Exception("Can't find required AudioPlayer component");
-            
-            //Default initialization for player voice analysis
-            AudioPlayer.Initialize();
         }
 
         public void SetVoiceId(int voice)
         {
             voiceId = voice;
+        }
+
+        public IAudioPlayer InitializePlayer(IAverageProvider provider, int samplesSize)
+        {
+            _averageProvider = provider;
+            _samplesSize = samplesSize;
+            AudioPlayer.Initialize(true, _averageProvider, _samplesSize);
+            return AudioPlayer;
         }
         
         public IEnumerator ConvertAndStartPlaying(string text)
@@ -90,9 +97,8 @@ namespace Charactr.VoiceSDK.Streaming
 
         public IEnumerator Play()
         {
-            AudioEnd = false; 
-            //Needs to be initialized before playing streams
-            AudioPlayer.PlayClip(AudioClip, true);
+            AudioEnd = false;
+            AudioPlayer.Play(AudioClip);
             yield return new WaitUntil(() => AudioEnd);
         }
 

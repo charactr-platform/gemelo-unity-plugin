@@ -39,7 +39,7 @@ var AmplitudeLib = {
         }
     },
 
-    WebGL_Initialize: function (bufferSize, allocationSize, sampleRate) {
+    WebGL_Initialize: function (bufferSize, allocationSize) {
         
         if (typeof pcmFramesBuffer.buffer == "undefined")
         {
@@ -47,7 +47,7 @@ var AmplitudeLib = {
         }
         else
         {
-           _free(pcmFramesBuffer.buffer);
+            _free(pcmFramesBuffer.buffer);
             pcmFramesBuffer.buffer = _malloc(allocationSize);
         }
        
@@ -55,19 +55,17 @@ var AmplitudeLib = {
         pcmFramesBuffer.stream = new Float32Array(bytes);
         pcmFramesBuffer.size = bufferSize;
         pcmFramesBuffer.samplesLength = 0;
-
-        console.log("PCM frames buffer ready, size: "+bufferSize+", heap size: "+Module.HEAPU8.buffer.byteLength)
+        pcmFramesBuffer.allocationSize = allocationSize;
+        console.log("Streaming PCM frames buffer, size: "+bufferSize+", heap size: "+Module.HEAPU8.buffer.byteLength)
     },
 
-    WebGL_FillBuffer: function (array, size, index) {
+    WebGL_FillBuffer: function (array, size) {
       
         var buffer = new Uint8Array(Module.HEAPU8.buffer, array, Float32Array.BYTES_PER_ELEMENT * size);
         var samples = new Float32Array(buffer.buffer, buffer.byteOffset, size);
 
         pcmFramesBuffer.stream.set(samples, pcmFramesBuffer.samplesLength);
         pcmFramesBuffer.samplesLength += samples.length;
-
-        console.log("Added buffer, total length: "+pcmFramesBuffer.samplesLength);
     },
    
     /** Create an analyzer and connect it to the audio source
@@ -185,8 +183,12 @@ var AmplitudeLib = {
         var analyzerName = UTF8ToString(uniqueName);
         var analyzerObj = analyzers[analyzerName];
         
-        if (typeof pcmFramesBuffer.frames != "undefined"){
-            delete pcmFramesBuffer.frames;
+        if (typeof pcmFramesBuffer.buffer != "undefined"){
+
+            var bytes = new Uint8Array(pcmFramesBuffer.buffer, pcmFramesBuffer.buffer.byteOffset, Float32Array.BYTES_PER_ELEMENT * pcmFramesBuffer.allocationSize);
+            pcmFramesBuffer.stream = new Float32Array(bytes);
+            pcmFramesBuffer.samplesLength = 0;
+      
             console.log("Cleared PcmFramesBuffer")
         }
 
