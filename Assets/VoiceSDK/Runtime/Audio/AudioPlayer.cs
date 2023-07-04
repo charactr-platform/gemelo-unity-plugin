@@ -5,6 +5,10 @@ using UnityEngine;
 
 namespace Charactr.VoiceSDK.Audio
 {
+	/// <summary>
+	/// Use AudioPlayer behaviour if 3D sound positioning is required, or if multiple
+	/// audio clips are being played with single instance.
+	/// </summary>
 	[ExecuteInEditMode]
 	public class AudioPlayer : AudioPlayerBase, IAudioPlayer
 	{
