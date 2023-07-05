@@ -18,19 +18,27 @@ namespace Charactr.VoiceSDK.Editor.Library
 			Initialized,
 			UpToDate,
 			NeedsUpdate,
-			Updating,
+			Download,
 		}
 		
-		public VisualElement Container { get; set; }
+		public VisualElement Container { get; private set; }
 		public PopupWindow PopupWindow { get; private set; }
 		public Button Button { get; set; }
-		public SerializedProperty Property { get; set; }
-		public SerializedProperty TextField { get; set; }
-		public SerializedProperty VoiceField { get; set; }
-		public SerializedProperty AudioClipField { get; set; }
+		public SerializedProperty Property { get; }
+		public SerializedProperty TextField { get; }
+		public SerializedProperty VoiceField { get; }
+		public SerializedProperty AudioClipField { get; }
 		public ItemState State { get; set; }
 
 		private int _lastHash;
+
+		public VoiceItemPropertyInstance(SerializedProperty property)
+		{
+			Property = property;
+			TextField = property.FindPropertyRelative("text");
+			VoiceField = property.FindPropertyRelative("voiceId");
+			AudioClipField = property.FindPropertyRelative("audioClip");
+		}
 		public override string ToString() => _lastHash.ToString();
 
 		private int CalculateCurrentHash()
@@ -40,56 +48,56 @@ namespace Charactr.VoiceSDK.Editor.Library
 
 		private ItemState CheckForState()
 		{
-			var clip = AudioClipField.objectReferenceValue as AudioClip;
+			AudioClip audioClip = null;
+
+			GetAudioClipInstance(out audioClip);
+			
 			var currentHash = CalculateCurrentHash();
 
-			if (clip == null)
+			if (audioClip == null)
 				return ItemState.NeedsUpdate;
 
-			if (currentHash != _lastHash)
+			if (currentHash.ToString() != audioClip.name)
 				return ItemState.NeedsUpdate;
 
 			return ItemState.UpToDate;
 		}
 
-		private void UpdateControlButtonStateToUpToDate()
+		private bool GetAudioClipInstance(out AudioClip audioClip)
 		{
-			var buttonLabel = Button.Q<Label>();
+			if (AudioClipField.objectReferenceValue is AudioClip clip)
+			{
+				audioClip = clip;
+				return true;
+			}
 
-			var clip = AudioClipField.objectReferenceValue as AudioClip;
-
-			buttonLabel.text = $"Play (duration {clip.length.ToString(CultureInfo.InvariantCulture)}s)";
-			AssignButtonOnClick(PlayAudioClip);
-
-			buttonLabel.AddToClassList("playIcon");
-			State = ItemState.UpToDate;
+			audioClip = null;
+			return false;
 		}
-
+		
 		private async void DownloadAudioClip()
 		{
-			var clip = AudioClipField.objectReferenceValue as AudioClip;
-			if (clip != null) RemoveOldClip(clip);
+			if (GetAudioClipInstance(out var audioClip))
+				RemoveOldClip(audioClip);
+
+			var field = PopupWindow.Q<PropertyField>();
+			field.visible = false;
 			
-			State = ItemState.Updating;
-			SetButtonLabelFromState();
-			
-			var voiceLibrary = Property.serializedObject.targetObject as VoiceLibrary;
-			await voiceLibrary.AddAudioClip(CalculateCurrentHash());
-			
-			UpdateControlsState();
+			State = ItemState.Download;
+			SetButtonFunctionFromState();
+
+			if (Property.serializedObject.targetObject is VoiceLibrary library)
+			{
+				await library.AddAudioClip(CalculateCurrentHash());
+				AudioClipField.serializedObject.Update();
+				UpdateState();
+				field.visible = true;
+			}
+			else
+				throw new Exception("Target object not set, or is not VoiceLibrary!");
 		}
-
-		private void UpdateControlButtonStateToNeedsUpdate()
-		{
-			var newFieldsHash = CalculateCurrentHash();
-
-			AssignButtonOnClick(DownloadAudioClip);
-
-			var fieldsUpdateOccured = _lastHash != newFieldsHash;
-			State = fieldsUpdateOccured ? ItemState.NeedsUpdate : ItemState.Updating;
-		}
-
-		private void SetButtonLabelFromState()
+		
+		private void SetButtonFunctionFromState()
 		{
 			var buttonLabel = Button.Q<Label>();
 			buttonLabel.RemoveFromClassList("warningIcon");
@@ -99,16 +107,27 @@ namespace Charactr.VoiceSDK.Editor.Library
 			switch (State)
 			{
 				case ItemState.UpToDate:
-					buttonLabel.text = "Play audio";
-					buttonLabel.AddToClassList("playIcon");
+					if (GetAudioClipInstance(out var clip))
+					{
+						buttonLabel.text = $"Play (duration {clip.length.ToString(CultureInfo.InvariantCulture)}s)";
+						buttonLabel.AddToClassList("playIcon");
+						AssignButtonOnClick(PlayAudioClip);
+					}
+					else
+						Debug.LogError("Can't find audio clip!");
+					
 					break;
+				
 				case ItemState.NeedsUpdate:
 					buttonLabel.text = "Update audio clip";
 					buttonLabel.AddToClassList("warningIcon");
+					AssignButtonOnClick(DownloadAudioClip);
 					break;
-				case ItemState.Updating:
-					buttonLabel.text = "Downloading";
+				
+				case ItemState.Download:
+					buttonLabel.text = "Downloading...";
 					buttonLabel.AddToClassList("cloudIcon");
+					AssignButtonOnClick(() => { Debug.Log("Download in progress"); });
 					break;
 			}
 		}
@@ -122,7 +141,12 @@ namespace Charactr.VoiceSDK.Editor.Library
 
 		private void PlayAudioClip()
 		{
-			var clip = AudioClipField.objectReferenceValue as AudioClip;
+			if (!GetAudioClipInstance(out var clip))
+			{
+				Debug.LogError("Can't play missing audio clip!");
+				return;
+			}
+
 			Debug.Log($"Playing:{clip.name}");
 			AudioPlayer.PlayClipStatic(clip);
 			EditorApplication.RepaintProjectWindow();
@@ -136,11 +160,11 @@ namespace Charactr.VoiceSDK.Editor.Library
 				AssetDatabase.DeleteAsset(path);
 				Debug.Log($"Removed old asset : {path}");
 				State = ItemState.NeedsUpdate;
-				UpdateControlsState();
+				UpdateState();
 			}
 		}
 
-		public void UpdateControlsState()
+		public void UpdateState()
 		{
 			//Ignore initial updates from Create...
 			if (State == ItemState.None)
@@ -149,18 +173,8 @@ namespace Charactr.VoiceSDK.Editor.Library
 			var newFieldsHash = CalculateCurrentHash();
 
 			State = CheckForState();
-
-			switch (State)
-			{
-				case ItemState.NeedsUpdate:
-					UpdateControlButtonStateToNeedsUpdate();
-					break;
-				case ItemState.UpToDate:
-					UpdateControlButtonStateToUpToDate();
-					break;
-			}
 			
-			SetButtonLabelFromState();
+			SetButtonFunctionFromState();
 
 			_lastHash = newFieldsHash;
 
@@ -187,8 +201,8 @@ namespace Charactr.VoiceSDK.Editor.Library
 			Container.Add(PopupWindow);
 
 			_lastHash = CalculateCurrentHash();
-			textField.RegisterValueChangedCallback((s) => UpdateControlsState());
-			voiceField.RegisterValueChangedCallback((s) => UpdateControlsState());
+			textField.RegisterValueChangedCallback((s) => UpdateState());
+			voiceField.RegisterValueChangedCallback((s) => UpdateState());
 
 			State = ItemState.Initialized;
 		}
@@ -196,7 +210,7 @@ namespace Charactr.VoiceSDK.Editor.Library
 		public void CreateWindow()
 		{
 			Container = new VisualElement();
-
+			
 			var noneStyle = new StyleColor(StyleKeyword.None);
 
 			PopupWindow = new PopupWindow
@@ -212,6 +226,8 @@ namespace Charactr.VoiceSDK.Editor.Library
 					borderRightColor = noneStyle,
 				}
 			};
+
+			Button = new Button();
 		}
 	}
 }
