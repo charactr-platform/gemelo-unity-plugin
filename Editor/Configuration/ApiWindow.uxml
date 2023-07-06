@@ -2,8 +2,8 @@
     <Style src="project://database/Assets/VoiceSDK/Editor/Configuration/ApiWindow.uss?fileID=7433441132597879392&amp;guid=004ac6047efd695459344016efd2d5f8&amp;type=3#ApiWindow" />
     <ui:GroupBox>
         <ui:IMGUIContainer name="LogoContainer" style="height: 42px; width: 327px; -unity-background-scale-mode: scale-to-fit; margin-top: 5px; margin-bottom: 5px; align-items: center; justify-content: center; -unity-text-align: upper-center; transform-origin: left top; margin-right: auto; margin-left: auto; background-image: none;" />
-        <ui:Button text="&lt;u&gt;api.charactr.com&lt;/u&gt;" display-tooltip-when-elided="true" name="LinkButton" tooltip="Visit api.character.com for account details" class="link" />
-        <ui:HelpBox text="Please visit api.charactr.com for account creation and available voices previews" message-type="Info" style="margin-top: 5px;" />
+        <ui:Button text="&lt;u&gt;https://charactr.com/studio&lt;/u&gt;" display-tooltip-when-elided="true" name="LinkButton" tooltip="Visit https://app.charactr.com for account details" class="link" />
+        <ui:HelpBox text="Please visit Voice Studio (https://charactr.com/studio) for account creation and available voices previews" message-type="Info" style="margin-top: 5px;" />
     </ui:GroupBox>
     <ui:GroupBox style="height: 102px;">
         <ui:Label text="Please provide Charactr API details:" display-tooltip-when-elided="true" name="Label" enable-rich-text="false" style="margin-bottom: 10px;" />
