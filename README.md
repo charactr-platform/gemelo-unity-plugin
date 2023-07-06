@@ -20,7 +20,7 @@ Please restart Unity Editor after package installation.
 - Mac/Windows
 - Android
 - iOS
-- WebGL (partially supported, TTS streaming issues)
+- WebGL (in beta, possible issues with text-to-speech streaming)
 
 
 ## Sample code
