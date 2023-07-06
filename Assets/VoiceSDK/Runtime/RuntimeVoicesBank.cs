@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Charactr.VoiceSDK.Audio;
 using Charactr.VoiceSDK.Library;
 using UnityEngine;
@@ -14,15 +16,17 @@ namespace Charactr.VoiceSDK
 
         private void Awake()
         {
-            
+            if (voiceLibrary == null)
+                throw new Exception("Please add VoiceLibrary item");
         }
 
         public void PlayLibraryVoice(int id)
         {
             if (voiceLibrary.GetAudioClipById(id, out var clip))
-            {
                 AudioPlayer.PlayClipStatic(clip);
-            }
         }
+
+        public List<VoiceItem> GetItems() => voiceLibrary.Items;
+        public int GetCount() => voiceLibrary.Items.Count;
     }
 }
