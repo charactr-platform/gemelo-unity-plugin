@@ -17,6 +17,11 @@
             "displayName": "Streaming Example",
             "description": "Contains example scene with tts streaming",
             "path": "Samples~/Streaming"
+        },
+		{
+            "displayName": "Convert Example",
+            "description": "Contains example of characters dialog scene, Voices Library usage and offline audio clips download using Convert API",
+            "path": "Samples~/Convert"
         }],
  "keywords": [
     "Voice",
