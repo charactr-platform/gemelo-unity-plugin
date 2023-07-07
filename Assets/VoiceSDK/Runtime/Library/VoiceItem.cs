@@ -54,16 +54,22 @@ namespace Charactr.VoiceSDK.Library
             using (var convert = new Convert())
             {
                 audioClip = await convert.ConvertToAudioClip(GetRequest());
+    #if UNITY_EDITOR
+                TryRemoveClip();
                 SaveInProject(convert);
+    #endif
             }
 
             Debug.Log($"Updated audio clip for voiceItem = {Id}");
             return AudioClip;
         }
-        
-        public void RemoveClip()
+
+#region Editor helpers
+
+    #if UNITY_EDITOR
+        public void TryRemoveClip()
         {
-#if UNITY_EDITOR
+
             if (audioClip == null)
                 return;
 
@@ -77,11 +83,10 @@ namespace Charactr.VoiceSDK.Library
 
             if (importer.userData.Equals(hash) && AssetDatabase.DeleteAsset(path))
                 Debug.Log($"Removed old asset : {path}");
-#endif
+
         }
         public void SaveInProject(Convert convert)
         {
-#if UNITY_EDITOR
             if (audioClip == null)
                 throw new Exception($"VoiceItem ({Id}) don't contains generated AudioClip");
 
@@ -104,7 +109,7 @@ namespace Charactr.VoiceSDK.Library
             audioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(filePath);
             SetClipHashData(audioClip);
             Debug.Assert(AudioClip != null);
-#endif
+
         }
         private void SetClipHashData(AudioClip clip)
 		{
@@ -115,6 +120,7 @@ namespace Charactr.VoiceSDK.Library
 			importer.userData = GetHashCode().ToString();
 			importer.SaveAndReimport();
 		}
-
+    #endif
+#endregion
     }
 }
