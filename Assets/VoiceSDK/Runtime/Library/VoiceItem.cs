@@ -61,7 +61,24 @@ namespace Charactr.VoiceSDK.Library
             return AudioClip;
         }
         
-    
+        public void RemoveClip()
+        {
+#if UNITY_EDITOR
+            if (audioClip == null)
+                return;
+
+            var path = AssetDatabase.GetAssetPath(audioClip);
+
+            if (string.IsNullOrEmpty(path))
+                return;
+            
+            var hash = GetHashCode().ToString();
+            var importer = AssetImporter.GetAtPath(path);
+
+            if (importer.userData.Equals(hash) && AssetDatabase.DeleteAsset(path))
+                Debug.Log($"Removed old asset : {path}");
+#endif
+        }
         public void SaveInProject(Convert convert)
         {
 #if UNITY_EDITOR
@@ -81,12 +98,23 @@ namespace Charactr.VoiceSDK.Library
 
             var filePath = $"{configuration.AudioSavePath}{Id}.wav";
             File.WriteAllBytes(filePath, data);
+            
             AssetDatabase.ImportAsset(filePath);
             Debug.Log($"Saved asset at: {filePath}");
             audioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(filePath);
+            SetClipHashData(audioClip);
             Debug.Assert(AudioClip != null);
 #endif
         }
+        private void SetClipHashData(AudioClip clip)
+		{
+			var path = AssetDatabase.GetAssetPath(clip);
+            
+			var importer = AssetImporter.GetAtPath(path);
+            
+			importer.userData = GetHashCode().ToString();
+			importer.SaveAndReimport();
+		}
 
     }
 }

@@ -90,6 +90,7 @@ namespace Charactr.VoiceSDK.Library
 
 			if (item.IsValid())
 			{
+				item.RemoveClip();
 				await item.GetAudioClip();
 			}
 			else
