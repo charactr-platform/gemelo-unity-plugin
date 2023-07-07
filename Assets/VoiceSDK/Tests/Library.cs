@@ -63,7 +63,7 @@ namespace Charactr.VoiceSDK.Tests
 		{
 			var library = Resources.Load<VoiceLibrary>("VoiceLibrary");
 			Assert.NotNull(library);
-			library.ConvertTextsToAudioClips();
+			library.ConvertTextsToAudioClips(null);
 		}
 	}
 }

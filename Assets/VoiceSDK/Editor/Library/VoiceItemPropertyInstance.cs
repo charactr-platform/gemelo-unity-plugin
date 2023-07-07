@@ -29,6 +29,8 @@ namespace Charactr.VoiceSDK.Editor.Library
 		public SerializedProperty VoiceField { get; }
 		public SerializedProperty AudioClipField { get; }
 		public ItemState State { get; set; }
+		public int Hash { get; private set; }
+		public SerializedProperty Id { get; }
 
 		private int _lastHash;
 
@@ -38,6 +40,8 @@ namespace Charactr.VoiceSDK.Editor.Library
 			TextField = property.FindPropertyRelative("text");
 			VoiceField = property.FindPropertyRelative("voiceId");
 			AudioClipField = property.FindPropertyRelative("audioClip");
+			Id = property.FindPropertyRelative("id");
+			Hash = property.GetHashCode();
 		}
 		public override string ToString() => _lastHash.ToString();
 
@@ -89,6 +93,9 @@ namespace Charactr.VoiceSDK.Editor.Library
 			if (Property.serializedObject.targetObject is VoiceLibrary library)
 			{
 				await library.AddAudioClip(CalculateCurrentHash());
+				
+				GetAudioClipInstance(out var newClip);
+				SetClipHashData(newClip);
 				AudioClipField.serializedObject.Update();
 				UpdateState();
 				field.visible = true;
@@ -152,16 +159,33 @@ namespace Charactr.VoiceSDK.Editor.Library
 			EditorApplication.RepaintProjectWindow();
 		}
 
+		private void SetClipHashData(AudioClip clip)
+		{
+			var path = AssetDatabase.GetAssetPath(clip);
+
+			if (string.IsNullOrEmpty(path))
+				return;
+			
+			var importer = AssetImporter.GetAtPath(path);
+			importer.userData = Hash.ToString();
+			importer.SaveAndReimport();
+		}
 		private void RemoveOldClip(AudioClip clip)
 		{
 			var path = AssetDatabase.GetAssetPath(clip);
-			if (!string.IsNullOrEmpty(path))
+
+			if (string.IsNullOrEmpty(path))
+				return;
+			
+			var importer = AssetImporter.GetAtPath(path);
+			if (importer.userData.Equals(Hash.ToString()))
 			{
 				AssetDatabase.DeleteAsset(path);
 				Debug.Log($"Removed old asset : {path}");
-				State = ItemState.NeedsUpdate;
-				UpdateState();
 			}
+			
+			State = ItemState.NeedsUpdate;
+			UpdateState();
 		}
 
 		public void UpdateState()

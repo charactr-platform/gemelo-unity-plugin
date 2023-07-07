@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: VoiceLibrary_PlayerTwo
   m_EditorClassIdentifier: 
   items:
-  - text: You can use this example setup as easy to use dialogue system
+  - text: You can use this example setup as easy to use dialogue system for game.
     voiceId: 161
-    audioClip: {fileID: 8300000, guid: 0dea4087ecd9348bead2f7168a573e11, type: 3}
+    audioClip: {fileID: 8300000, guid: a8f9e803e350b45eeb29091fb3a57f1c, type: 3}
   - text: This simple demonstration may help to start with our SDK, have fun!
     voiceId: 161
-    audioClip: {fileID: 8300000, guid: 6f1b82243eb674f978b94ca11a449e4e, type: 3}
+    audioClip: {fileID: 8300000, guid: 467af3a10c59d4b3289a04f837816df9, type: 3}
