@@ -6,7 +6,7 @@ This is the UPM package for the Charactr Voice SDK API.
 
 Install it via menu `Window/Package Manager->Add package from Git url` in Unity:
 ```
-https://github.com/charactr-platform/charactr-api-sdk-unity.git#v0.2.2
+https://github.com/charactr-platform/charactr-api-sdk-unity.git#v0.2.3
 ```
 Please restart Unity Editor after package installation.
 
