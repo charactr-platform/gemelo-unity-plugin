@@ -7,7 +7,7 @@ namespace Charactr.VoiceSDK.Editor.Configuration
     public class ApiWindow : EditorWindow
     {
         public VisualTreeAsset visualTreeAsset;
-        private const string API_URL = "https://api.charactr.com";
+        private const string STUDIO_URL = "https://charactr.com/studio";
         private TextField _keyField, _clientField;
         private IMGUIContainer _logoContainer;
         
@@ -35,7 +35,7 @@ namespace Charactr.VoiceSDK.Editor.Configuration
             saveButton.RegisterCallback<MouseUpEvent>((e)=> SaveConfiguration());
             
             var linkButton = root.Q<Button>("LinkButton");
-            linkButton.RegisterCallback<MouseUpEvent>((e)=> Application.OpenURL(API_URL));
+            linkButton.RegisterCallback<MouseUpEvent>((e)=> Application.OpenURL(STUDIO_URL));
 
             if (!VoiceSDK.Configuration.Exists())
                 return;
@@ -52,7 +52,7 @@ namespace Charactr.VoiceSDK.Editor.Configuration
             var key = _keyField.value;
 
             if (string.IsNullOrEmpty(client) || string.IsNullOrEmpty(key))
-                EditorUtility.DisplayDialog("Save error!", $"Please provide api details from {API_URL}", "OK");
+                EditorUtility.DisplayDialog("Save error!", $"Please provide api details from {STUDIO_URL}", "OK");
             
             VoiceSDK.Configuration.Save(client, key);
 
