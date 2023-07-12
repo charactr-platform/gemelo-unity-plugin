@@ -28,8 +28,11 @@ namespace Charactr.VoiceSDK.Library
             set => audioClip = value;
         }
 
-        public int Id => Mathf.Abs(text.GetHashCode() + voiceId);
-        
+        public int Id
+        {
+            get { return Mathf.Abs(text.GetHashCode() + voiceId); }
+        }
+
         [SerializeField] private string text;
         [SerializeField] private int voiceId;
         [SerializeField] private AudioClip audioClip;

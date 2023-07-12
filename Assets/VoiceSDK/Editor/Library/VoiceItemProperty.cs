@@ -14,8 +14,6 @@ namespace Charactr.VoiceSDK.Editor.Library
 			// Create a new VisualElement to be the root the property UI
 			instance.CreateWindow();
 			instance.RegisterVisualElements();
-			instance.PopupWindow.RegisterCallback<ClickEvent>((e) =>
-				EditorGUIUtility.systemCopyBuffer = instance.ToString());
 			instance.UpdateState();
 			// Return the finished UI
 			return instance.Container;
