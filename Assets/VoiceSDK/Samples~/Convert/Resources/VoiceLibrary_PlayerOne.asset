@@ -15,8 +15,8 @@ MonoBehaviour:
   items:
   - text: Hello from Character Voice SDK for Unity!
     voiceId: 151
-    audioClip: {fileID: 8300000, guid: 2b860516d41824e91b327aff93fff9aa, type: 3}
+    audioClip: {fileID: 8300000, guid: 637d33fae18b347d7afbe07b12fe37f8, type: 3}
   - text: Or even create much more advanced setups with different voices in single
-      library
+      library!
     voiceId: 151
-    audioClip: {fileID: 8300000, guid: 9ed6c1583b63b476bbd8cc17ef55602c, type: 3}
+    audioClip: {fileID: 8300000, guid: 149d13d5e073f4b8cb0adb339ec7f6e5, type: 3}

@@ -23,13 +23,17 @@ namespace Charactr.VoiceSDK.Editor.Library
 		
 		public VisualElement Container { get; private set; }
 		public PopupWindow PopupWindow { get; private set; }
-		public Button Button { get; set; }
+		public Button UpdateButton { get; set; }
+		public Button CopyIdButton { get; set; }
 		public SerializedProperty Property { get; }
 		public SerializedProperty TextField { get; }
 		public SerializedProperty VoiceField { get; }
 		public SerializedProperty AudioClipField { get; }
+		public IntegerField IdField { get; private set; }
+		public Label Label { get; private set; }
 		public ItemState State { get; set; }
-
+		public int Hash { get; private set; }
+		
 		private int _lastHash;
 
 		public VoiceItemPropertyInstance(SerializedProperty property)
@@ -38,12 +42,15 @@ namespace Charactr.VoiceSDK.Editor.Library
 			TextField = property.FindPropertyRelative("text");
 			VoiceField = property.FindPropertyRelative("voiceId");
 			AudioClipField = property.FindPropertyRelative("audioClip");
+			Hash = property.GetHashCode();
 		}
 		public override string ToString() => _lastHash.ToString();
 
 		private int CalculateCurrentHash()
 		{
-			return Mathf.Abs(TextField.stringValue.GetHashCode() + VoiceField.intValue);
+			var hash = Mathf.Abs(TextField.stringValue.GetHashCode() + VoiceField.intValue);
+			IdField.value = hash;
+			return hash;
 		}
 
 		private ItemState CheckForState()
@@ -77,10 +84,14 @@ namespace Charactr.VoiceSDK.Editor.Library
 		
 		private async void DownloadAudioClip()
 		{
-			if (GetAudioClipInstance(out var audioClip))
-				RemoveOldClip(audioClip);
+			if (GetAudioClipInstance(out _))
+			{
+				State = ItemState.NeedsUpdate;
+				UpdateState();
+			};
 
 			var field = PopupWindow.Q<PropertyField>();
+		
 			field.visible = false;
 			
 			State = ItemState.Download;
@@ -99,7 +110,7 @@ namespace Charactr.VoiceSDK.Editor.Library
 		
 		private void SetButtonFunctionFromState()
 		{
-			var buttonLabel = Button.Q<Label>();
+			var buttonLabel = UpdateButton.Q<Label>();
 			buttonLabel.RemoveFromClassList("warningIcon");
 			buttonLabel.RemoveFromClassList("cloudIcon");
 			buttonLabel.RemoveFromClassList("playIcon");
@@ -134,9 +145,9 @@ namespace Charactr.VoiceSDK.Editor.Library
 
 		private void AssignButtonOnClick(Action onClick)
 		{
-			Button.clickable.clicked -= DownloadAudioClip;
-			Button.clickable.clicked -= PlayAudioClip;
-			Button.clickable.clicked += onClick;
+			UpdateButton.clickable.clicked -= DownloadAudioClip;
+			UpdateButton.clickable.clicked -= PlayAudioClip;
+			UpdateButton.clickable.clicked += onClick;
 		}
 
 		private void PlayAudioClip()
@@ -151,18 +162,7 @@ namespace Charactr.VoiceSDK.Editor.Library
 			AudioPlayer.PlayClipStatic(clip);
 			EditorApplication.RepaintProjectWindow();
 		}
-
-		private void RemoveOldClip(AudioClip clip)
-		{
-			var path = AssetDatabase.GetAssetPath(clip);
-			if (!string.IsNullOrEmpty(path))
-			{
-				AssetDatabase.DeleteAsset(path);
-				Debug.Log($"Removed old asset : {path}");
-				State = ItemState.NeedsUpdate;
-				UpdateState();
-			}
-		}
+		
 
 		public void UpdateState()
 		{
@@ -178,26 +178,37 @@ namespace Charactr.VoiceSDK.Editor.Library
 
 			_lastHash = newFieldsHash;
 
-			PopupWindow.text = $"Voice item details [{_lastHash}] [{State}]";
+			PopupWindow.text = $"Voice item state: {State}";
 		}
 
 		public void RegisterVisualElements()
 		{
+			Label = new Label();
+			IdField = new IntegerField("ID");
+			IdField.isReadOnly = true;
+			
+			CopyIdButton.Add(new Label("Copy ID"));
+			CopyIdButton.clicked += ()=> EditorGUIUtility.systemCopyBuffer = ToString();
+			IdField.Add(CopyIdButton);
+			Label.Add(IdField);
+			
+			PopupWindow.Add(Label);
+			
 			var textField = new TextField("Text to voice", 500, true, false, ' ');
 			textField.BindProperty(TextField);
+
 			PopupWindow.Add(textField);
 
 			var voiceField = new IntegerField("Selected Voice Id");
 			voiceField.BindProperty(VoiceField);
-
 			PopupWindow.Add(voiceField);
-
-			var audioField = new PropertyField(AudioClipField, "Downloaded AudioClip");
+			
+			var audioField = new PropertyField(AudioClipField, "AudioClip");
 			PopupWindow.Add(audioField);
-
-			Button.Add(new Label("Control button"));
-			PopupWindow.Add(Button);
-
+			
+			UpdateButton.Add(new Label("Control button"));
+			PopupWindow.Add(UpdateButton);
+			
 			Container.Add(PopupWindow);
 
 			_lastHash = CalculateCurrentHash();
@@ -216,7 +227,6 @@ namespace Charactr.VoiceSDK.Editor.Library
 			PopupWindow = new PopupWindow
 			{
 				text = $"Voice item details [hash][state]",
-				tooltip = "Click to copy item ID into clipboard...",
 				style =
 				{
 					backgroundColor = noneStyle,
@@ -227,7 +237,8 @@ namespace Charactr.VoiceSDK.Editor.Library
 				}
 			};
 
-			Button = new Button();
+			UpdateButton = new Button();
+			CopyIdButton = new Button();
 		}
 	}
 }
