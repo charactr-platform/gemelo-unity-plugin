@@ -8,9 +8,9 @@ namespace Charactr.VoiceSDK.Streaming
 	public class DefaultAudioStreamingClient : AudioStreamingClientBase, IAudioStreamingClient
 	{
 		private readonly NativeSocketWrapper _socket;
-		public DefaultAudioStreamingClient(string url, Configuration configuration): base(configuration)
+		public DefaultAudioStreamingClient(string url, Configuration configuration, int samplingRate = 44100): base(configuration)
 		{
-			_socket = new NativeSocketWrapper(AddAudioFormat(url));
+			_socket = new NativeSocketWrapper(AddAudioFormat(url, samplingRate));
 			_socket.OnOpen += OnOpen;
 			_socket.OnClose += OnClose;
 			_socket.OnError += OnError;

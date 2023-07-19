@@ -13,7 +13,12 @@ namespace Charactr.VoiceSDK.Streaming
 		
 		public WebGlAudioStreamingClient(string url, Configuration configuration) : base(configuration)
 		{
-			_socket = new NativeWebSocket.WebSocket(AddAudioFormat(url));
+			var sampleRate = WebGlAudioBufferProcessor.GetSupportedSampleRate();
+
+			if (sampleRate == -1)
+				throw new Exception("Can't read sample rate from Browser AudioContext!");
+			
+			_socket = new NativeWebSocket.WebSocket(AddAudioFormat(url, sampleRate));
 			
 			_socket.OnOpen += OnOpen;
 			_socket.OnClose += code => OnClose(code.ToString());
