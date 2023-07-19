@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "com.unity.ide.rider": "3.0.22",
+    "com.unity.memoryprofiler": "0.7.1-preview.1",
     "com.unity.nuget.newtonsoft-json": "3.0.2",
     "com.unity.test-framework": "2.0.1-pre.18",
     "com.unity.textmeshpro": "3.0.6",
