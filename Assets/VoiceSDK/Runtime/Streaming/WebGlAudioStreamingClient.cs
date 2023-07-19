@@ -13,7 +13,7 @@ namespace Charactr.VoiceSDK.Streaming
 		
 		public WebGlAudioStreamingClient(string url, Configuration configuration) : base(configuration)
 		{
-			_socket = new NativeWebSocket.WebSocket(url);
+			_socket = new NativeWebSocket.WebSocket(AddAudioFormat(url));
 			
 			_socket.OnOpen += OnOpen;
 			_socket.OnClose += code => OnClose(code.ToString());

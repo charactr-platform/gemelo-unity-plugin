@@ -45,6 +45,11 @@ namespace Charactr.VoiceSDK.Streaming
 				_dataQueue.Enqueue(data);
 			}
 		}
+
+		protected string AddAudioFormat(string url, int samplingRate = 44100)
+		{
+			return url + $"&format=wav&sr={samplingRate}";
+		}
 		
 		public void DepleteBufferQueue()
 		{
@@ -100,7 +105,9 @@ namespace Charactr.VoiceSDK.Streaming
 				Debug.Log($"Creating audio clip, buffered length: {AudioLength}sec.");
 				CreateAudioClip();
 			}
-
+			
+			frame.Dispose();
+			
 			_frameCount++;
 		}
 
@@ -115,12 +122,7 @@ namespace Charactr.VoiceSDK.Streaming
 
 			CreateNewPcmFrame();
 			
-#if UNITY_EDITOR
 			WavBuilder = new WavBuilder(header);
-#else
-			WavBuilder = new WavBuilder(header);
-#endif
-			
 		}
 
 		private void CreateNewPcmFrame()

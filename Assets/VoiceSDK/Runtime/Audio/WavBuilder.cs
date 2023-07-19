@@ -17,15 +17,14 @@ namespace Charactr.VoiceSDK.Audio
 		private int _processedSamplesCount = 0;
 		private int _playbackPosition = 0;
 		private int _silenceSamplesCount = 0;
-		private readonly List<float> _samplesBuffer;
+		private List<float> _samplesBuffer;
 		private readonly WavDebugSave _debugSave;
 		private AudioClip _clip;
-		public WavBuilder(byte[] data, bool debug = false)
+		public WavBuilder(byte[] data)
 		{
 			_samplesBuffer = new List<float>();
 			_data = data;
 			_header = new WavHeaderData(data);
-			if (debug) _debugSave = new WavDebugSave(data);
 		}
 
 		public AudioClip CreateAudioClipStream(string name, int seconds = 30)
@@ -54,18 +53,8 @@ namespace Charactr.VoiceSDK.Audio
 			_processedSamplesCount += frame.Samples.Length;
 			_samplesBuffer.AddRange(frame.Samples);
 			var length = _processedSamplesCount / (_header.SampleRate * 1f);
-			
 			Debug.Log($"BufferAdd: [{frame.ByteSize}/{_lastBytesReadCount}]bytes [{frame.Samples.Length}/{_processedSamplesCount}]samples [{length}s]");
 			return length;
-		}
-		
-		public void WriteAudioClipDataToFile()
-		{
-			if (_debugSave != null)
-			{
-				_debugSave.ConvertAndWrite(_samplesBuffer.ToArray());
-				_debugSave.Close();
-			}
 		}
 		
 		private void PcmReaderCallback(float[] data)
@@ -97,6 +86,7 @@ namespace Charactr.VoiceSDK.Audio
 		
 		public void Dispose()
 		{
+			_samplesBuffer = null;
 			_debugSave?.Close();
 		}
 	}
