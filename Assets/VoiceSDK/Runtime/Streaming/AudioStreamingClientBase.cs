@@ -23,14 +23,15 @@ namespace Charactr.VoiceSDK.Streaming
 		private readonly Configuration _configuration;
 		private readonly WavDebugSave _debugSave;
 		private readonly Queue<PcmFrame> _pcmFrames;
+		private readonly int _maxClipLenght;
 		private PcmFrame _currentPcmFrame;
-		
-		protected AudioStreamingClientBase(Configuration configuration)
+		protected AudioStreamingClientBase(Configuration configuration, int maxClipLenght = 30)
 		{
 			_commands = new Queue<string>();
 			_dataQueue = new Queue<byte[]>();
 			_pcmFrames = new Queue<PcmFrame>();
 			_configuration = configuration;
+			_maxClipLenght = maxClipLenght;
 		}
 		protected void EnqueueCommand(string command)
 		{
@@ -46,8 +47,21 @@ namespace Charactr.VoiceSDK.Streaming
 			}
 		}
 
-		protected string AddAudioFormat(string url, int samplingRate = 44100)
+		protected static string AddAudioFormat(string url, int samplingRate = 44100)
 		{
+			switch (samplingRate)
+			{
+				//Some default sampling rate values
+				case 44100:
+				case 32000:
+				case 22050:
+					Debug.Log($"Sampling rate: {samplingRate}");
+					break;
+                
+				default:
+					throw new Exception("Can't set unsupported sampling rate");
+			}
+			
 			return url + $"&format=wav&sr={samplingRate}";
 		}
 		
@@ -135,7 +149,7 @@ namespace Charactr.VoiceSDK.Streaming
 		}
 		private void CreateAudioClip()
 		{
-			var clip = WavBuilder.CreateAudioClipStream("test");
+			var clip = WavBuilder.CreateAudioClipStream("test", _maxClipLenght);
 			
 			if (clip.LoadAudioData() == false)
 				throw new Exception("Data not loaded");

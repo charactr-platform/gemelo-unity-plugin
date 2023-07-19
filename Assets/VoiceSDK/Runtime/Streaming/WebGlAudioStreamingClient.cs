@@ -11,7 +11,7 @@ namespace Charactr.VoiceSDK.Streaming
 		private readonly GameObject _gameObject;
 		private WebGlAudioBufferProcessor _bufferProcessor;
 		
-		public WebGlAudioStreamingClient(string url, Configuration configuration) : base(configuration)
+		public WebGlAudioStreamingClient(string url, Configuration configuration, int maxLength = 30) : base(configuration, maxLength)
 		{
 			var sampleRate = WebGlAudioBufferProcessor.GetSupportedSampleRate();
 
