@@ -31,6 +31,13 @@ var AmplitudeLib = {
         return -1;
     },
     
+    WebGL_GetAudioContextSampleRate: function() {
+        if (WEBAudio && WEBAudio.audioContext.state == "running") {
+            return WEBAudio.audioContext.sampleRate;
+        }
+        return -1;
+    },
+    
     WebGL_Stats: function() {
         for (let index = 0; index <= WEBAudio.audioInstanceIdCounter; index++) {
     
