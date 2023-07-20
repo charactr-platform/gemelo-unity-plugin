@@ -6,7 +6,7 @@ This is the UPM package for the Charactr Voice SDK API.
 
 Install it via menu `Window/Package Manager->Add package from Git url` in Unity:
 ```
-https://github.com/charactr-platform/charactr-api-sdk-unity.git#v0.2.4
+https://github.com/charactr-platform/charactr-api-sdk-unity.git#v0.3.0
 ```
 Please restart Unity Editor after package installation.
 
@@ -14,13 +14,14 @@ Please restart Unity Editor after package installation.
 
 - Developed and tested on Unity 2021 LTS (2021.3.10)
 - Tested on Unity 2022 LTS (2022.3.1)
+- Tested on Unity 2023 (2023.1.5)
 
-## Platform support
+## Platform support (tested)
 
 - Mac/Windows
 - Android
 - iOS
-- WebGL (in beta, possible issues with text-to-speech streaming)
+- WebGL
 
 ## HowTo samples
 
