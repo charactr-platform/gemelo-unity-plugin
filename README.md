@@ -83,7 +83,7 @@ public class CreateVoiceLibraryInstance : MonoBehaviour
 
 This package contains two example scenes with both Convert API and Steaming API:
 
-<i>Use Tools/VoiceSDK/Configuration tool menu to provide API access keys first!</i>
+<i>Use top menu Tools->Gemelo.ai Voice->Configuration to provide API access keys first!</i>
 
 * Samples/[Streaming](https://github.com/charactr-platform/gemelo-unity-plugin/tree/main/Samples~/Streaming) - TTS realtime streaming example with different voices switching
 * Samples/[Convert](https://github.com/charactr-platform/gemelo-unity-plugin/tree/main/Samples~/Convert) - Convert API tools for offline audio clips and dialogue creation
