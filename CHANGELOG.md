@@ -4,8 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v1.0.1] - 2023-08-08
+- Fixed Resources folder creation on empty project
+- Minor documentation updates
+
 ## [v1.0.0] - 2023-08-03
-- Release of Gemelo.ai Voice SDK (formerly Charactr Voice SDK)
+- Release of Gemelo.ai Voice Plugin (formerly Charactr Voice SDK)
 
 ## [v0.3.1] - 2023-07-27
 - Added User-Agent headers for API requests
