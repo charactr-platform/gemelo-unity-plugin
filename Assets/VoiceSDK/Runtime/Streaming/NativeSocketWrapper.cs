@@ -71,7 +71,7 @@ namespace Charactr.VoiceSDK.Tests
 		
 		private async Task Dispatch()
 		{
-			var rcvBytes = new byte[1024 * 1024 * 1024];
+			var rcvBytes = new byte[1024 * 1024 * 10];
 			var rcvBuffer = new ArraySegment<byte>(rcvBytes);
 			WebSocketReceiveResult result = null;
 			
@@ -90,6 +90,10 @@ namespace Charactr.VoiceSDK.Tests
 				}
 			} 
 			while (result.CloseStatus == null);
+
+			rcvBytes = null;
+			rcvBuffer = null;
+			GC.Collect();
 			
 			if (result.CloseStatus == WebSocketCloseStatus.NormalClosure)
 			{
