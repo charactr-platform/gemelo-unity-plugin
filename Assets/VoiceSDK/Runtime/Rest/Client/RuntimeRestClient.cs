@@ -13,12 +13,10 @@ namespace Charactr.VoiceSDK.Rest.Client
 			var request = new UnityAudioConvertRequest(url, convertRequest);
 			request.AddHeader(Configuration.API_CLIENT, ClientKey);
 			request.AddHeader(Configuration.API_KEY, APIKey);
+			request.AddHeader("user-agent", Configuration.USER_AGENT);
 			return request;
 		}
 		
-		public void Dispose()
-		{
-			
-		}
+		public void Dispose() { }
 	}
 }
