@@ -19,6 +19,8 @@ namespace Charactr.VoiceSDK.Tests
 		private async Task<ClientWebSocket> GetClient(int voiceId = 151)
 		{
 			var ws = new ClientWebSocket();
+			ws.Options.SetRequestHeader("user-agent", Configuration.USER_AGENT);
+			
 			var serverUri = new Uri(AudioStreamingManager.URL + $"?voiceId={voiceId}");
 			var source = new CancellationTokenSource();
 			source.CancelAfter(Timeout);
