@@ -18,7 +18,7 @@ namespace Charactr.VoiceSDK.Rest.Client
 			_client = new HttpClient();
 			_client.DefaultRequestHeaders.Add(Configuration.API_CLIENT, ClientKey);
 			_client.DefaultRequestHeaders.Add(Configuration.API_KEY, APIKey);
-			_client.DefaultRequestHeaders.UserAgent.Add(ProductInfoHeaderValue.Parse("Charactr.Unity.SDK"));
+			_client.DefaultRequestHeaders.UserAgent.ParseAdd(Configuration.USER_AGENT);
 		}
 		
 		public async Task<T> GetAsync<T>(string url) where T: IAPIResponse

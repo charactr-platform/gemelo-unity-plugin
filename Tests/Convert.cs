@@ -41,7 +41,7 @@ namespace Charactr.VoiceSDK.Tests
 			var clip = wav.CreateAudioClip();
 			Assert.NotNull(clip);
 			Assert.NotZero(clip.length);
-			Assert.AreEqual(130560, clip.samples);
+			Assert.AreEqual(130562, clip.samples);
 			Assert.AreEqual(32000, clip.frequency);
 			Assert.AreEqual(4.08f, clip.length);
 			

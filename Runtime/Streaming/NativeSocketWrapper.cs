@@ -24,6 +24,8 @@ namespace Charactr.VoiceSDK.Tests
 		public NativeSocketWrapper(string url, int timeout = 5000)
 		{
 			_ws = new ClientWebSocket();
+			_ws.Options.SetRequestHeader("user-agent", Configuration.USER_AGENT);
+			
 			_uri = new Uri(url);
 			_token = new CancellationTokenSource();
 			_token.CancelAfter(timeout);

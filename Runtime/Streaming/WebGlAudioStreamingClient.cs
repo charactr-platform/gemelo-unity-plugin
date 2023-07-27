@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Charactr.VoiceSDK.Audio;
 using NativeWebSocket;
 using UnityEngine;
@@ -18,8 +19,13 @@ namespace Charactr.VoiceSDK.Streaming
 			if (sampleRate == -1)
 				throw new Exception("Can't read sample rate from Browser AudioContext!");
 			
-			_socket = new NativeWebSocket.WebSocket(AddAudioFormat(url, sampleRate));
+			var header = new Dictionary<string, string>()
+			{
+				{"user-agent", Configuration.USER_AGENT}
+			};
 			
+			_socket = new NativeWebSocket.WebSocket(AddAudioFormat(url, sampleRate), header);
+	
 			_socket.OnOpen += OnOpen;
 			_socket.OnClose += code => OnClose(code.ToString());
 			_socket.OnError += OnError;

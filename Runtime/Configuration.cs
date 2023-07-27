@@ -1,19 +1,19 @@
 ﻿using System;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Windows;
 
 namespace Charactr.VoiceSDK
 {
 	public class Configuration : ScriptableObject
 	{
+		public const string API = "https://api.charactr.com/v1/tts/";
+		public const string USER_AGENT = "sdk-unity";
 		public const string API_CLIENT = "X-Client-Key";
 		public const string API_KEY = "X-Api-Key";
-		
-		public const string API = "https://api.charactr.com/v1/tts/";
-		private const string FILENAME = "Configuration";
 		public const string SAVE_PATH = "Assets/Resources/"+FILENAME+".asset";
-		
+
+		private const string FILENAME = "Configuration";
+
 		public string ApiClient
 		{
 			get => apiClient;
