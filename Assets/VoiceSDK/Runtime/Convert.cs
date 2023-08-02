@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Charactr.VoiceSDK.Audio;
-using Charactr.VoiceSDK.Rest;
-using Charactr.VoiceSDK.Rest.Client;
-using Charactr.VoiceSDK.Rest.Model;
+using gemelo.VoiceSDK.Audio;
+using gemelo.VoiceSDK.Rest;
+using gemelo.VoiceSDK.Rest.Client;
+using gemelo.VoiceSDK.Rest.Model;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK
+namespace gemelo.VoiceSDK
 {
 	/// <summary>
-	/// Base class to utilize Charactr API
+	/// Base class to utilize gemelo.ai API
 	/// </summary>
 	public class Convert: IConvert, IDisposable
 	{
@@ -23,10 +23,7 @@ namespace Charactr.VoiceSDK
 			var configuration = Configuration.Load();
 			
 			if (configuration == null)
-			{
-				//ApiConfigurationWindow.ShowWindow();
 				return;
-			}
 
 			Configuration = configuration;
 			
@@ -53,7 +50,7 @@ namespace Charactr.VoiceSDK
 			
 			ValidateRequest(convertRequest);
 				
-			var wavData = await _client.PostAsync(Configuration.CONVERT_API + "convert", convertRequest.ToJson());
+			var wavData = await _client.PostAsync(Configuration.CONVERT_API, convertRequest.ToJson());
 			
 			if (wavData.Length == 0)
 				throw new Exception("Can't download requested WAV data");
@@ -63,6 +60,12 @@ namespace Charactr.VoiceSDK
 			return new WavBuilder(wavData).CreateAudioClip();
 		}
 
+		/// <summary>
+		/// Allows to convert text to voice in runtime where async operations are problematic (WebGL)
+		/// </summary>
+		/// <param name="convertRequest">Request object, filled with text data and selected VoiceID integer</param>
+		/// <returns>Returns AudioClip object that can be used in AudioSource.clip property.</returns>
+		/// <exception cref="Exception">Throws exception when data can't be downloaded, ie. network error</exception>
 		public UnityAudioConvertRequest ConvertToAudioClipRuntime(ConvertRequest convertRequest)
 		{
 			if (_client == null)
@@ -72,7 +75,7 @@ namespace Charactr.VoiceSDK
 			
 			var runtimeRest = new RuntimeRestClient(Configuration);
 
-			return runtimeRest.GetAudioClipRequest(Configuration.CONVERT_API + "convert", convertRequest);
+			return runtimeRest.GetAudioClipRequest(Configuration.CONVERT_API, convertRequest);
 		}
 
 		private void ValidateRequest(ConvertRequest request)

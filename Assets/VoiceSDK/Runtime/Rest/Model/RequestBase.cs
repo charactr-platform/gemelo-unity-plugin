@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Charactr.VoiceSDK.Rest.Model
+namespace gemelo.VoiceSDK.Rest.Model
 {
 	public class RequestBase
 	{

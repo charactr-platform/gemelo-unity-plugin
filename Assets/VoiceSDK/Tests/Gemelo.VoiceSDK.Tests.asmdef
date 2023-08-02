@@ -1,11 +1,11 @@
 {
-    "name": "Charactr.VoiceSDK.Tests",
+    "name": "Gemelo.VoiceSDK.Tests",
     "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "Charactr.VoiceSDK",
-        "Charactr.VoiceSDK.Audio"
+        "Gemelo.VoiceSDK",
+        "Gemelo.VoiceSDK.Audio"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

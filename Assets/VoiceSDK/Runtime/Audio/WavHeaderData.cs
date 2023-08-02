@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace Charactr.VoiceSDK.Audio
+namespace gemelo.VoiceSDK.Audio
 {
 	public struct WavHeaderData
 	{

@@ -1,13 +1,11 @@
 {
-    "name": "Charactr.VoiceSDK.Editor",
+    "name": "Gemelo.VoiceSDK",
     "rootNamespace": "",
     "references": [
-        "GUID:837a4f6d680c2d147b8cc4a26af9a07e",
+        "GUID:04376767bc1f3b428aefa3d20743e819",
         "GUID:703643d4954c1b741948dd3d1acea324"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

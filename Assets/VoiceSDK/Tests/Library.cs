@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
-using Charactr.VoiceSDK.Library;
+using gemelo.VoiceSDK.Library;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Tests
+namespace gemelo.VoiceSDK.Tests
 {
 	public class Library
 	{

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Audio
+namespace gemelo.VoiceSDK.Audio
 {
 	public interface IAudioPlayer
 	{

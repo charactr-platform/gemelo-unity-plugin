@@ -3,12 +3,12 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Charactr.VoiceSDK.Streaming;
+using gemelo.VoiceSDK.Streaming;
 using NUnit.Framework;
 using UnityEngine;
 using Task = System.Threading.Tasks.Task;
 
-namespace Charactr.VoiceSDK.Tests
+namespace gemelo.VoiceSDK.Tests
 {
 	public class Streaming
 	{

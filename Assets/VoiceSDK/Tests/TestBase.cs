@@ -1,10 +1,9 @@
-using Charactr.VoiceSDK.Rest;
-using Charactr.VoiceSDK.Rest.Client;
-using Charactr.VoiceSDK.Rest.Model;
+using gemelo.VoiceSDK.Rest.Client;
+using gemelo.VoiceSDK.Rest.Model;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Tests
+namespace gemelo.VoiceSDK.Tests
 {
 	public class TestBase
 	{

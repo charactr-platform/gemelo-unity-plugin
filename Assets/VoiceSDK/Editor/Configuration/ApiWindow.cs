@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Charactr.VoiceSDK.Editor.Configuration
+namespace gemelo.VoiceSDK.Editor.Configuration
 {
     public class ApiWindow : EditorWindow
     {

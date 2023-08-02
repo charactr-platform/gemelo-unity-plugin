@@ -1,9 +1,7 @@
-﻿using System;
-using Charactr.VoiceSDK.Audio;
-using Charactr.VoiceSDK.Tests;
+﻿using gemelo.VoiceSDK.Audio;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Streaming
+namespace gemelo.VoiceSDK.Streaming
 {
 	public class DefaultAudioStreamingClient : AudioStreamingClientBase, IAudioStreamingClient
 	{

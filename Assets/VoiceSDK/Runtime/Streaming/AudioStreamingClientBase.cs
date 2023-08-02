@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Charactr.VoiceSDK.Audio;
+using gemelo.VoiceSDK.Audio;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Streaming
+namespace gemelo.VoiceSDK.Streaming
 {
 	public abstract class AudioStreamingClientBase
 	{

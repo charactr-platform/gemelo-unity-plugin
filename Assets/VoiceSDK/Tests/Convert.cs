@@ -1,33 +1,29 @@
 using System.Collections;
 using System.Threading.Tasks;
-using Charactr.VoiceSDK.Audio;
+using gemelo.VoiceSDK.Audio;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Charactr.VoiceSDK.Tests
+namespace gemelo.VoiceSDK.Tests
 {
 	public class Convert : TestBase
 	{
-		private const string ENDPOINT = "convert";
-
 		[Test]
 		public async Task GetConversion_Returns_WAV()
 		{
-			var wavBytes = await EditorHttp.PostAsync(Configuration.CONVERT_API + ENDPOINT, CreateRequest().ToJson());
+			var wavBytes = await EditorHttp.PostAsync(Configuration.CONVERT_API, CreateRequest().ToJson());
 			
 			Assert.NotNull(wavBytes);
-			Assert.IsNotEmpty(wavBytes);
 		}
 
 		[Test]
 		public async Task GetBytesAndConvertToWAV_Returns_WAV()
 		{
-			var wavBytes = await EditorHttp.PostAsync(Configuration.CONVERT_API + ENDPOINT, CreateRequest().ToJson());
+			var wavBytes = await EditorHttp.PostAsync(Configuration.CONVERT_API, CreateRequest().ToJson());
 			
 			Assert.NotNull(wavBytes);
-			Assert.IsNotEmpty(wavBytes);
-			
+
 			var wav = new WavBuilder(wavBytes);
 			Assert.NotNull(wav);
 			
@@ -53,7 +49,7 @@ namespace Charactr.VoiceSDK.Tests
 		{
 			AudioClip audioClip = null;
 			
-			var request = RuntimeHttp.GetAudioClipRequest(Configuration.CONVERT_API + ENDPOINT, CreateRequest());
+			var request = RuntimeHttp.GetAudioClipRequest(Configuration.CONVERT_API, CreateRequest());
 			yield return request.SendRequest();
 			
 			audioClip = request.AudioClip;

@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using Charactr.VoiceSDK.Rest.Model;
+using gemelo.VoiceSDK.Rest.Model;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Rest
+namespace gemelo.VoiceSDK.Rest
 {
 	public interface IConvert
 	{

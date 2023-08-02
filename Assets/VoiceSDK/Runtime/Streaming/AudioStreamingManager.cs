@@ -1,11 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Charactr.VoiceSDK.Audio;
+using gemelo.VoiceSDK.Audio;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Streaming
+namespace gemelo.VoiceSDK.Streaming
 {
+    /// <summary>
+    /// Base utility class for Audio Streaming
+    /// </summary>
     [RequireComponent(typeof(AudioPlayer))]
     public class AudioStreamingManager: MonoBehaviour
     {
