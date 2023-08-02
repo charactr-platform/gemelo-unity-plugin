@@ -14,7 +14,7 @@ namespace Charactr.VoiceSDK.Tests
 		[Test]
 		public async Task GetConversion_Returns_WAV()
 		{
-			var wavBytes = await EditorHttp.PostAsync(Configuration.API + ENDPOINT, CreateRequest().ToJson());
+			var wavBytes = await EditorHttp.PostAsync(Configuration.CONVERT_API + ENDPOINT, CreateRequest().ToJson());
 			
 			Assert.NotNull(wavBytes);
 			Assert.IsNotEmpty(wavBytes);
@@ -23,7 +23,7 @@ namespace Charactr.VoiceSDK.Tests
 		[Test]
 		public async Task GetBytesAndConvertToWAV_Returns_WAV()
 		{
-			var wavBytes = await EditorHttp.PostAsync(Configuration.API + ENDPOINT, CreateRequest().ToJson());
+			var wavBytes = await EditorHttp.PostAsync(Configuration.CONVERT_API + ENDPOINT, CreateRequest().ToJson());
 			
 			Assert.NotNull(wavBytes);
 			Assert.IsNotEmpty(wavBytes);
@@ -53,7 +53,7 @@ namespace Charactr.VoiceSDK.Tests
 		{
 			AudioClip audioClip = null;
 			
-			var request = RuntimeHttp.GetAudioClipRequest(Configuration.API + ENDPOINT, CreateRequest());
+			var request = RuntimeHttp.GetAudioClipRequest(Configuration.CONVERT_API + ENDPOINT, CreateRequest());
 			yield return request.SendRequest();
 			
 			audioClip = request.AudioClip;

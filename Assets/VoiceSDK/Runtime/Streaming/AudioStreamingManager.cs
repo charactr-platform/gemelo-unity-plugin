@@ -9,7 +9,6 @@ namespace Charactr.VoiceSDK.Streaming
     [RequireComponent(typeof(AudioPlayer))]
     public class AudioStreamingManager: MonoBehaviour
     {
-        public const string URL = "wss://api.charactr.com/v1/tts/stream/simplex/ws";
         public IAudioPlayer AudioPlayer { get; private set; }
         public AudioClip AudioClip { get; private set; }
         public bool AudioEnd { get; private set; }
@@ -60,7 +59,7 @@ namespace Charactr.VoiceSDK.Streaming
 
         private IEnumerator CreateClientInstance(string text, Configuration configuration)
         {
-            var url = URL + $"?voiceId={voiceId}";
+            var url = Configuration.STREAMING_API + $"?voiceId={voiceId}";
             
 #if UNITY_WEBGL && !UNITY_EDITOR
             _streamingClient = new WebGlAudioStreamingClient(url, configuration, _maxLenght);

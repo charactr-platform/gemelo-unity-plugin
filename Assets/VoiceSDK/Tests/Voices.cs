@@ -11,7 +11,7 @@ namespace Charactr.VoiceSDK.Tests
         [Test]
         public async Task GetVoices_Returns_OK()
         {
-            var voices = await EditorHttp.GetAsync<VoicesResponse>(Configuration.API + ENDPOINT);
+            var voices = await EditorHttp.GetAsync<VoicesResponse>(Configuration.CONVERT_API + ENDPOINT);
             Assert.NotNull(voices);
             Assert.IsNotEmpty(voices);
         }

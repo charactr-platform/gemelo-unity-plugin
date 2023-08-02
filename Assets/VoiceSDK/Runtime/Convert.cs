@@ -53,7 +53,7 @@ namespace Charactr.VoiceSDK
 			
 			ValidateRequest(convertRequest);
 				
-			var wavData = await _client.PostAsync(Configuration.API + "convert", convertRequest.ToJson());
+			var wavData = await _client.PostAsync(Configuration.CONVERT_API + "convert", convertRequest.ToJson());
 			
 			if (wavData.Length == 0)
 				throw new Exception("Can't download requested WAV data");
@@ -72,7 +72,7 @@ namespace Charactr.VoiceSDK
 			
 			var runtimeRest = new RuntimeRestClient(Configuration);
 
-			return runtimeRest.GetAudioClipRequest(Configuration.API + "convert", convertRequest);
+			return runtimeRest.GetAudioClipRequest(Configuration.CONVERT_API + "convert", convertRequest);
 		}
 
 		private void ValidateRequest(ConvertRequest request)

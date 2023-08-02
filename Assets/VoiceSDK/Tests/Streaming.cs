@@ -21,7 +21,7 @@ namespace Charactr.VoiceSDK.Tests
 			var ws = new ClientWebSocket();
 			ws.Options.SetRequestHeader("user-agent", Configuration.USER_AGENT);
 			
-			var serverUri = new Uri(AudioStreamingManager.URL + $"?voiceId={voiceId}");
+			var serverUri = new Uri(Configuration.STREAMING_API + $"?voiceId={voiceId}");
 			var source = new CancellationTokenSource();
 			source.CancelAfter(Timeout);
 
@@ -126,7 +126,7 @@ namespace Charactr.VoiceSDK.Tests
 			var authCommand = AudioStreamingClientBase.GetAuthCommand(_configuration.ApiKey, _configuration.ApiClient);
 			var convertCommand = AudioStreamingClientBase.GetConvertCommand(Text);
 			
-			var w = new NativeSocketWrapper(AudioStreamingManager.URL + $"?voiceId={VoiceId}");
+			var w = new NativeSocketWrapper(Configuration.STREAMING_API + $"?voiceId={VoiceId}");
 			
 			w.OnData += bytes =>
 			{
@@ -169,7 +169,7 @@ namespace Charactr.VoiceSDK.Tests
 				var bytesCount = 0;
 				var start =  DateTimeOffset.Now;
 				
-				var w = new NativeSocketWrapper(AudioStreamingManager.URL + $"?voiceId={VoiceId}");
+				var w = new NativeSocketWrapper(Configuration.STREAMING_API+ $"?voiceId={VoiceId}");
 				
 				w.OnData += bytes =>
 				{
