@@ -7,15 +7,16 @@ namespace Charactr.VoiceSDK.Editor.Configuration
     public class ApiWindow : EditorWindow
     {
         public VisualTreeAsset visualTreeAsset;
-        private const string STUDIO_URL = "https://charactr.com/studio";
+        private const string STUDIO_URL = "https://gemelo.ai/studio";
+        private const string LOGO_GUID = "2f9da5dd0ddd7470a9ef00889bd59c13";
         private TextField _keyField, _clientField;
         private IMGUIContainer _logoContainer;
         
-        [MenuItem("Charactr/Configuration")]
+        [MenuItem("Tools/VoiceSDK/Configuration")]
         public static void ShowWindow()
         {
             var wnd = GetWindow<ApiWindow>();
-            wnd.titleContent = new GUIContent("Charactr Voice SDK API Configuration");
+            wnd.titleContent = new GUIContent("gemelo.ai Voice SDK API Configuration");
         }
 
         public void CreateGUI()
@@ -28,7 +29,7 @@ namespace Charactr.VoiceSDK.Editor.Configuration
             _clientField = root.Q<TextField>("ClientText");
             _keyField = root.Q<TextField>("ApiText");
             _logoContainer = root.Q<IMGUIContainer>("LogoContainer");
-            var path = AssetDatabase.GUIDToAssetPath("598fe54de0312494ab36c4a8e2148e0e");
+            var path = AssetDatabase.GUIDToAssetPath(LOGO_GUID);
             _logoContainer.style.backgroundImage = new StyleBackground(AssetDatabase.LoadAssetAtPath<Texture2D>(path));
             
             var saveButton = root.Q<Button>("SaveButton");
