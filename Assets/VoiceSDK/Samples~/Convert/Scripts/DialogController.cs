@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Samples.Convert
+namespace Gemelo.VoiceSDK.Samples.Convert
 {
 	public class DialogController : MonoBehaviour
 	{
