@@ -1,31 +1,36 @@
 {
-  "name": "com.charactr.voicesdk",
-  "version": "0.1.2",
-  "displayName": "Charactr Voice SDK for Unity",
+  "name": "ai.gemelo.voicesdk",
+  "version": "1.0.0",
+  "displayName": "gemelo.ai Voice SDK for Unity",
   "description": "Voice SDK allows to convert and stream text-to-speech",
   "unity": "2021.3",
   "unityRelease": "0f1",
-  "documentationUrl": "https://docs.api.charactr.com/reference/about",
-  "changelogUrl": "https://api.charactr.com/changelog.html",
-  "licensesUrl": "https://api.charactr.com/licensing.html",
+  "documentationUrl": "https://docs.api.gemelo.ai/reference/unity",
+  "changelogUrl": "https://github.com/charactr-platform/charactr-api-sdk-unity/blob/main/CHANGELOG.md",
+  "licensesUrl": "https://api.gemelo.ai/licensing.html",
   "dependencies": {
-	"com.unity.nuget.newtonsoft-json": "2.0.0",
-    "com.unity.test-framework": "2.0.1-pre.18"
- },
- "samples": [
-        {
-            "displayName": "Streaming Example",
-            "description": "Contains example scene with tts streaming",
-            "path": "Samples~/Streaming"
-        }],
- "keywords": [
+    "com.unity.nuget.newtonsoft-json": "2.0.0",
+    "com.unity.test-framework": "2.0.1-exp.2"
+  },
+  "samples": [
+    {
+      "displayName": "Streaming Example",
+      "description": "Contains example scene with tts streaming",
+      "path": "Samples~/Streaming"
+    },
+    {
+      "displayName": "Convert Example",
+      "description": "Contains example of characters dialog scene, Voices Library usage and offline audio clips download using Convert API",
+      "path": "Samples~/Convert"
+    }],
+  "keywords": [
     "Voice",
     "TTS",
     "NLP"
   ],
   "author": {
     "name": "Charactr Inc.",
-    "email": "inbound@charactr.com",
-    "url": "https://www.charactr.com"
+    "email": "inbound@gemelo.ai",
+    "url": "https://www.gemelo.ai"
   }
 }
