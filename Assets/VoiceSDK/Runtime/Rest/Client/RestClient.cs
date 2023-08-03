@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace gemelo.VoiceSDK.Rest.Client
+namespace Gemelo.VoiceSDK.Rest.Client
 {
 	public class RestClient
 	{

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using gemelo.VoiceSDK.Audio;
+using Gemelo.VoiceSDK.Audio;
 using NativeWebSocket;
 using UnityEngine;
 
-namespace gemelo.VoiceSDK.Streaming
+namespace Gemelo.VoiceSDK.Streaming
 {
 	public class WebGlAudioStreamingClient : AudioStreamingClientBase, IAudioStreamingClient
 	{

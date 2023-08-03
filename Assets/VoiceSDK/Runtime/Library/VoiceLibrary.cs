@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
-namespace gemelo.VoiceSDK.Library
+namespace Gemelo.VoiceSDK.Library
 {
 	[CreateAssetMenu(menuName = "VoiceSDK/Create VoiceLibrary", fileName = "VoiceLibrary", order = 0)]
 	public class VoiceLibrary : ScriptableObject

@@ -1,14 +1,14 @@
 using System;
 using System.Globalization;
-using gemelo.VoiceSDK.Audio;
-using gemelo.VoiceSDK.Library;
+using Gemelo.VoiceSDK.Audio;
+using Gemelo.VoiceSDK.Library;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using PopupWindow = UnityEngine.UIElements.PopupWindow;
 
-namespace gemelo.VoiceSDK.Editor.Library
+namespace Gemelo.VoiceSDK.Editor.Library
 {
 	internal class VoiceItemPropertyInstance
 	{

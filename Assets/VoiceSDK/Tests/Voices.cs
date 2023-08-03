@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
-using gemelo.VoiceSDK.Rest.Model;
+using Gemelo.VoiceSDK.Rest.Model;
 using NUnit.Framework;
 
-namespace gemelo.VoiceSDK.Tests
+namespace Gemelo.VoiceSDK.Tests
 {
     public class Voices: TestBase
     {

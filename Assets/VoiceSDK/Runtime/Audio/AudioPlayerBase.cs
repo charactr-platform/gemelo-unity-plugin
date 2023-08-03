@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace gemelo.VoiceSDK.Audio
+namespace Gemelo.VoiceSDK.Audio
 {
 	[RequireComponent(typeof(AudioSource))]
 	public abstract class AudioPlayerBase: MonoBehaviour, IDisposable

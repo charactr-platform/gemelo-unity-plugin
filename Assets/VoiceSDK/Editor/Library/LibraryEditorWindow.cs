@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using gemelo.VoiceSDK.Library;
+using Gemelo.VoiceSDK.Library;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace gemelo.VoiceSDK.Editor.Library
+namespace Gemelo.VoiceSDK.Editor.Library
 {
     public class LibraryEditorWindow : EditorWindow
     {

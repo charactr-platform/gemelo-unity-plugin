@@ -1,8 +1,8 @@
 ﻿using System;
-using gemelo.VoiceSDK.Rest.Model;
+using Gemelo.VoiceSDK.Rest.Model;
 using UnityEngine;
 
-namespace gemelo.VoiceSDK.Rest.Client
+namespace Gemelo.VoiceSDK.Rest.Client
 {
 	public class RuntimeRestClient : RestClient, IDisposable
 	{

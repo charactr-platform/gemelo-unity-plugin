@@ -1,5 +1,5 @@
 
-using gemelo.VoiceSDK.Library;
+using Gemelo.VoiceSDK.Library;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;

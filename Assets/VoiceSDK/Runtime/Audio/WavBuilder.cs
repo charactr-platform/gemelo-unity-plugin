@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace gemelo.VoiceSDK.Audio
+namespace Gemelo.VoiceSDK.Audio
 {
 	public class WavBuilder
 	{

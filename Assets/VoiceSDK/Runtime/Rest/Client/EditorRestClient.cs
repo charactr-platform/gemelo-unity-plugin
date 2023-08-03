@@ -4,10 +4,10 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using gemelo.VoiceSDK.Rest.Model;
+using Gemelo.VoiceSDK.Rest.Model;
 using Newtonsoft.Json;
 
-namespace gemelo.VoiceSDK.Rest.Client
+namespace Gemelo.VoiceSDK.Rest.Client
 {
 	public class EditorRestClient: RestClient, IDisposable
 	{

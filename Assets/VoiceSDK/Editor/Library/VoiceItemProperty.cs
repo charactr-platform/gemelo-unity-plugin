@@ -1,9 +1,9 @@
 using Charactr.VoiceSDK.Editor.Library;
-using gemelo.VoiceSDK.Library;
+using Gemelo.VoiceSDK.Library;
 using UnityEditor;
 using UnityEngine.UIElements;
 
-namespace gemelo.VoiceSDK.Editor.Library
+namespace Gemelo.VoiceSDK.Editor.Library
 {
 	[CustomPropertyDrawer(typeof(VoiceItem))]
 	public class VoiceItemProperty : PropertyDrawer
