@@ -1,12 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Gemelo.VoiceSDK.Audio;
-using Gemelo.VoiceSDK.Streaming;
+using Gemelo.Voice.Audio;
+using Gemelo.Voice.Streaming;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Gemelo.VoiceSDK.Samples.Streaming
+namespace Gemelo.Voice.Samples.Streaming
 {
     public class StreamingExample : MonoBehaviour
     {

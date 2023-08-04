@@ -28,8 +28,8 @@ Please visit [Gemelo.ai](https://app.gemelo.ai) for account creation and API key
 
 * Play VoiceLibrary item:
 ```
-using Gemelo.VoiceSDK.Audio;
-using Gemelo.VoiceSDK.Library;
+using Gemelo.Voice.Audio;
+using Gemelo.Voice.Library;
 using UnityEngine;
 
 public class PlayVoiceLibrary : MonoBehaviour
@@ -54,7 +54,7 @@ public class PlayVoiceLibrary : MonoBehaviour
 ```
 * Create runtime instance of VoiceLibrary:
 ```
-using Gemelo.VoiceSDK.Library;
+using Gemelo.Voice.Library;
 using UnityEngine;
 
 public class CreateVoiceLibraryInstance : MonoBehaviour

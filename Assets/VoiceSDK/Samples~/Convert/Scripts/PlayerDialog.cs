@@ -1,12 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Gemelo.VoiceSDK.Audio;
-using Gemelo.VoiceSDK.Library;
+using Gemelo.Voice.Audio;
+using Gemelo.Voice.Library;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Gemelo.VoiceSDK.Samples.Convert
+namespace Gemelo.Voice.Samples.Convert
 {
     [RequireComponent(typeof(AudioPlayer))]
     public class PlayerDialog : MonoBehaviour
