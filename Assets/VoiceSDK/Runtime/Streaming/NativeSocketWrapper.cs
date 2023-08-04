@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Tests
+namespace Gemelo.Voice.Streaming
 {
 	public class NativeSocketWrapper
 	{

@@ -1,6 +1,6 @@
-﻿using Charactr.VoiceSDK.Audio;
+﻿using Gemelo.Voice.Audio;
 
-namespace Charactr.VoiceSDK.Streaming
+namespace Gemelo.Voice.Streaming
 {
 	public class CustomAudioStreamingClient : AudioStreamingClientBase
 	{

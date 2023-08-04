@@ -2,11 +2,15 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK
+namespace Gemelo.Voice
 {
 	public class Configuration : ScriptableObject
 	{
-		public const string API = "https://api.charactr.com/v1/tts/";
+		public const string HOST = "api.gemelo.ai";
+		public const string CONVERT_API = "https://" + HOST + "/v1/tts/convert";
+		public const string VOICES_API = "https://" + HOST + "/v1/tts/voices";
+		public const string STREAMING_API = "wss://" + HOST + "/v1/tts/stream/simplex/ws";
+		
 		public const string USER_AGENT = "sdk-unity";
 		public const string API_CLIENT = "X-Client-Key";
 		public const string API_KEY = "X-Api-Key";

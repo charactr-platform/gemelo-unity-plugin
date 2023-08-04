@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Charactr.VoiceSDK.Audio;
+using Gemelo.Voice.Audio;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Streaming
+namespace Gemelo.Voice.Streaming
 {
 	public abstract class AudioStreamingClientBase
 	{
@@ -52,14 +52,15 @@ namespace Charactr.VoiceSDK.Streaming
 			switch (samplingRate)
 			{
 				//Some default sampling rate values
+				case 48000:
 				case 44100:
 				case 32000:
 				case 22050:
-					Debug.Log($"Sampling rate: {samplingRate}");
+					Debug.Log($"Transcoder sampling rate set: {samplingRate}");
 					break;
                 
 				default:
-					throw new Exception("Can't set unsupported sampling rate");
+					throw new Exception($"Can't set unsupported transcoder sampling rate: {samplingRate}");
 			}
 			
 			return url + $"&format=wav&sr={samplingRate}";

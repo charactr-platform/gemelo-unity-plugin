@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Streaming
+namespace Gemelo.Voice.Streaming
 {
 	public interface IAudioStreamingClient
 	{
