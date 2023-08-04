@@ -1,4 +1,4 @@
-namespace Gemelo.VoiceSDK.Audio
+namespace Gemelo.Voice.Audio
 {
 	public interface IAverageProvider
 	{

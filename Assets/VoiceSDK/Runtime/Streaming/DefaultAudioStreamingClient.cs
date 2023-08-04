@@ -1,7 +1,7 @@
-﻿using Gemelo.VoiceSDK.Audio;
+﻿using Gemelo.Voice.Audio;
 using UnityEngine;
 
-namespace Gemelo.VoiceSDK.Streaming
+namespace Gemelo.Voice.Streaming
 {
 	public class DefaultAudioStreamingClient : AudioStreamingClientBase, IAudioStreamingClient
 	{

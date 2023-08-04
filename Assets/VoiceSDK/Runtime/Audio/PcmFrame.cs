@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-namespace Gemelo.VoiceSDK.Audio
+namespace Gemelo.Voice.Audio
 {
 	public class PcmFrame: IDisposable
 	{

@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Gemelo.VoiceSDK.Audio;
-using Gemelo.VoiceSDK.Library;
+using Gemelo.Voice.Audio;
+using Gemelo.Voice.Library;
 using UnityEngine;
 
-namespace Gemelo.VoiceSDK
+namespace Gemelo.Voice
 {
     /// <summary>
     /// Allows to use VoiceLibrary object on any GameObject and play selected voices

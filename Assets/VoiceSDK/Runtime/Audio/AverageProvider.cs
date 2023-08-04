@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Gemelo.VoiceSDK.Audio
+namespace Gemelo.Voice.Audio
 {
 	public class AverageProvider: IAverageProvider
 	{

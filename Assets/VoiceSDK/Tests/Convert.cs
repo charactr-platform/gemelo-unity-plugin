@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Threading.Tasks;
-using Gemelo.VoiceSDK.Audio;
+using Gemelo.Voice.Audio;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Gemelo.VoiceSDK.Tests
+namespace Gemelo.Voice.Tests
 {
 	public class Convert : TestBase
 	{

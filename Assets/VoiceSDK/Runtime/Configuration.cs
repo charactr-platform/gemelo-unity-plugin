@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Gemelo.VoiceSDK
+namespace Gemelo.Voice
 {
 	public class Configuration : ScriptableObject
 	{

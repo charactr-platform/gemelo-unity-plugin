@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-namespace Gemelo.VoiceSDK.Audio
+namespace Gemelo.Voice.Audio
 {
 	public class WebGlAudioBufferProcessor
 	{

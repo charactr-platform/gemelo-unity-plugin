@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using Gemelo.VoiceSDK.Library;
+using Gemelo.Voice.Library;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Gemelo.VoiceSDK.Editor.Library
+namespace Gemelo.Voice.Editor.Library
 {
     public class LibraryEditorWindow : EditorWindow
     {
@@ -39,7 +39,7 @@ namespace Gemelo.VoiceSDK.Editor.Library
         private void OnCreateButton()
         {
             var instance = CreateInstance<VoiceLibrary>();
-            VoiceSDK.Configuration.CheckForResourcesDir();
+            Voice.Configuration.CheckForResourcesDir();
             var path = AssetDatabase.GenerateUniqueAssetPath($"Assets/{VoiceLibrary.SAVE_PATH}/VoiceLibrary.asset");
             AssetDatabase.CreateAsset(instance, path);
             LoadItems();

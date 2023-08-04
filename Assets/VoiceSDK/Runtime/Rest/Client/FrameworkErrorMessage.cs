@@ -1,4 +1,4 @@
-namespace Gemelo.VoiceSDK.Rest.Client
+namespace Gemelo.Voice.Rest.Client
 {
 	public class FrameworkErrorMessage
 	{

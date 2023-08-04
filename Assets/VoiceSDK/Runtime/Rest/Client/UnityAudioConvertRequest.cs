@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Text;
-using Gemelo.VoiceSDK.Rest.Model;
+using Gemelo.Voice.Rest.Model;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Gemelo.VoiceSDK.Rest.Client
+namespace Gemelo.Voice.Rest.Client
 {
 	public class UnityAudioConvertRequest
 	{

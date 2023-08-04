@@ -1,4 +1,4 @@
-namespace Gemelo.VoiceSDK.Rest.Model
+namespace Gemelo.Voice.Rest.Model
 {
 	public interface IAPIResponse
 	{

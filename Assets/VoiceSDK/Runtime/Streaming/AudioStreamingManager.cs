@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Gemelo.VoiceSDK.Audio;
+using Gemelo.Voice.Audio;
 using UnityEngine;
 
-namespace Gemelo.VoiceSDK.Streaming
+namespace Gemelo.Voice.Streaming
 {
     /// <summary>
     /// Base utility class for Audio Streaming

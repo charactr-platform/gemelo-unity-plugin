@@ -1,14 +1,16 @@
-Gemelo.ai Voice SDK for Unity
+Gemelo.ai Voice Plugin for Unity
 ===========
-Please visit [Gemelo.ai](https://app.gemelo.ai) for account creation and API keys.
 
-This is the UPM package for the Gemelo.ai Voice SDK.
+This is the UPM package for the Gemelo.ai Voice Plugin.
 
 Install it via menu `Window/Package Manager->Add package from Git url` in Unity:
 ```
 https://github.com/charactr-platform/gemelo-unity-plugin.git#v1.0.0
 ```
 Please restart Unity Editor after package installation.
+
+##Notice
+Please visit [Gemelo.ai](https://app.gemelo.ai) for account creation and API keys.
 
 ## Unity version support
 

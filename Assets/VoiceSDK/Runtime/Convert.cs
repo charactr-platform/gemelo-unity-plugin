@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Gemelo.VoiceSDK.Audio;
-using Gemelo.VoiceSDK.Rest;
-using Gemelo.VoiceSDK.Rest.Client;
-using Gemelo.VoiceSDK.Rest.Model;
+using Gemelo.Voice.Audio;
+using Gemelo.Voice.Rest;
+using Gemelo.Voice.Rest.Client;
+using Gemelo.Voice.Rest.Model;
 using UnityEngine;
 
-namespace Gemelo.VoiceSDK
+namespace Gemelo.Voice
 {
 	/// <summary>
 	/// Base class to utilize gemelo.ai API

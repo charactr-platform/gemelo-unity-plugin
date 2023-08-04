@@ -1,11 +1,11 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Gemelo.VoiceSDK.Rest.Model;
+using Gemelo.Voice.Rest.Model;
 using UnityEditor;
 using UnityEngine;
 
-namespace Gemelo.VoiceSDK.Library
+namespace Gemelo.Voice.Library
 {
     [System.Serializable]
     public class VoiceItem

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Gemelo.VoiceSDK.Rest.Model
+namespace Gemelo.Voice.Rest.Model
 {
 	public class ConvertRequest: RequestBase
 	{

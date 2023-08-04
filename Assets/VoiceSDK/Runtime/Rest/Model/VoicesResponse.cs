@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Gemelo.VoiceSDK.Rest.Model
+namespace Gemelo.Voice.Rest.Model
 {
 	public class VoicesResponse : List<VoiceDescription>, IAPIResponse { }
 	

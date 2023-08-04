@@ -3,7 +3,7 @@ using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Gemelo.VoiceSDK.Audio
+namespace Gemelo.Voice.Audio
 {
 	/// <summary>
 	/// Use AudioPlayer behaviour if 3D sound positioning is required, or if multiple

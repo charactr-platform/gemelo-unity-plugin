@@ -2,7 +2,7 @@
 using System.IO;
 using UnityEngine;
 
-namespace Gemelo.VoiceSDK.Audio
+namespace Gemelo.Voice.Audio
 {
 	public class WavDebugSave
 	{
