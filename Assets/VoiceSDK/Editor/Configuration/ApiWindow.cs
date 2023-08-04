@@ -16,7 +16,7 @@ namespace Gemelo.VoiceSDK.Editor.Configuration
         public static void ShowWindow()
         {
             var wnd = GetWindow<ApiWindow>();
-            wnd.titleContent = new GUIContent("gemelo.ai Voice SDK API Configuration");
+            wnd.titleContent = new GUIContent("Gemelo.ai Voice SDK Configuration");
         }
 
         public void CreateGUI()

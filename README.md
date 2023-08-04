@@ -6,7 +6,7 @@ This is the UPM package for the Gemelo.ai Voice SDK.
 
 Install it via menu `Window/Package Manager->Add package from Git url` in Unity:
 ```
-https://github.com/charactr-platform/charactr-api-sdk-unity.git#v1.0.0
+https://github.com/charactr-platform/gemelo-unity-plugin.git#v1.0.0
 ```
 Please restart Unity Editor after package installation.
 
@@ -82,8 +82,8 @@ This package contains two example scenes with both Convert API and Steaming API:
 
 <i>Use Tools/VoiceSDK/Configuration tool menu to provide API access keys first!</i>
 
-* Samples/[Streaming](https://github.com/charactr-platform/charactr-api-sdk-unity/tree/main/Samples~/Streaming) - TTS realtime streaming example with different voices switching
-* Samples/[Convert](https://github.com/charactr-platform/charactr-api-sdk-unity/tree/main/Samples~/Convert) - Convert API tools for offline audio clips and dialogue creation
+* Samples/[Streaming](https://github.com/charactr-platform/gemelo-unity-plugin/tree/main/Samples~/Streaming) - TTS realtime streaming example with different voices switching
+* Samples/[Convert](https://github.com/charactr-platform/gemelo-unity-plugin/tree/main/Samples~/Convert) - Convert API tools for offline audio clips and dialogue creation
 
 ## Source code
 
