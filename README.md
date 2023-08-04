@@ -90,7 +90,7 @@ This package contains two example scenes with both Convert API and Steaming API:
 ## Source code
 
 The source code for this project is located at:
-https://github.com/charactr-platform/charactr-api-sdk-unity
+https://github.com/charactr-platform/gemelo-unity-plugin
 
 ## Resources
 
