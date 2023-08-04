@@ -15,7 +15,7 @@ namespace Gemelo.Voice.Editor.Library
         private List<ObjectField> _libraryObjects;
         private Button _deleteButton, _openButton;
         
-        [MenuItem("Tools/VoiceSDK/LibraryEditor")]
+        [MenuItem("Tools/Gemelo.ai Voice/LibraryEditor")]
         public static void ShowWindow()
         {
             var wnd = GetWindow<LibraryEditorWindow>();
