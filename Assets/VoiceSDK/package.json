@@ -1,7 +1,7 @@
 {
   "name": "ai.gemelo.voice",
   "version": "1.0.0",
-  "displayName": "Gemelo.ai Voice Plugin for Unity",
+  "displayName": "Gemelo.ai Voice Plugin",
   "description": "Voice Plugin allows to convert and stream text-to-speech voices in real time",
   "unity": "2021.3",
   "unityRelease": "0f1",
@@ -29,7 +29,7 @@
     "NLP"
   ],
   "author": {
-    "name": "Charactr Inc.",
+    "name": "Gemelo.ai",
     "email": "inbound@gemelo.ai",
     "url": "https://www.gemelo.ai"
   }

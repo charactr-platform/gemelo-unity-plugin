@@ -12,11 +12,11 @@ namespace Gemelo.Voice.Editor.Configuration
         private TextField _keyField, _clientField;
         private IMGUIContainer _logoContainer;
         
-        [MenuItem("Tools/VoiceSDK/Configuration")]
+        [MenuItem("Tools/Gemelo.ai Voice/Configuration")]
         public static void ShowWindow()
         {
             var wnd = GetWindow<ApiWindow>();
-            wnd.titleContent = new GUIContent("Gemelo.ai Voice SDK Configuration");
+            wnd.titleContent = new GUIContent("Gemelo.ai Voice Configuration");
         }
 
         public void CreateGUI()
