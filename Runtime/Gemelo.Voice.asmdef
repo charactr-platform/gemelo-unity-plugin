@@ -1,7 +1,10 @@
 {
-    "name": "Charactr.VoiceSDK.Audio",
+    "name": "Gemelo.Voice",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "GUID:04376767bc1f3b428aefa3d20743e819",
+        "GUID:703643d4954c1b741948dd3d1acea324"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

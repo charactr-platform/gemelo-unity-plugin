@@ -1,9 +1,10 @@
 ﻿using System;
-using Charactr.VoiceSDK.Audio;
+using System.Collections.Generic;
+using Gemelo.Voice.Audio;
 using NativeWebSocket;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Streaming
+namespace Gemelo.Voice.Streaming
 {
 	public class WebGlAudioStreamingClient : AudioStreamingClientBase, IAudioStreamingClient
 	{
@@ -11,10 +12,20 @@ namespace Charactr.VoiceSDK.Streaming
 		private readonly GameObject _gameObject;
 		private WebGlAudioBufferProcessor _bufferProcessor;
 		
-		public WebGlAudioStreamingClient(string url, Configuration configuration) : base(configuration)
+		public WebGlAudioStreamingClient(string url, Configuration configuration, int maxLength = 30) : base(configuration, maxLength)
 		{
-			_socket = new NativeWebSocket.WebSocket(url);
+			var sampleRate = WebGlAudioBufferProcessor.GetSupportedSampleRate();
+
+			if (sampleRate == -1)
+				throw new Exception("Can't read sample rate from Browser AudioContext!");
 			
+			var header = new Dictionary<string, string>()
+			{
+				{"user-agent", Configuration.USER_AGENT}
+			};
+			
+			_socket = new NativeWebSocket.WebSocket(AddAudioFormat(url, sampleRate), header);
+	
 			_socket.OnOpen += OnOpen;
 			_socket.OnClose += code => OnClose(code.ToString());
 			_socket.OnError += OnError;

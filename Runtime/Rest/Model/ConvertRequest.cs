@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Charactr.VoiceSDK.Rest.Model
+namespace Gemelo.Voice.Rest.Model
 {
 	public class ConvertRequest: RequestBase
 	{
@@ -9,6 +9,5 @@ namespace Charactr.VoiceSDK.Rest.Model
 
 		[JsonProperty("text")]
 		public string Text { get; set; }
-		
 	}
 }

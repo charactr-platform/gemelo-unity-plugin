@@ -1,17 +1,15 @@
 using System.Threading.Tasks;
-using Charactr.VoiceSDK.Rest.Model;
+using Gemelo.Voice.Rest.Model;
 using NUnit.Framework;
 
-namespace Charactr.VoiceSDK.Tests
+namespace Gemelo.Voice.Tests
 {
     public class Voices: TestBase
     {
-        private const string ENDPOINT = "voices";
-        
         [Test]
         public async Task GetVoices_Returns_OK()
         {
-            var voices = await EditorHttp.GetAsync<VoicesResponse>(Configuration.API + ENDPOINT);
+            var voices = await EditorHttp.GetAsync<VoicesResponse>(Configuration.VOICES_API);
             Assert.NotNull(voices);
             Assert.IsNotEmpty(voices);
         }

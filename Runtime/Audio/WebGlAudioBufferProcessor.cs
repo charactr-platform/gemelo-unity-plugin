@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Audio
+namespace Gemelo.Voice.Audio
 {
 	public class WebGlAudioBufferProcessor
 	{
@@ -11,6 +11,7 @@ namespace Charactr.VoiceSDK.Audio
 #if UNITY_WEBGL
 		[DllImport("__Internal")]
 		private static extern bool WebGL_Initialize(int bufferSize, int allocationSize);
+
 		[DllImport("__Internal")]
 		private static extern bool WebGL_StartSampling(string uniqueName, int bufferIndex, int sampleSize, bool streaming = false);
 
@@ -19,11 +20,16 @@ namespace Charactr.VoiceSDK.Audio
 		
 		[DllImport("__Internal")]
 		private static extern bool WebGL_Stats();
+
 		[DllImport("__Internal")]
 		public static extern int WebGL_GetBufferInstanceOfLastAudioClip();
-		
+
+		[DllImport("__Internal")]
+		public static extern int WebGL_GetAudioContextSampleRate();
+
 		[DllImport("__Internal")]
 		private static extern void WebGL_FillBuffer(float[] array, int size);
+
 		[DllImport("__Internal")]
 		private static extern bool WebGL_GetAmplitude(string uniqueName, float[] sample, int sampleSize);
 #endif
@@ -54,6 +60,13 @@ namespace Charactr.VoiceSDK.Audio
 #endif
 		}
 
+		public static int GetSupportedSampleRate()
+		{
+#if UNITY_WEBGL
+			return WebGL_GetAudioContextSampleRate();
+#endif
+			return -1;
+		}
 		public void StartSampling(AudioClip clip)
 		{
 #if UNITY_WEBGL

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Charactr.VoiceSDK.Audio;
+using Gemelo.Voice.Audio;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Streaming
+namespace Gemelo.Voice.Streaming
 {
 	public abstract class AudioStreamingClientBase
 	{
@@ -23,14 +23,15 @@ namespace Charactr.VoiceSDK.Streaming
 		private readonly Configuration _configuration;
 		private readonly WavDebugSave _debugSave;
 		private readonly Queue<PcmFrame> _pcmFrames;
+		private readonly int _maxClipLenght;
 		private PcmFrame _currentPcmFrame;
-		
-		protected AudioStreamingClientBase(Configuration configuration)
+		protected AudioStreamingClientBase(Configuration configuration, int maxClipLenght = 30)
 		{
 			_commands = new Queue<string>();
 			_dataQueue = new Queue<byte[]>();
 			_pcmFrames = new Queue<PcmFrame>();
 			_configuration = configuration;
+			_maxClipLenght = maxClipLenght;
 		}
 		protected void EnqueueCommand(string command)
 		{
@@ -44,6 +45,25 @@ namespace Charactr.VoiceSDK.Streaming
 			{
 				_dataQueue.Enqueue(data);
 			}
+		}
+
+		protected static string AddAudioFormat(string url, int samplingRate = 44100)
+		{
+			switch (samplingRate)
+			{
+				//Some default sampling rate values
+				case 48000:
+				case 44100:
+				case 32000:
+				case 22050:
+					Debug.Log($"Transcoder sampling rate set: {samplingRate}");
+					break;
+                
+				default:
+					throw new Exception($"Can't set unsupported transcoder sampling rate: {samplingRate}");
+			}
+			
+			return url + $"&format=wav&sr={samplingRate}";
 		}
 		
 		public void DepleteBufferQueue()
@@ -100,7 +120,9 @@ namespace Charactr.VoiceSDK.Streaming
 				Debug.Log($"Creating audio clip, buffered length: {AudioLength}sec.");
 				CreateAudioClip();
 			}
-
+			
+			frame.Dispose();
+			
 			_frameCount++;
 		}
 
@@ -115,12 +137,7 @@ namespace Charactr.VoiceSDK.Streaming
 
 			CreateNewPcmFrame();
 			
-#if UNITY_EDITOR
 			WavBuilder = new WavBuilder(header);
-#else
-			WavBuilder = new WavBuilder(header);
-#endif
-			
 		}
 
 		private void CreateNewPcmFrame()
@@ -133,7 +150,7 @@ namespace Charactr.VoiceSDK.Streaming
 		}
 		private void CreateAudioClip()
 		{
-			var clip = WavBuilder.CreateAudioClipStream("test");
+			var clip = WavBuilder.CreateAudioClipStream("test", _maxClipLenght);
 			
 			if (clip.LoadAudioData() == false)
 				throw new Exception("Data not loaded");

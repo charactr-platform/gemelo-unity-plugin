@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Tests
+namespace Gemelo.Voice.Streaming
 {
 	public class NativeSocketWrapper
 	{
@@ -24,6 +24,8 @@ namespace Charactr.VoiceSDK.Tests
 		public NativeSocketWrapper(string url, int timeout = 5000)
 		{
 			_ws = new ClientWebSocket();
+			_ws.Options.SetRequestHeader("user-agent", Configuration.USER_AGENT);
+			
 			_uri = new Uri(url);
 			_token = new CancellationTokenSource();
 			_token.CancelAfter(timeout);
@@ -71,7 +73,7 @@ namespace Charactr.VoiceSDK.Tests
 		
 		private async Task Dispatch()
 		{
-			var rcvBytes = new byte[1024 * 1024 * 1024];
+			var rcvBytes = new byte[1024 * 1024 * 10];
 			var rcvBuffer = new ArraySegment<byte>(rcvBytes);
 			WebSocketReceiveResult result = null;
 			
@@ -90,6 +92,10 @@ namespace Charactr.VoiceSDK.Tests
 				}
 			} 
 			while (result.CloseStatus == null);
+
+			rcvBytes = null;
+			rcvBuffer = null;
+			GC.Collect();
 			
 			if (result.CloseStatus == WebSocketCloseStatus.NormalClosure)
 			{

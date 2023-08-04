@@ -1,27 +1,29 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Charactr.VoiceSDK.Audio;
+using Gemelo.Voice.Audio;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Streaming
+namespace Gemelo.Voice.Streaming
 {
+    /// <summary>
+    /// Base utility class for Audio Streaming
+    /// </summary>
     [RequireComponent(typeof(AudioPlayer))]
     public class AudioStreamingManager: MonoBehaviour
     {
-        public const string URL = "wss://api.charactr.com/v1/tts/stream/simplex/ws";
         public IAudioPlayer AudioPlayer { get; private set; }
         public AudioClip AudioClip { get; private set; }
         public bool AudioEnd { get; private set; }
-        
-        public event Action OnAudioEnd;
-        public event Action OnAudioReady;
-      
+        public event Action OnAudioEnd, OnAudioReady;
+
         [SerializeField] private int voiceId = 151;
 
         private IAudioStreamingClient _streamingClient;
         private IAverageProvider _averageProvider;
         private int _samplesSize;
+        private int _samplingRate = 44100;
+        private int _maxLenght = 30;
         private Configuration _configuration;
         private Queue<Action> _actions;
 
@@ -37,12 +39,8 @@ namespace Charactr.VoiceSDK.Streaming
             if (AudioPlayer == null)
                 throw new Exception("Can't find required AudioPlayer component");
         }
-
-        public void SetVoiceId(int voice)
-        {
-            voiceId = voice;
-        }
-
+        
+        
         public IAudioPlayer InitializePlayer(IAverageProvider provider, int samplesSize)
         {
             _averageProvider = provider;
@@ -64,12 +62,12 @@ namespace Charactr.VoiceSDK.Streaming
 
         private IEnumerator CreateClientInstance(string text, Configuration configuration)
         {
-            var url = URL + $"?voiceId={voiceId}";
+            var url = Configuration.STREAMING_API + $"?voiceId={voiceId}";
             
 #if UNITY_WEBGL && !UNITY_EDITOR
-            _streamingClient = new WebGlAudioStreamingClient(url, configuration);
+            _streamingClient = new WebGlAudioStreamingClient(url, configuration, _maxLenght);
 #else
-            _streamingClient = new DefaultAudioStreamingClient(url, configuration);
+            _streamingClient = new DefaultAudioStreamingClient(url, configuration, _samplingRate, _maxLenght);
 #endif
             _streamingClient.Connect();
 
@@ -124,6 +122,21 @@ namespace Charactr.VoiceSDK.Streaming
             OnAudioEnd?.Invoke();
             Debug.Log($"Playback finished [{playbackSamples}/{clipSamples}]");
             return true;
+        }
+        
+        public void SetVoiceId(int voice)
+        {
+            voiceId = voice;
+        }
+
+        public void SetSamplingRate(int rate)
+        {
+            _samplingRate = rate;
+        }
+
+        public void SetMaxLenght(int lenght)
+        {
+            _maxLenght = lenght;
         }
     }
 }

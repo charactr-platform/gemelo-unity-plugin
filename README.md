@@ -1,14 +1,16 @@
-Charactr Voice SDK for Unity
+Gemelo.ai Voice Plugin for Unity
 ===========
-Please visit [Character Voice Studio](https://charactr.com/studio) for account creation and API keys.
 
-This is the UPM package for the Charactr Voice SDK API.
+This is the UPM package for the Gemelo.ai Voice Plugin.
 
 Install it via menu `Window/Package Manager->Add package from Git url` in Unity:
 ```
-https://github.com/charactr-platform/charactr-api-sdk-unity.git#v0.2.4
+https://github.com/charactr-platform/gemelo-unity-plugin.git#v1.0.0
 ```
 Please restart Unity Editor after package installation.
+
+##Notice
+Please visit [Gemelo.ai](https://app.gemelo.ai) for account creation and API keys.
 
 ## Unity version support
 
@@ -20,14 +22,14 @@ Please restart Unity Editor after package installation.
 - Mac/Windows
 - Android
 - iOS
-- WebGL (in beta, possible issues with text-to-speech streaming)
+- WebGL
 
 ## HowTo samples
 
 * Play VoiceLibrary item:
 ```
-using Charactr.VoiceSDK.Audio;
-using Charactr.VoiceSDK.Library;
+using Gemelo.Voice.Audio;
+using Gemelo.Voice.Library;
 using UnityEngine;
 
 public class PlayVoiceLibrary : MonoBehaviour
@@ -52,7 +54,7 @@ public class PlayVoiceLibrary : MonoBehaviour
 ```
 * Create runtime instance of VoiceLibrary:
 ```
-using Charactr.VoiceSDK.Library;
+using Gemelo.Voice.Library;
 using UnityEngine;
 
 public class CreateVoiceLibraryInstance : MonoBehaviour
@@ -80,17 +82,17 @@ public class CreateVoiceLibraryInstance : MonoBehaviour
 
 This package contains two example scenes with both Convert API and Steaming API:
 
-Use Charactr/Configuration tool menu to provide API access keys first!</i>
+<i>Use Tools/VoiceSDK/Configuration tool menu to provide API access keys first!</i>
 
-* Samples/[Streaming](https://github.com/charactr-platform/charactr-api-sdk-unity/tree/main/Samples~/Streaming) - TTS realtime streaming example with different voices switching
-* Samples/[Convert](https://github.com/charactr-platform/charactr-api-sdk-unity/tree/main/Samples~/Convert) - Convert API tools for offline audio clips and dialogue creation
+* Samples/[Streaming](https://github.com/charactr-platform/gemelo-unity-plugin/tree/main/Samples~/Streaming) - TTS realtime streaming example with different voices switching
+* Samples/[Convert](https://github.com/charactr-platform/gemelo-unity-plugin/tree/main/Samples~/Convert) - Convert API tools for offline audio clips and dialogue creation
 
 ## Source code
 
 The source code for this project is located at:
-https://github.com/charactr-platform/charactr-api-sdk-unity
+https://github.com/charactr-platform/gemelo-unity-plugin
 
 ## Resources
 
-* [Character Voice Studio](https://charactr.com/studio)
-* [Documentation](https://docs.api.charactr.com/reference/about)
+* [Gemelo.ai](https://app.gemelo.ai)
+* [Documentation](https://docs.api.charactr.com/reference/unity)

@@ -1,13 +1,8 @@
 {
-    "name": "Charactr.VoiceSDK.Editor",
+    "name": "Gemelo.Voice.Audio",
     "rootNamespace": "",
-    "references": [
-        "GUID:837a4f6d680c2d147b8cc4a26af9a07e",
-        "GUID:703643d4954c1b741948dd3d1acea324"
-    ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "references": [],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

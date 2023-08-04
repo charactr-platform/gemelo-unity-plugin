@@ -1,16 +1,14 @@
-﻿using System;
-using Charactr.VoiceSDK.Audio;
-using Charactr.VoiceSDK.Tests;
+﻿using Gemelo.Voice.Audio;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Streaming
+namespace Gemelo.Voice.Streaming
 {
 	public class DefaultAudioStreamingClient : AudioStreamingClientBase, IAudioStreamingClient
 	{
 		private readonly NativeSocketWrapper _socket;
-		public DefaultAudioStreamingClient(string url, Configuration configuration): base(configuration)
+		public DefaultAudioStreamingClient(string url, Configuration configuration, int samplingRate = 44100, int maxLenght = 30): base(configuration, maxLenght)
 		{
-			_socket = new NativeSocketWrapper(url);
+			_socket = new NativeSocketWrapper(AddAudioFormat(url, samplingRate));
 			_socket.OnOpen += OnOpen;
 			_socket.OnClose += OnClose;
 			_socket.OnError += OnError;

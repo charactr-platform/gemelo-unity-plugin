@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using Charactr.VoiceSDK.Library;
+using Gemelo.Voice.Library;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Charactr.VoiceSDK.Editor.Library
+namespace Gemelo.Voice.Editor.Library
 {
     public class LibraryEditorWindow : EditorWindow
     {
@@ -15,7 +15,7 @@ namespace Charactr.VoiceSDK.Editor.Library
         private List<ObjectField> _libraryObjects;
         private Button _deleteButton, _openButton;
         
-        [MenuItem("Charactr/LibraryEditor")]
+        [MenuItem("Tools/VoiceSDK/LibraryEditor")]
         public static void ShowWindow()
         {
             var wnd = GetWindow<LibraryEditorWindow>();
@@ -39,7 +39,7 @@ namespace Charactr.VoiceSDK.Editor.Library
         private void OnCreateButton()
         {
             var instance = CreateInstance<VoiceLibrary>();
-            VoiceSDK.Configuration.CheckForResourcesDir();
+            Voice.Configuration.CheckForResourcesDir();
             var path = AssetDatabase.GenerateUniqueAssetPath($"Assets/{VoiceLibrary.SAVE_PATH}/VoiceLibrary.asset");
             AssetDatabase.CreateAsset(instance, path);
             LoadItems();
