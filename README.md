@@ -9,7 +9,7 @@ https://github.com/charactr-platform/gemelo-unity-plugin.git#v1.0.0
 ```
 Please restart Unity Editor after package installation.
 
-##Notice
+## Notice
 Please visit [Gemelo.ai](https://app.gemelo.ai) for account creation and API keys.
 
 ## Unity version support
