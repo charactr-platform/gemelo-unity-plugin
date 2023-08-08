@@ -16,7 +16,7 @@ Please visit [Gemelo.ai](https://app.gemelo.ai) for account creation and API key
 
 - Developed and tested on Unity 2021 LTS (2021.3.10)
 - Tested on Unity 2022 LTS (2022.3.1)
-
+- Tested on Unity 2023.1 (2023.1.5)
 ## Platform support
 
 - Mac/Windows
@@ -82,7 +82,7 @@ public class CreateVoiceLibraryInstance : MonoBehaviour
 
 This package contains two example scenes with both Convert API and Steaming API:
 
-<i>Use Tools/VoiceSDK/Configuration tool menu to provide API access keys first!</i>
+<i>Use top menu Tools->Gemelo.ai Voice->Configuration to provide API access keys first!</i>
 
 * Samples/[Streaming](https://github.com/charactr-platform/gemelo-unity-plugin/tree/main/Samples~/Streaming) - TTS realtime streaming example with different voices switching
 * Samples/[Convert](https://github.com/charactr-platform/gemelo-unity-plugin/tree/main/Samples~/Convert) - Convert API tools for offline audio clips and dialogue creation
@@ -95,4 +95,4 @@ https://github.com/charactr-platform/gemelo-unity-plugin
 ## Resources
 
 * [Gemelo.ai](https://app.gemelo.ai)
-* [Documentation](https://docs.api.charactr.com/reference/unity)
+* [Documentation](https://docs.api.gemelo.com/reference/unity)
