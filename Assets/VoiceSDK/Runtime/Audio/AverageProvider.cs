@@ -1,32 +1,40 @@
 ﻿using UnityEngine;
 
-namespace Charactr.VoiceSDK.Audio
+namespace Gemelo.Voice.Audio
 {
-	public class AverageProvider
+	public class AverageProvider: IAverageProvider
 	{
-		public const int SampleSize = 1024;
+		private const float BoostBase = 1f;
+		private const float Boost = 0.265f;
 		
 		private float _avgTotal = 0;
 		private float _maxTotal = 0;
-		private float _max;
-		private const float BoostBase = 1f;
-		private const float Boost = 0.2f;
+		private readonly float _boost;
+		private readonly float _boostBase;
+		
+		public AverageProvider(float boost = Boost, float boostBase = BoostBase)
+		{
+			_boost = boost;
+			_boostBase = boostBase;
+		}
 		
 		public float GetSampleAverage(float[] sample)
 		{
+			int size = sample.Length;
+			
 			float tempVal = 0;
 			
 			_avgTotal = 0;
 			_maxTotal = 0;
 
-			for (int i = 0; i < sample.Length; i++)
+			for (int i = 0; i < size; i++)
 			{
 				// Get the sample value
 				tempVal = sample[i];
 				// Get the absolute value
 				tempVal = Mathf.Abs(tempVal);
 				// Add boost
-				tempVal = Mathf.Pow(tempVal, BoostBase - Boost);
+				tempVal = Mathf.Pow(tempVal, _boostBase - _boost);
 				// Write boosted value back to the original sample
 				sample[i] = tempVal;
 
@@ -36,8 +44,7 @@ namespace Charactr.VoiceSDK.Audio
 					_maxTotal = sample[i];
 			}
 			
-			_max = _maxTotal;
-			return _avgTotal / SampleSize;
+			return _avgTotal / size;
 		}
 	}
 }

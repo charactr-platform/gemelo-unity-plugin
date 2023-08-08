@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Charactr.VoiceSDK.Audio;
+using Gemelo.Voice.Audio;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Streaming
+namespace Gemelo.Voice.Streaming
 {
 	public abstract class AudioStreamingClientBase
 	{
@@ -24,18 +22,16 @@ namespace Charactr.VoiceSDK.Streaming
 		private int _frameCount, _totalFramesRead;
 		private readonly Configuration _configuration;
 		private readonly WavDebugSave _debugSave;
-		private readonly AverageProvider _averageProvider;
-
 		private readonly Queue<PcmFrame> _pcmFrames;
+		private readonly int _maxClipLenght;
 		private PcmFrame _currentPcmFrame;
-		
-		protected AudioStreamingClientBase(Configuration configuration)
+		protected AudioStreamingClientBase(Configuration configuration, int maxClipLenght = 30)
 		{
 			_commands = new Queue<string>();
 			_dataQueue = new Queue<byte[]>();
 			_pcmFrames = new Queue<PcmFrame>();
-			_averageProvider = new AverageProvider();
 			_configuration = configuration;
+			_maxClipLenght = maxClipLenght;
 		}
 		protected void EnqueueCommand(string command)
 		{
@@ -49,6 +45,25 @@ namespace Charactr.VoiceSDK.Streaming
 			{
 				_dataQueue.Enqueue(data);
 			}
+		}
+
+		protected static string AddAudioFormat(string url, int samplingRate = 44100)
+		{
+			switch (samplingRate)
+			{
+				//Some default sampling rate values
+				case 48000:
+				case 44100:
+				case 32000:
+				case 22050:
+					Debug.Log($"Transcoder sampling rate set: {samplingRate}");
+					break;
+                
+				default:
+					throw new Exception($"Can't set unsupported transcoder sampling rate: {samplingRate}");
+			}
+			
+			return url + $"&format=wav&sr={samplingRate}";
 		}
 		
 		public void DepleteBufferQueue()
@@ -96,10 +111,17 @@ namespace Charactr.VoiceSDK.Streaming
 			
 			//WebGL needs first buffer before start of sampling
 			OnPcmFrame(_frameCount, frame);
+
+			//Buffer some data before we start audio play, 1 sec approx.
+			var startFrame = Mathf.RoundToInt((float) WavBuilder.SampleRate / frame.Samples.Length);
 			
-			//Buffer some data before we start audio play
-			if (_frameCount == 5)
+			if (_frameCount == startFrame)
+			{
+				Debug.Log($"Creating audio clip, buffered length: {AudioLength}sec.");
 				CreateAudioClip();
+			}
+			
+			frame.Dispose();
 			
 			_frameCount++;
 		}
@@ -115,13 +137,7 @@ namespace Charactr.VoiceSDK.Streaming
 
 			CreateNewPcmFrame();
 			
-#if UNITY_EDITOR
-			WavBuilder = new WavBuilder(header, true);
-#else
 			WavBuilder = new WavBuilder(header);
-#endif
-			
-			OnHeaderData(WavBuilder.SampleRate);
 		}
 
 		private void CreateNewPcmFrame()
@@ -134,7 +150,7 @@ namespace Charactr.VoiceSDK.Streaming
 		}
 		private void CreateAudioClip()
 		{
-			var clip = WavBuilder.CreateAudioClipStream("test");
+			var clip = WavBuilder.CreateAudioClipStream("test", _maxClipLenght);
 			
 			if (clip.LoadAudioData() == false)
 				throw new Exception("Data not loaded");
@@ -182,17 +198,10 @@ namespace Charactr.VoiceSDK.Streaming
 		
 		public abstract void Connect();
 		protected abstract bool IsConnected();
-		public abstract void Play();
-
-		protected float GetSampleAverage(float[] sample)
-		{
-			return _averageProvider.GetSampleAverage(sample);
-		}
 		protected abstract void Send(string text);
-		protected abstract void OnPcmFrame(int frameIndex, PcmFrame pcmFrame);
-		protected abstract void OnHeaderData(int sampleRate);
 		public virtual void SendConvertCommand(string text) => Send(GetConvertCommand(text));
 		protected virtual void OnError(string obj) => Debug.LogError("Error: " + obj);
+		protected virtual void OnPcmFrame(int frameIndex, PcmFrame pcmFrame) { }
 
 		protected virtual void OnClose(string obj)
 		{

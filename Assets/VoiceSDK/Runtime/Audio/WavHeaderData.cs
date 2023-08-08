@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace Charactr.VoiceSDK.Audio
+namespace Gemelo.Voice.Audio
 {
 	public struct WavHeaderData
 	{
@@ -37,18 +37,6 @@ namespace Charactr.VoiceSDK.Audio
 				
 			//TODO: Validate PCM wav header
 			var headerOffset = extensible ? subchunkSize + 20 + 16 : 44;
-			
-		
-			
-			if (headerOffset == data.Length)
-				return (audioFormat, headerOffset, false);
-			
-			var wavDataSize = BitConverter.ToInt32 (data, headerOffset);
-			
-			headerOffset += 4;
-			
-			if (wavDataSize != data.Length - headerOffset)
-				throw new Exception($"Can't read WAV data, data size: {wavDataSize}");
 			
 			return (audioFormat, headerOffset, extensible);
 		}

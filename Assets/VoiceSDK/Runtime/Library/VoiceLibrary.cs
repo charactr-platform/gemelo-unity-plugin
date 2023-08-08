@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Library
+namespace Gemelo.Voice.Library
 {
 	[CreateAssetMenu(menuName = "VoiceSDK/Create VoiceLibrary", fileName = "VoiceLibrary", order = 0)]
 	public class VoiceLibrary : ScriptableObject
 	{
-		public const string SAVE_PATH = "Charactr/Resources";
+		public const string SAVE_PATH = "Resources";
 		
 		public bool IsEmpty
 		{
@@ -28,22 +28,6 @@ namespace Charactr.VoiceSDK.Library
 			items = new List<VoiceItem>();
 		}
 		
-		public bool GetItemByVoiceId(int voiceId, out VoiceItem voiceItem)
-		{
-			var index = items.FindIndex(f => f.VoiceId == voiceId);
-
-			voiceItem = null;
-			
-			if (index < 0)
-			{
-				Debug.LogError($"Can't find VoiceItem with voiceId = {voiceId}");
-				return false;
-			}
-
-			voiceItem = items[index];
-			return true;
-		}
-
 		public bool GetItemById(int id, out VoiceItem voiceItem)
 		{
 			var index = items.FindIndex(f => f.Id == id);
@@ -115,7 +99,7 @@ namespace Charactr.VoiceSDK.Library
 		}
 		
 #if UNITY_EDITOR
-		public async void ConvertTextsToAudioClips()
+		public async Task<int> ConvertTextsToAudioClips(Action<int> onItemDownloaded)
 		{
 			var processedItems = 0;
 			
@@ -123,15 +107,18 @@ namespace Charactr.VoiceSDK.Library
 			{
 				await voiceItem.GetAudioClip();
 				processedItems++;
-				Debug.Log(voiceItem.AudioClip.name);
+				onItemDownloaded?.Invoke(processedItems);
 			}
 			
 			if (processedItems > 0)
 			{
 				EditorUtility.SetDirty(this);
 				AssetDatabase.SaveAssetIfDirty(this);
+				
 				Debug.Log($"Saved library asset = {name}, updated items count = {processedItems}");
 			}
+
+			return processedItems;
 		}
 #endif
 	}

@@ -1,15 +1,15 @@
 using System;
 using System.IO;
-namespace Charactr.VoiceSDK.Audio
+namespace Gemelo.Voice.Audio
 {
-	public class PcmFrame
+	public class PcmFrame: IDisposable
 	{
 		public static int BlockSize = sizeof(short);//16bit per sample 
 		public int ByteSize => _bytesSize;
 		public float[] Samples => _samples;
 		public bool HasData => _bytes?.Length > 0 && _samples == null;
 		
-		private readonly MemoryStream _bytes;
+		private MemoryStream _bytes;
 	
 		private float[] _samples;
 		private readonly int _bytesSize;
@@ -25,7 +25,7 @@ namespace Charactr.VoiceSDK.Audio
 			if (_bytes.Length < ByteSize)
 				_bytes.Write(data);
 				
-			if (_bytes.Length > ByteSize)
+			if (_bytes.Length >= ByteSize)
 			{
 				overflow = WriteSamples();
 				return true;
@@ -48,8 +48,6 @@ namespace Charactr.VoiceSDK.Audio
 			ConvertByteToFloat(frameBytes.ToArray(), out _samples);
 
 			var overflow = segment.Slice(bytesCount).ToArray();
-			
-			_bytes.Dispose();
 
 			return endOfData ? null : overflow;
 		}
@@ -58,7 +56,7 @@ namespace Charactr.VoiceSDK.Audio
 		{
 			var i = 0;
 			
-			var samplesSize = data.Length / BlockSize;
+			var samplesSize = (data.Length - offset) / BlockSize;
 			waveData = new float[samplesSize];
 
 			while (i < samplesSize)
@@ -68,6 +66,17 @@ namespace Charactr.VoiceSDK.Audio
 				waveData[i] = v;
 				++i;
 			}
+
+			data = null;
+		}
+
+		public void Dispose()
+		{
+			_samples = null;
+			_bytes.Dispose();
+			_bytes = null;
+			
+			GC.Collect();
 		}
 	}
 }

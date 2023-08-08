@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c2b42b752e40fd8d3cb96f15951aa2, type: 3}
+  m_Name: VoiceLibrary_PlayerTwo
+  m_EditorClassIdentifier: 
+  items:
+  - text: You can use this example setup as easy to use dialogue system for game.
+    voiceId: 161
+    audioClip: {fileID: 8300000, guid: e73308f675e4744b1ade1cc8625ab25c, type: 3}
+  - text: This simple demonstration may help to start with our SDK, have fun!
+    voiceId: 161
+    audioClip: {fileID: 8300000, guid: 29a6ef2d2a093489599780ae48878060, type: 3}

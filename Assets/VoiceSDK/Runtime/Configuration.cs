@@ -1,19 +1,23 @@
 ﻿using System;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Windows;
 
-namespace Charactr.VoiceSDK
+namespace Gemelo.Voice
 {
 	public class Configuration : ScriptableObject
 	{
+		public const string HOST = "api.gemelo.ai";
+		public const string CONVERT_API = "https://" + HOST + "/v1/tts/convert";
+		public const string VOICES_API = "https://" + HOST + "/v1/tts/voices";
+		public const string STREAMING_API = "wss://" + HOST + "/v1/tts/stream/simplex/ws";
+		
+		public const string USER_AGENT = "sdk-unity";
 		public const string API_CLIENT = "X-Client-Key";
 		public const string API_KEY = "X-Api-Key";
-		
-		public const string API = "https://api.charactr.com/v1/tts/";
-		private const string FILENAME = "Configuration";
 		public const string SAVE_PATH = "Assets/Resources/"+FILENAME+".asset";
-		
+
+		private const string FILENAME = "Configuration";
+
 		public string ApiClient
 		{
 			get => apiClient;
@@ -41,10 +45,18 @@ namespace Charactr.VoiceSDK
 		{
 			var instance = CreateInstance<Configuration>();
 			instance.Create(apiClient, apiKey, audioSavePath);
-			AssetDatabase.CreateFolder("Assets", "Resources");
+			CheckForResourcesDir();
 			AssetDatabase.CreateAsset(instance, SAVE_PATH);
 		}
 		
+		public static void CheckForResourcesDir()
+		{
+			if (!AssetDatabase.IsValidFolder($"Assets/Resources"))
+			{
+				AssetDatabase.CreateFolder("Assets", "Resources");
+				Debug.Log("Created default Resources folder in Assets/Resources");
+			}
+		}
 #endif
 
 		public void Create(string apiClientString, string apiKeyString, string savePathString)

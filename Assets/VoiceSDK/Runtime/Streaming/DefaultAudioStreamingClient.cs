@@ -1,20 +1,14 @@
-﻿using System;
-using Charactr.VoiceSDK.Audio;
-using Charactr.VoiceSDK.Tests;
+﻿using Gemelo.Voice.Audio;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Streaming
+namespace Gemelo.Voice.Streaming
 {
 	public class DefaultAudioStreamingClient : AudioStreamingClientBase, IAudioStreamingClient
 	{
-		public AudioSource AudioSource => _audioSource;
-
 		private readonly NativeSocketWrapper _socket;
-		private readonly AudioSource _audioSource;
-		public DefaultAudioStreamingClient(string url, Configuration configuration, AudioSource audioSource): base(configuration)
+		public DefaultAudioStreamingClient(string url, Configuration configuration, int samplingRate = 44100, int maxLenght = 30): base(configuration, maxLenght)
 		{
-			_audioSource = audioSource;
-			_socket = new NativeSocketWrapper(url);
+			_socket = new NativeSocketWrapper(AddAudioFormat(url, samplingRate));
 			_socket.OnOpen += OnOpen;
 			_socket.OnClose += OnClose;
 			_socket.OnError += OnError;
@@ -22,7 +16,6 @@ namespace Charactr.VoiceSDK.Streaming
 		}
 
 		protected override void OnPcmFrame(int frameIndex, PcmFrame pcmFrame) { }
-		protected override void OnHeaderData(int sampleRate) { }
 
 		public override void Connect()
 		{
@@ -32,25 +25,7 @@ namespace Charactr.VoiceSDK.Streaming
 
 		protected override bool IsConnected() =>
 			_socket.Status == System.Net.WebSockets.WebSocketState.Open;
-
-		public override void Play()
-		{
-			if (!Initialized)
-				throw new Exception("AudioClip is not initialized");
-			
-			_audioSource.clip = AudioClip;
-			_audioSource.Play();
-		}
 		
-		public float GetAverage()
-		{
-			var sample = new float[AverageProvider.SampleSize];
-			
-			_audioSource.GetOutputData(sample, 0);
-			
-			return GetSampleAverage(sample);
-		}
-
 		public override void Dispose()
 		{
 			base.Dispose();

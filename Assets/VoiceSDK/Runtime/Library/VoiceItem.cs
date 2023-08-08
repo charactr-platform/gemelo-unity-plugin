@@ -1,11 +1,11 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Charactr.VoiceSDK.Rest.Model;
+using Gemelo.Voice.Rest.Model;
 using UnityEditor;
 using UnityEngine;
 
-namespace Charactr.VoiceSDK.Library
+namespace Gemelo.Voice.Library
 {
     [System.Serializable]
     public class VoiceItem
@@ -28,8 +28,11 @@ namespace Charactr.VoiceSDK.Library
             set => audioClip = value;
         }
 
-        public int Id => Mathf.Abs(text.GetHashCode() + voiceId);
-        
+        public int Id
+        {
+            get { return Mathf.Abs(text.GetHashCode() + voiceId); }
+        }
+
         [SerializeField] private string text;
         [SerializeField] private int voiceId;
         [SerializeField] private AudioClip audioClip;
@@ -54,17 +57,39 @@ namespace Charactr.VoiceSDK.Library
             using (var convert = new Convert())
             {
                 audioClip = await convert.ConvertToAudioClip(GetRequest());
+    #if UNITY_EDITOR
+                TryRemoveClip();
                 SaveInProject(convert);
+    #endif
             }
 
             Debug.Log($"Updated audio clip for voiceItem = {Id}");
             return AudioClip;
         }
-        
-    
+
+#region Editor helpers
+
+    #if UNITY_EDITOR
+        public void TryRemoveClip()
+        {
+
+            if (audioClip == null)
+                return;
+
+            var path = AssetDatabase.GetAssetPath(audioClip);
+
+            if (string.IsNullOrEmpty(path))
+                return;
+            
+            var hash = GetHashCode().ToString();
+            var importer = AssetImporter.GetAtPath(path);
+
+            if (importer.userData.Equals(hash) && AssetDatabase.DeleteAsset(path))
+                Debug.Log($"Removed old asset : {path}");
+
+        }
         public void SaveInProject(Convert convert)
         {
-#if UNITY_EDITOR
             if (audioClip == null)
                 throw new Exception($"VoiceItem ({Id}) don't contains generated AudioClip");
 
@@ -81,12 +106,24 @@ namespace Charactr.VoiceSDK.Library
 
             var filePath = $"{configuration.AudioSavePath}{Id}.wav";
             File.WriteAllBytes(filePath, data);
+            
             AssetDatabase.ImportAsset(filePath);
             Debug.Log($"Saved asset at: {filePath}");
             audioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(filePath);
+            SetClipHashData(audioClip);
             Debug.Assert(AudioClip != null);
-#endif
-        }
 
+        }
+        private void SetClipHashData(AudioClip clip)
+		{
+			var path = AssetDatabase.GetAssetPath(clip);
+            
+			var importer = AssetImporter.GetAtPath(path);
+            
+			importer.userData = GetHashCode().ToString();
+			importer.SaveAndReimport();
+		}
+    #endif
+#endregion
     }
 }
