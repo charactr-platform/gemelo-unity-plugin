@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -17,7 +16,9 @@ namespace Gemelo.Voice.Tests
 	{
 		private const string Text = "Hello from Charactr Software Development Kit for Unity";
 		private const int VoiceId = 151;
-		private const int ByteSize = 247084;
+		
+		private const int ByteSize = 247084; //259672
+		private const int Samples = 129814;
 		private const int Timeout = 3000;
 		private async Task<ClientWebSocket> GetClient(int voiceId = 151)
 		{
@@ -99,7 +100,7 @@ namespace Gemelo.Voice.Tests
 			
 			Assert.IsTrue(ws.State == WebSocketState.Open);
 			
-			var receiveBuffer = new byte[1024];
+			var receiveBuffer = new byte[128];
 			var total = 0;
 			var dataPerPacket = receiveBuffer.Length;
 			WebSocketReceiveResult result = null;
@@ -122,43 +123,26 @@ namespace Gemelo.Voice.Tests
 		}
 
 		[Test]
-		public async Task SendConvertMessage_Wrapper_StatusNormalClosure()
+		public async Task SendConvertMessage_AudioStreamWrapper_StatusNormalClosure()
 		{
-			var bytesCount = 0;
-			var closeStatus = string.Empty;
-			var authCommand = AudioStreamingClientBase.GetAuthCommand(_configuration.ApiKey, _configuration.ApiClient);
-			var convertCommand = AudioStreamingClientBase.GetConvertCommand(Text);
+			var s = new AudioStream(_configuration);
 			
-			var w = new NativeSocketWrapper(Configuration.STREAMING_API + $"?voiceId={VoiceId}");
+			s.Connect();
+			await s.WaitForData(ByteSize);
+			s.Close();
 			
-			w.OnData += bytes =>
-			{
-				bytesCount += bytes.Length;
-				Debug.Log($"OnData: {bytes.Length}/{bytesCount}");
-			};
+			Assert.IsTrue(s.State == WebSocketState.Closed);
+			Assert.AreEqual(ByteSize , s.Stream.Length);
+
+			var buffer = s.Stream.GetBuffer();
+			var header = new WavHeaderData(buffer);
+			var wav = new WavBuilder(buffer);
+			var clip = wav.CreateAudioClip();
+			Debug.Log(clip.samples);
 			
-			w.OnOpen += () =>
-			{
-				w.SendText(authCommand);
-				w.SendText(convertCommand);
-			};
-			
-			w.OnClose += s =>
-			{
-				closeStatus = s;
-				Debug.Log("Close: "+ closeStatus);
-			};
-			
-			w.OnError += s =>
-			{
-				closeStatus = s;
-				Debug.LogError("Error: " + closeStatus);
-			};
-			
-			w.Connect();
-			await Task.Delay(Timeout);
-			Assert.IsTrue(w.Status == WebSocketState.Closed);
-			Assert.AreEqual(ByteSize , bytesCount);
+			Assert.AreEqual(s.Length, s.Stream.Length);
+			Assert.AreEqual(ByteSize, s.Length);
+			Assert.AreEqual(clip.samples, (buffer.Length - header.DataOffset) / sizeof(short));
 		}
 
 		[Test]
@@ -200,78 +184,45 @@ namespace Gemelo.Voice.Tests
 				Assert.AreEqual(ByteSize , bytesCount);
 			}
 		}
-		
+
 		[Test]
-		public async Task SendConvertMessage_Wrapper_Returns_Mp3()
+		public async Task SendConvertMessage_AudioStreamWrapper_Returns_Mp3Stream()
 		{
 			var bytesCount = 0;
-			var closeStatus = string.Empty;
-
-			var memory = new MemoryStream();
-	
+			var readSize = 1024;
+			var audio = new AudioStream(_configuration, true);
+			audio.Connect();
 			
-			var authCommand = AudioStreamingClientBase.GetAuthCommand(_configuration.ApiKey, _configuration.ApiClient);
-			var convertCommand = AudioStreamingClientBase.GetConvertCommand(Text);
-			
-			var w = new NativeSocketWrapper(Configuration.STREAMING_API + $"?voiceId={VoiceId}&format=mp3&sr=44100");
-
 			MpegFile mp3 = null;
 			int pcmSamplesRead = 0;
+
+			await audio.WaitForData(readSize * 10);
 			
-			w.OnData += bytes =>
-			{
-				bytesCount += bytes.Length;
-				Debug.Log($"OnData: {bytes.Length}/{bytesCount}");
-				memory.Write(bytes);
-			};
-			
-			w.OnOpen += () =>
-			{
-				w.SendText(authCommand);
-				w.SendText(convertCommand);
-			};
-			
-			w.OnClose += s =>
-			{
-				closeStatus = s;
-				Debug.Log("Close: "+ closeStatus);
-			};
-			
-			w.OnError += s =>
-			{
-				closeStatus = s;
-				Debug.LogError("Error: " + closeStatus);
-			};
-			
-			w.Connect();
-			await Task.Delay((int)(Timeout*1.5f));
-			Assert.IsTrue(w.Status == WebSocketState.Closed);
-			
-			
-			mp3 = new MpegFile(memory);
+			mp3 = new MpegFile(audio.Stream);
 			Assert.AreEqual(1, mp3.Channels);
 
-			var readSize = 1024;
-			var samples = mp3.Length / mp3.Channels / sizeof(float);
-			
 			//BUG: ReadSamples checks buffer size with read size together
-			var pcmSamples = new float[samples + readSize];
+			var pcmSamples = new float[Samples + readSize];
 
 			var index = 0;
+			var pcmRead = 0;
 			
-			while (mp3.Position < mp3.Length)
+			var clip = AudioClip.Create("name", Samples, 1, 44100, true, (buff) =>
 			{
-				var count = mp3.ReadSamples(pcmSamples, index, readSize);
-				pcmSamplesRead += count;
-				Debug.Log($"PCM length:{count}/{pcmSamplesRead}, position: {mp3.Position}");
-				index = pcmSamplesRead;
-			}
-			
-			var clip = AudioClip.Create("name", pcmSamplesRead, mp3.Channels, mp3.SampleRate, false);
-			clip.SetData(pcmSamples.AsSpan(0, pcmSamplesRead).ToArray(),0);
-			clip.LoadAudioData();
-			Assert.AreEqual(pcmSamplesRead, clip.samples);
+				var size = buff.Length;
+				
+				index += mp3.ReadSamples(pcmSamples, index, size);
+				
+				for (int i = 0; i < size; i++)
+				{
+					buff[i] = pcmSamples[pcmRead + i];
+				}
+				
+				pcmRead += size;
+			});
+
 			await AudioPlayer.PlayClipStatic(clip);
+			Assert.AreEqual(pcmRead, clip.samples);
 		}
 	}
 }
