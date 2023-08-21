@@ -1,9 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Gemelo.Voice.Audio;
 using Gemelo.Voice.Streaming;
+using NLayer;
 using NUnit.Framework;
 using UnityEngine;
 using Task = System.Threading.Tasks.Task;
@@ -196,6 +199,79 @@ namespace Gemelo.Voice.Tests
 				Assert.AreEqual(WebSocketState.Closed,w.Status);
 				Assert.AreEqual(ByteSize , bytesCount);
 			}
+		}
+		
+		[Test]
+		public async Task SendConvertMessage_Wrapper_Returns_Mp3()
+		{
+			var bytesCount = 0;
+			var closeStatus = string.Empty;
+
+			var memory = new MemoryStream();
+	
+			
+			var authCommand = AudioStreamingClientBase.GetAuthCommand(_configuration.ApiKey, _configuration.ApiClient);
+			var convertCommand = AudioStreamingClientBase.GetConvertCommand(Text);
+			
+			var w = new NativeSocketWrapper(Configuration.STREAMING_API + $"?voiceId={VoiceId}&format=mp3&sr=44100");
+
+			MpegFile mp3 = null;
+			int pcmSamplesRead = 0;
+			
+			w.OnData += bytes =>
+			{
+				bytesCount += bytes.Length;
+				Debug.Log($"OnData: {bytes.Length}/{bytesCount}");
+				memory.Write(bytes);
+			};
+			
+			w.OnOpen += () =>
+			{
+				w.SendText(authCommand);
+				w.SendText(convertCommand);
+			};
+			
+			w.OnClose += s =>
+			{
+				closeStatus = s;
+				Debug.Log("Close: "+ closeStatus);
+			};
+			
+			w.OnError += s =>
+			{
+				closeStatus = s;
+				Debug.LogError("Error: " + closeStatus);
+			};
+			
+			w.Connect();
+			await Task.Delay((int)(Timeout*1.5f));
+			Assert.IsTrue(w.Status == WebSocketState.Closed);
+			
+			
+			mp3 = new MpegFile(memory);
+			Assert.AreEqual(1, mp3.Channels);
+
+			var readSize = 1024;
+			var samples = mp3.Length / mp3.Channels / sizeof(float);
+			
+			//BUG: ReadSamples checks buffer size with read size together
+			var pcmSamples = new float[samples + readSize];
+
+			var index = 0;
+			
+			while (mp3.Position < mp3.Length)
+			{
+				var count = mp3.ReadSamples(pcmSamples, index, readSize);
+				pcmSamplesRead += count;
+				Debug.Log($"PCM length:{count}/{pcmSamplesRead}, position: {mp3.Position}");
+				index = pcmSamplesRead;
+			}
+			
+			var clip = AudioClip.Create("name", pcmSamplesRead, mp3.Channels, mp3.SampleRate, false);
+			clip.SetData(pcmSamples.AsSpan(0, pcmSamplesRead).ToArray(),0);
+			clip.LoadAudioData();
+			Assert.AreEqual(pcmSamplesRead, clip.samples);
+			await AudioPlayer.PlayClipStatic(clip);
 		}
 	}
 }
