@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -196,33 +197,50 @@ namespace Gemelo.Voice.Tests
 			MpegFile mp3 = null;
 			int pcmSamplesRead = 0;
 
-			await audio.WaitForData(readSize * 10);
+			await audio.WaitForData(readSize * 3);
 			
-			mp3 = new MpegFile(audio.Stream);
+			var mp3Stream = new MemoryStream();
+			audio.Stream.WriteTo(mp3Stream);
+			var lastAudioStreamPosition = audio.Stream.Position;
+			
+			mp3 = new MpegFile(mp3Stream);
 			Assert.AreEqual(1, mp3.Channels);
 
 			//BUG: ReadSamples checks buffer size with read size together
 			var pcmSamples = new float[Samples + readSize];
 
 			var index = 0;
-			var pcmRead = 0;
+			var pcmWriteCount = 0;
 			
-			var clip = AudioClip.Create("name", Samples, 1, 44100, true, (buff) =>
+			var clip = AudioClip.Create("name", Samples, 1, 44100, true, (buffer) =>
 			{
-				var size = buff.Length;
-				
-				index += mp3.ReadSamples(pcmSamples, index, size);
-				
-				for (int i = 0; i < size; i++)
+				var pcmDataSize = buffer.Length;
+
+				if (lastAudioStreamPosition < audio.Stream.Length)
 				{
-					buff[i] = pcmSamples[pcmRead + i];
+					lastAudioStreamPosition += audio.CopyTo(mp3Stream);
+					Debug.Log($"OnCopy: {lastAudioStreamPosition}/{audio.Stream.Length}");
+				}
+
+				var pcmReadCount = mp3.ReadSamples(pcmSamples, index, pcmDataSize);
+				
+				Debug.Log($"Position: {index} / {mp3.Position}");
+
+				index += pcmReadCount;
+
+				for (int i = 0; i < pcmDataSize; i++)
+				{
+					buffer[i] = pcmSamples[pcmWriteCount + i];
 				}
 				
-				pcmRead += size;
+				pcmWriteCount += pcmDataSize;
+				
 			});
 
+			await Task.Delay(2000);
+			
 			await AudioPlayer.PlayClipStatic(clip);
-			Assert.AreEqual(pcmRead, clip.samples);
+			Assert.AreEqual(pcmWriteCount, clip.samples);
 		}
 	}
 }
