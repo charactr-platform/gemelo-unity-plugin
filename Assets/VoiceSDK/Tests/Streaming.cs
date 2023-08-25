@@ -190,14 +190,14 @@ namespace Gemelo.Voice.Tests
 		[Test]
 		public async Task SendConvertMessage_AudioStreamWrapper_Returns_Mp3Stream()
 		{
-			var readSize = 1024;
-			var samples = 135936;
+			var readSize = 8192;
+			var samples = 135936 + 10240 + 10240;
 			var audio = new AudioStream(_configuration, true);
 			audio.Connect();
 			
 			MpegFile mp3 = null;
 
-			await audio.WaitForData(readSize * 10);
+			await audio.WaitForData(readSize);
 			
 			var mp3Stream = new MemoryStream();
 			audio.Stream.WriteTo(mp3Stream);
@@ -207,7 +207,7 @@ namespace Gemelo.Voice.Tests
 			Assert.AreEqual(1, mp3.Channels);
 
 			//BUG: ReadSamples checks buffer size with read size together
-			var pcmSamples = new float[samples];
+			var pcmSamples = new float[samples + readSize];
 
 			var index = 0;
 			var pcmWriteCount = 0;
@@ -250,10 +250,11 @@ namespace Gemelo.Voice.Tests
 			var clip = AudioClip.Create("name", samples, 1, 44100, true, PcmCallback);
 
 			await AudioPlayer.PlayClipStatic(clip);
-			Assert.AreEqual(audio.Stream.Length,  31181);
-			Assert.AreEqual(readPosition, 31181);
-			Assert.AreEqual(pcmWriteCount, 135936);
-			Assert.AreEqual(pcmWriteCount, clip.samples);
+			
+			Assert.AreEqual(31181, audio.Stream.Length);
+			Assert.AreEqual(31181, readPosition);
+			Assert.AreEqual(samples, pcmWriteCount);
+			Assert.AreEqual(clip.samples, pcmWriteCount);
 		}
 	}
 }
