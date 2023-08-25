@@ -39,8 +39,8 @@ namespace Gemelo.Voice.Tests
 					_bytesCount += bytes.Length;
 					_writer.Write(bytes);
 					_writer.Flush();
-					var end = Stream.Seek(0, SeekOrigin.End);
-					Debug.Log($"OnData: {end}/{_bytesCount}");
+					//var end = Stream.Seek(0, SeekOrigin.End);
+					//Debug.Log($"OnData: {end}/{_bytesCount}");
 				};
 			
 				_socket.OnOpen += () =>
@@ -94,18 +94,20 @@ namespace Gemelo.Voice.Tests
 				_socket.Close();
 			}
 
-			public int CopyTo(Stream stream)
+			public int CopyTo(Stream stream, long offset)
 			{
 				byte[] buffer = new byte[128];
 
 				int bytesRead = 0 , totalRead = 0;
+				
+				Stream.Seek(offset, SeekOrigin.Begin);
 				
 				while((bytesRead = Stream.Read(buffer, 0, buffer.Length)) > 0)
 				{
 					stream.Write(buffer, 0, bytesRead);
 					totalRead += bytesRead;
 				}
-
+				
 				return totalRead;
 			}
 		}
