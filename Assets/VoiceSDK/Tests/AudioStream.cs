@@ -34,17 +34,21 @@ namespace Gemelo.Voice.Tests
 				_socket = new NativeSocketWrapper(Configuration.STREAMING_API + $"?voiceId={VoiceId}" + mp3Params);
 			}
 
-			public void Connect()
+			public void Connect(string text = "")
 			{
 				_socket.OnData += bytes =>
 				{
 					_bytesCount += bytes.Length;
 					_writer.Write(bytes);
 					_writer.Flush();
+					Debug.Log("Ondata: "+ Length);
 				};
 			
 				_socket.OnOpen += () =>
 				{
+					if (!string.IsNullOrEmpty(text))
+						_commands[1] = AudioStreamingClientBase.GetConvertCommand(text);
+					
 					foreach (var command in _commands)
 					{
 						_socket.SendText(command);

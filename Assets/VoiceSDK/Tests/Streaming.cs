@@ -191,8 +191,15 @@ namespace Gemelo.Voice.Tests
 		public async Task SendConvertMessage_AudioStreamWrapper_Returns_Mp3Stream()
 		{
 			var readSize = 8192;
-			var samples = 135936 + 10240 + 10240 + 10240 + readSize;
+			var expectedSamples = 171648;
 			var audio = new AudioStream(_configuration, true);
+			
+			/*audio.Connect("We use optional cookies to improve your experience on our websites, such as through social media connections," +
+			              " and to display personalized advertising based on your online activity. If you reject optional cookies," +
+			              " only cookies necessary to provide you the services will be used." +
+			              " You may change your selection by clicking “Manage Cookies” at the bottom of the page.");
+			              */
+			
 			audio.Connect();
 			
 			MpegFile mp3 = null;
@@ -200,14 +207,13 @@ namespace Gemelo.Voice.Tests
 			await audio.WaitForData(readSize);
 			
 			var mp3Stream = new MemoryStream();
-			audio.Stream.WriteTo(mp3Stream);
-			long readPosition = audio.Stream.Position;
+			long readPosition = audio.CopyTo(mp3Stream, 0);
 			
 			mp3 = new MpegFile(mp3Stream);
 			Assert.AreEqual(1, mp3.Channels);
 			Assert.AreEqual(44100, mp3.SampleRate);
 			
-			var pcmSamples = new float[samples];
+			var pcmSamples = new float[expectedSamples];
 
 			var index = 0;
 			var pcmWriteCount = 0;
@@ -224,17 +230,7 @@ namespace Gemelo.Voice.Tests
 
 				var pcmReadCount = mp3.ReadSamples(pcmSamples, index, pcmDataSize);
 				
-				if (pcmReadCount == 0)
-				{
-					for (int i = 0; i < pcmDataSize; i++)
-					{
-						buffer[i] = 0f;
-					}
-					Debug.LogWarning("no data");
-					return;
-				}
-				
-				Debug.Log($"Samples: ReadCount: {pcmReadCount}, Samples: {index} / {samples}");
+				Debug.Log($"Samples: ReadCount: {pcmReadCount}, Samples: {index} / {expectedSamples}");
 
 				index += pcmReadCount;
 
@@ -246,14 +242,14 @@ namespace Gemelo.Voice.Tests
 				pcmWriteCount += pcmDataSize;
 			}
 			
-			var clip = AudioClip.Create("name", samples, 1, 44100, true, PcmCallback);
+			var clip = AudioClip.Create("name", expectedSamples, 1, 44100, true, PcmCallback);
 
 			await AudioPlayer.PlayClipStatic(clip);
 			
 			Assert.AreEqual(31181, audio.Stream.Length);
 			Assert.AreEqual(31181, readPosition);
 			Assert.AreEqual(mp3.Position, mp3.Length);
-			Assert.AreEqual(samples, pcmWriteCount);
+			Assert.AreEqual(expectedSamples, pcmWriteCount);
 			Assert.AreEqual(clip.samples, pcmWriteCount);
 		}
 	}
