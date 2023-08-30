@@ -21,15 +21,17 @@ namespace Gemelo.Voice.Tests
 			private int _bytesCount;
 			private string _closeStatus;
 			private readonly BinaryWriter _writer;
+			private bool _useMp3;
 			public AudioStream(Configuration configuration, bool useMp3 = false)
 			{
 				Stream = new MemoryStream();
 				_writer = new BinaryWriter(Stream);
+				_useMp3 = useMp3;
 				_commands.Add(AudioStreamingClientBase.GetAuthCommand(configuration.ApiKey, configuration.ApiClient));
 				_commands.Add(AudioStreamingClientBase.GetConvertCommand(Text));
 				
-				var mp3 = useMp3 ? "&format=mp3&sr=44100" : string.Empty;
-				_socket = new NativeSocketWrapper(Configuration.STREAMING_API + $"?voiceId={VoiceId}" + mp3);
+				var mp3Params = useMp3 ? "&format=mp3&sr=44100" : string.Empty;
+				_socket = new NativeSocketWrapper(Configuration.STREAMING_API + $"?voiceId={VoiceId}" + mp3Params);
 			}
 
 			public void Connect()
@@ -39,8 +41,6 @@ namespace Gemelo.Voice.Tests
 					_bytesCount += bytes.Length;
 					_writer.Write(bytes);
 					_writer.Flush();
-					//var end = Stream.Seek(0, SeekOrigin.End);
-					//Debug.Log($"OnData: {end}/{_bytesCount}");
 				};
 			
 				_socket.OnOpen += () =>
@@ -55,7 +55,7 @@ namespace Gemelo.Voice.Tests
 				{
 					_closeStatus = s;
 					var end = _writer.Seek(0, SeekOrigin.End);
-					Debug.Log($"Data recevied: {Stream.Length}/{end} Close: "+ _closeStatus);
+					Debug.Log($"Data received: {Stream.Length}/{end} Close: "+ _closeStatus);
 				};
 			
 				_socket.OnError += s =>
@@ -101,6 +101,7 @@ namespace Gemelo.Voice.Tests
 				int bytesRead = 0 , totalRead = 0;
 				
 				Stream.Seek(offset, SeekOrigin.Begin);
+				stream.Seek(offset, SeekOrigin.Begin);
 				
 				while((bytesRead = Stream.Read(buffer, 0, buffer.Length)) > 0)
 				{
