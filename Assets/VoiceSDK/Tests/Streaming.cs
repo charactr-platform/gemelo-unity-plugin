@@ -126,7 +126,7 @@ namespace Gemelo.Voice.Tests
 		[Test]
 		public async Task SendConvertMessage_AudioStreamWrapper_StatusNormalClosure()
 		{
-			var s = new AudioStream(_configuration);
+			var s = new AudioStream(_configuration, AudioDataType.Mp3, 44100);
 			
 			s.Connect();
 			await s.WaitForData(ByteSize);
@@ -137,7 +137,9 @@ namespace Gemelo.Voice.Tests
 
 			var buffer = s.Stream.GetBuffer();
 			var header = new WavHeaderData(buffer);
-			var wav = new WavBuilder(buffer);
+			Assert.AreEqual(44100, header.SampleRate);
+			
+			var wav = new WavBuilder(header.SampleRate, buffer);
 			var clip = wav.CreateAudioClip();
 			Debug.Log(clip.samples);
 			
@@ -148,7 +150,7 @@ namespace Gemelo.Voice.Tests
 		}
 
 		[Test]
-		public async Task SendConvertMessageLoop_StatusNormalClosure()
+		public async Task SendConvertMessage_Loop_StatusNormalClosure()
 		{
 			var authCommand = AudioStreamingClientBase.GetAuthCommand(_configuration.ApiKey, _configuration.ApiClient);
 			var convertCommand = AudioStreamingClientBase.GetConvertCommand(Text);
@@ -192,7 +194,7 @@ namespace Gemelo.Voice.Tests
 		{
 			var readSize = 8192;
 			var expectedSamples = 171648;
-			var audio = new AudioStream(_configuration, true);
+			var audio = new AudioStream(_configuration, AudioDataType.Mp3, 44100);
 			
 			/*audio.Connect("We use optional cookies to improve your experience on our websites, such as through social media connections," +
 			              " and to display personalized advertising based on your online activity. If you reject optional cookies," +
@@ -211,7 +213,7 @@ namespace Gemelo.Voice.Tests
 			
 			mp3 = new MpegFile(mp3Stream);
 			Assert.AreEqual(1, mp3.Channels);
-			Assert.AreEqual(44100, mp3.SampleRate);
+			Assert.AreEqual(audio.SampleRate, mp3.SampleRate);
 			
 			var pcmSamples = new float[expectedSamples];
 
@@ -242,7 +244,7 @@ namespace Gemelo.Voice.Tests
 				pcmWriteCount += pcmDataSize;
 			}
 			
-			var clip = AudioClip.Create("name", expectedSamples, 1, 44100, true, PcmCallback);
+			var clip = AudioClip.Create("name", expectedSamples, 1, audio.SampleRate, true, PcmCallback);
 
 			await AudioPlayer.PlayClipStatic(clip);
 			

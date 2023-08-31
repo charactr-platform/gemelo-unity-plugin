@@ -56,8 +56,8 @@ namespace Gemelo.Voice
 				throw new Exception("Can't download requested WAV data");
 			
 			Data = wavData;
-			
-			return new WavBuilder(wavData).CreateAudioClip();
+			var header = new WavHeaderData(wavData);
+			return new WavBuilder(header.SampleRate, wavData).CreateAudioClip();
 		}
 
 		/// <summary>

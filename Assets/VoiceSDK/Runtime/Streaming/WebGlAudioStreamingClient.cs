@@ -12,11 +12,10 @@ namespace Gemelo.Voice.Streaming
 		private readonly GameObject _gameObject;
 		private WebGlAudioBufferProcessor _bufferProcessor;
 		
-		public WebGlAudioStreamingClient(string url, Configuration configuration, int maxLength = 30) : base(configuration, maxLength)
+		public WebGlAudioStreamingClient(string url, Configuration configuration, AudioDataType audioDataType = AudioDataType.Wav, int maxLength = 30) 
+			: base(configuration, audioDataType, WebGlAudioBufferProcessor.GetSupportedSampleRate(), maxLength)
 		{
-			var sampleRate = WebGlAudioBufferProcessor.GetSupportedSampleRate();
-
-			if (sampleRate == -1)
+			if (SampleRate == -1)
 				throw new Exception("Can't read sample rate from Browser AudioContext!");
 			
 			var header = new Dictionary<string, string>()
@@ -24,7 +23,7 @@ namespace Gemelo.Voice.Streaming
 				{"user-agent", Configuration.USER_AGENT}
 			};
 			
-			_socket = new NativeWebSocket.WebSocket(AddAudioFormat(url, sampleRate), header);
+			_socket = new NativeWebSocket.WebSocket(AddAudioFormat(url), header);
 	
 			_socket.OnOpen += OnOpen;
 			_socket.OnClose += code => OnClose(code.ToString());

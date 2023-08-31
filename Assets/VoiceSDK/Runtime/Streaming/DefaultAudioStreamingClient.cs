@@ -6,9 +6,12 @@ namespace Gemelo.Voice.Streaming
 	public class DefaultAudioStreamingClient : AudioStreamingClientBase, IAudioStreamingClient
 	{
 		private readonly NativeSocketWrapper _socket;
-		public DefaultAudioStreamingClient(string url, Configuration configuration, int samplingRate = 44100, int maxLenght = 30): base(configuration, maxLenght)
+		
+		//TODO: Use configuration data structure
+		public DefaultAudioStreamingClient(string url, Configuration configuration, AudioDataType dataType = AudioDataType.Wav, 
+			int sampleRate = 44100, int maxLenght = 30): base(configuration, dataType, sampleRate, maxLenght)
 		{
-			_socket = new NativeSocketWrapper(AddAudioFormat(url, samplingRate));
+			_socket = new NativeSocketWrapper(AddAudioFormat(url));
 			_socket.OnOpen += OnOpen;
 			_socket.OnClose += OnClose;
 			_socket.OnError += OnError;
