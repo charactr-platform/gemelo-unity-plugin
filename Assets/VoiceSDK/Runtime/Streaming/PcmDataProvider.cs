@@ -4,7 +4,7 @@ using Gemelo.Voice.Audio;
 
 namespace Gemelo.Voice.Streaming
 {
-	internal class PcmDataProvider
+	internal class PcmDataProvider : IDataProvider
 	{
 		private readonly Queue<byte[]> _dataQueue;
 		private readonly Queue<PcmFrame> _pcmFrames;
@@ -65,7 +65,7 @@ namespace Gemelo.Voice.Streaming
 			}
 		}
 			
-		public bool FillPcmFramesBuffer(out List<PcmFrame> pcmFrames)
+		public bool ReadPcmFrames(out List<PcmFrame> pcmFrames)
 		{
 			bool framesFound = false;
 			pcmFrames = new List<PcmFrame>();
@@ -88,8 +88,8 @@ namespace Gemelo.Voice.Streaming
 				return framesFound;
 			}
 		}
-		
-		private void CreateFrameData(Span<byte> data)
+
+		public void CreateFrameData(Span<byte> data)
 		{
 			if (!_currentPcmFrame.AddData(data.ToArray(), out var overflow))
 				return;

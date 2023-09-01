@@ -30,12 +30,12 @@ namespace Gemelo.Voice.Streaming
 		private AudioClip _clip = null;
 		
 		private int _frameCount, _totalFramesRead;
-		private PcmDataProvider _dataProvider;
+		private readonly IDataProvider _dataProvider;
 
 		protected AudioStreamingClientBase(Configuration configuration, AudioDataType dataType, int sampleRate, int maxClipLenght)
 		{
 			_commands = new Queue<string>();
-			_dataProvider = new PcmDataProvider();
+			_dataProvider = new StreamDataProvider();
 			_configuration = configuration;
 			_maxClipLenght = maxClipLenght;
 			_dataType = dataType;
@@ -83,7 +83,7 @@ namespace Gemelo.Voice.Streaming
 				return;
 			}
 
-			if (_dataProvider.FillPcmFramesBuffer(out var frames))
+			if (_dataProvider.ReadPcmFrames(out var frames))
 			{
 				for (int i = 0; i < frames.Count; i++)
 				{
