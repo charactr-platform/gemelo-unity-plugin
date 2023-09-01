@@ -33,12 +33,35 @@ namespace Gemelo.Voice.Streaming
 				return _dataQueue.Count > 0;
 			}
 		}
-
-		public void ReadHeaderData(out byte[] header)
+		
+		/// <summary>
+		/// Read header data and remove it from PCM frames buffer readout
+		/// </summary>
+		/// <param name="dataType"></param>
+		/// <param name="header"></param>
+		public void ReadHeaderData(AudioDataType dataType, out byte[] header)
 		{
 			lock (_dataQueue)
 			{
-				header = _dataQueue.ToArray()[0];
+				var tempArray = _dataQueue.ToArray();
+				var headerPushback = false;
+				header = tempArray[0];
+				
+				//Assuming 44 bytes for Wav file
+				if (dataType == AudioDataType.Wav && header.Length > 44)
+				{
+					tempArray[0] = header.AsSpan(44).ToArray();
+					headerPushback = true;
+				}
+				
+				if (tempArray.Length <= 1)
+					return;
+				
+				//Push back items to queue if more items found, without header
+				_dataQueue.Clear();
+					
+				for (int i = headerPushback ? 0 : 1 ; i < tempArray.Length; i++)
+					_dataQueue.Enqueue(tempArray[i]);
 			}
 		}
 			
@@ -65,8 +88,7 @@ namespace Gemelo.Voice.Streaming
 				return framesFound;
 			}
 		}
-			
-			
+		
 		private void CreateFrameData(Span<byte> data)
 		{
 			if (!_currentPcmFrame.AddData(data.ToArray(), out var overflow))

@@ -36,7 +36,6 @@ namespace Gemelo.Voice.Streaming
 		{
 			_commands = new Queue<string>();
 			_dataProvider = new PcmDataProvider();
-			
 			_configuration = configuration;
 			_maxClipLenght = maxClipLenght;
 			_dataType = dataType;
@@ -80,8 +79,7 @@ namespace Gemelo.Voice.Streaming
 		{
 			if (_dataProvider.HasData() && AudioClipBuilder == null)
 			{
-				_dataProvider.ReadHeaderData(out var header);
-				CreateAudioBuilderInstance(header);
+				CreateAudioBuilderInstance(DataType);
 				return;
 			}
 
@@ -89,30 +87,32 @@ namespace Gemelo.Voice.Streaming
 			{
 				for (int i = 0; i < frames.Count; i++)
 				{
+					Debug.Log($"Adding frames [{frames.Count}]");
 					BufferPcmFrameData(frames[i]);
 				}
 			}
-
+			
 			CheckForBufferEnd();
 		}
 
-		private void CreateAudioBuilderInstance(byte[] initialData)
+		private void CreateAudioBuilderInstance(AudioDataType dataType)
 		{
+			_dataProvider.ReadHeaderData(dataType, out var header);
+			
 			Initialize();
 			
-			switch (DataType)
+			switch (dataType)
 			{
 				case AudioDataType.Mp3:
-					AudioClipBuilder = new Mp3Builder(SampleRate, initialData);
+					AudioClipBuilder = new Mp3Builder(SampleRate, header);
 					break;
 				case AudioDataType.Wav:
-					AudioClipBuilder = new WavBuilder(SampleRate, initialData);
+					AudioClipBuilder = new WavBuilder(SampleRate, header);
 					break;
 				case AudioDataType.None:
 					throw new Exception("AudioData type not selected!");
 			}
 		}
-		
 		
 		private void BufferPcmFrameData(PcmFrame frame)
 		{
@@ -144,7 +144,6 @@ namespace Gemelo.Voice.Streaming
 			BufferingCompleted = false;
 			AudioLength = 0f;
 			TimeSamples = 0;
-			_dataProvider = new PcmDataProvider();
 		}
 
 		

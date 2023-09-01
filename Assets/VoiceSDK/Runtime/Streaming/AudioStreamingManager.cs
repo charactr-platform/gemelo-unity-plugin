@@ -43,7 +43,6 @@ namespace Gemelo.Voice.Streaming
                 throw new Exception("Can't find required AudioPlayer component");
         }
         
-        
         public IAudioPlayer InitializePlayer(IAverageProvider provider, int samplesSize)
         {
             _averageProvider = provider;

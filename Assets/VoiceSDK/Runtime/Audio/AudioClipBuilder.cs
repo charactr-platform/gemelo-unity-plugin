@@ -28,6 +28,7 @@ namespace Gemelo.Voice.Audio
 		protected AudioClipBuilder(int sampleRate)
 		{
 			_sampleRate = sampleRate;
+			_samplesBuffer = new List<float>();
 		}
 		
 		public AudioClip CreateAudioClipStream(string name, int seconds = 30)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using System.Net.WebSockets;
 using System.Text;
@@ -9,6 +10,7 @@ using Gemelo.Voice.Streaming;
 using NLayer;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 using Task = System.Threading.Tasks.Task;
 
 namespace Gemelo.Voice.Tests
@@ -253,6 +255,26 @@ namespace Gemelo.Voice.Tests
 			Assert.AreEqual(mp3.Position, mp3.Length);
 			Assert.AreEqual(expectedSamples, pcmWriteCount);
 			Assert.AreEqual(clip.samples, pcmWriteCount);
+		}
+
+		[UnityTest]
+		[RequiresPlayMode()]
+		public IEnumerator AudioStreamingManager_Play_Wav()
+		{
+			var gameobject = new GameObject("_audioStreamingManager");
+			var manager = gameobject.AddComponent<AudioStreamingManager>();
+			
+			Assert.IsNotNull(manager);
+			Assert.IsTrue(manager.TryGetComponent<AudioPlayer>(out _));
+			
+			yield return manager.Convert(Text);
+			Assert.IsNotNull(manager.AudioClip);
+			Assert.IsFalse(manager.AudioEnd);
+			
+			manager.InitializePlayer(new AverageProvider(), 512);
+
+			yield return manager.Play();
+			Assert.IsTrue(manager.AudioEnd);
 		}
 	}
 }
