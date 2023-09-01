@@ -18,6 +18,13 @@ namespace Gemelo.Voice.Tests
 	public class Streaming
 	{
 		private const string Text = "Hello from Charactr Software Development Kit for Unity";
+
+		private const string LongText =
+			"We use optional cookies to improve your experience on our websites, such as through social media connections," +
+			" and to display personalized advertising based on your online activity. If you reject optional cookies," +
+			" only cookies necessary to provide you the services will be used." +
+			" You may change your selection by clicking “Manage Cookies” at the bottom of the page.";
+		
 		private const int VoiceId = 151;
 		
 		private const int ByteSize = 247084; //259672
@@ -198,11 +205,7 @@ namespace Gemelo.Voice.Tests
 			var expectedSamples = 171648;
 			var audio = new AudioStream(_configuration, AudioDataType.Mp3, 44100);
 			
-			/*audio.Connect("We use optional cookies to improve your experience on our websites, such as through social media connections," +
-			              " and to display personalized advertising based on your online activity. If you reject optional cookies," +
-			              " only cookies necessary to provide you the services will be used." +
-			              " You may change your selection by clicking “Manage Cookies” at the bottom of the page.");
-			              */
+			/*audio.Connect(LongText);*/
 			
 			audio.Connect();
 			
@@ -267,7 +270,7 @@ namespace Gemelo.Voice.Tests
 			Assert.IsNotNull(manager);
 			Assert.IsTrue(manager.TryGetComponent<AudioPlayer>(out _));
 			
-			yield return manager.Convert(Text);
+			yield return manager.Convert(LongText);
 			Assert.IsNotNull(manager.AudioClip);
 			Assert.IsFalse(manager.AudioEnd);
 			
