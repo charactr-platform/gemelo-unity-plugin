@@ -264,13 +264,25 @@ namespace Gemelo.Voice.Tests
 		[RequiresPlayMode()]
 		public IEnumerator AudioStreamingManager_Play_Wav()
 		{
+			yield return ConvertAndPlayAudioByStreamingManager(Text, AudioDataType.Wav);
+		}
+		
+		[UnityTest]
+		[RequiresPlayMode()]
+		public IEnumerator AudioStreamingManager_Play_Mp3()
+		{
+			yield return ConvertAndPlayAudioByStreamingManager(Text, AudioDataType.Mp3);
+		}
+		
+		private IEnumerator ConvertAndPlayAudioByStreamingManager(string text, AudioDataType dataType)
+		{
 			var gameobject = new GameObject("_audioStreamingManager");
 			var manager = gameobject.AddComponent<AudioStreamingManager>();
 			
 			Assert.IsNotNull(manager);
 			Assert.IsTrue(manager.TryGetComponent<AudioPlayer>(out _));
-			
-			yield return manager.Convert(LongText);
+			manager.SetAudioDataType(dataType);
+			yield return manager.Convert(text);
 			Assert.IsNotNull(manager.AudioClip);
 			Assert.IsFalse(manager.AudioEnd);
 			

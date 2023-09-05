@@ -30,12 +30,12 @@ namespace Gemelo.Voice.Streaming
 		private AudioClip _clip = null;
 		
 		private int _frameCount, _totalFramesRead;
-		private readonly IDataProvider _dataProvider;
+		private readonly IPcmDataProvider _pcmDataProvider;
 
 		protected AudioStreamingClientBase(Configuration configuration, AudioDataType dataType, int sampleRate, int maxClipLenght)
 		{
 			_commands = new Queue<string>();
-			_dataProvider = new StreamDataProvider();
+			_pcmDataProvider = new StreamPcmDataProvider();
 			_configuration = configuration;
 			_maxClipLenght = maxClipLenght;
 			_dataType = dataType;
@@ -50,7 +50,7 @@ namespace Gemelo.Voice.Streaming
 		//Invoke on main thread 
 		protected void OnData(byte[] data)
 		{
-			_dataProvider.AddRawData(data);
+			_pcmDataProvider.AddRawData(data);
 		}
 
 		protected string AddAudioFormat(string url)
@@ -77,63 +77,37 @@ namespace Gemelo.Voice.Streaming
 		
 		public void DepleteBufferQueue()
 		{
-			if (_dataProvider.HasData() && AudioClipBuilder == null)
+			var hasData = _pcmDataProvider.HasData();
+			
+			if (hasData && AudioClipBuilder == null)
 			{
-				CreateAudioBuilderInstance(DataType);
+				AudioClipBuilder = _pcmDataProvider.CreateAudioBuilder(DataType, SampleRate);
+				Initialize();
 				return;
 			}
-
-			if (_dataProvider.ReadPcmFrames(out var frames))
-			{
-				for (int i = 0; i < frames.Count; i++)
-				{
-					Debug.Log($"Adding frames [{frames.Count}]");
-					BufferPcmFrameData(frames[i]);
-				}
-			}
 			
+			BufferPcmFramesData();
+
 			CheckForBufferEnd();
 		}
-
-		private void CreateAudioBuilderInstance(AudioDataType dataType)
-		{
-			_dataProvider.ReadHeaderData(dataType, out var header);
-			
-			Initialize();
-			
-			switch (dataType)
-			{
-				case AudioDataType.Mp3:
-					AudioClipBuilder = new Mp3Builder(SampleRate, header);
-					break;
-				case AudioDataType.Wav:
-					AudioClipBuilder = new WavBuilder(SampleRate, header);
-					break;
-				case AudioDataType.None:
-					throw new Exception("AudioData type not selected!");
-			}
-		}
 		
-		private void BufferPcmFrameData(PcmFrame frame)
+		private void BufferPcmFramesData()
 		{
-			AudioLength = AudioClipBuilder.BufferData(frame);
+			var processedCount = _pcmDataProvider.BufferPcmFrames();
+			
+			if (processedCount == 0)
+				return;
+			Debug.Log($"Added frames: {processedCount}");
+			AudioLength = AudioClipBuilder.ProcessedSamplesCount / (float)AudioClipBuilder.SampleRate;
 			TimeSamples = AudioClipBuilder.ProcessedSamplesCount + AudioClipBuilder.EmptySamples;
-			
-			//WebGL needs first buffer before start of sampling
-			OnPcmFrame(_frameCount, frame);
 
-			//Buffer some data before we start audio play, 1 sec approx.
-			var startFrame = Mathf.RoundToInt((float) AudioClipBuilder.SampleRate / frame.Samples.Length);
-			
-			if (_frameCount == startFrame)
+			if (_clip == null && AudioLength > 0.5f)
 			{
-				Debug.Log($"Creating audio clip, buffered length: {AudioLength}sec.");
-				CreateAudioClip();
+				Debug.Log($"Creating audio clip, buffered length: {AudioLength} sec.");
+				_clip = CreateAudioClip();
 			}
-			
-			frame.Dispose();
-			
-			_frameCount++;
+
+			_frameCount += processedCount;
 		}
 		
 		private void Initialize()
@@ -144,10 +118,11 @@ namespace Gemelo.Voice.Streaming
 			BufferingCompleted = false;
 			AudioLength = 0f;
 			TimeSamples = 0;
+			_pcmDataProvider.OnPcmFrame = frame => OnPcmFrame(_frameCount, frame);
 		}
 
 		
-		private void CreateAudioClip()
+		private AudioClip CreateAudioClip()
 		{
 			var clip = AudioClipBuilder.CreateAudioClipStream("test", _maxClipLenght);
 			
@@ -156,15 +131,14 @@ namespace Gemelo.Voice.Streaming
 			
 			Debug.Log($"Loaded audio clip...{clip.loadState}");
 		
-			_clip = clip;
+			return clip;
 		}
 		
 		private void CheckForBufferEnd()
 		{
 			if (Initialized && !Connected && _totalFramesRead != 0)
 			{
-				if (_dataProvider.ReadLastFrame(out var frame))
-					BufferPcmFrameData(frame);
+				_pcmDataProvider.BufferLastFrame();
 
 				Debug.Log($"Buffer loaded [{_totalFramesRead}]: {AudioLength}s");
 				_totalFramesRead = 0;
@@ -186,7 +160,7 @@ namespace Gemelo.Voice.Streaming
 			AudioClipBuilder = null;
 			_clip = null;
 			_commands.Clear();
-			_dataProvider.Dispose();
+			_pcmDataProvider.Dispose();
 			Debug.Log("Disposed streaming client");
 		}
 		

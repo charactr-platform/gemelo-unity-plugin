@@ -30,7 +30,8 @@ namespace Gemelo.Voice.Audio
 			_sampleRate = sampleRate;
 			_samplesBuffer = new List<float>();
 		}
-		
+
+		public abstract byte[] Decode(byte[] bytes); 
 		public AudioClip CreateAudioClipStream(string name, int seconds = 30)
 		{
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -43,7 +44,7 @@ namespace Gemelo.Voice.Audio
 			return _clip;
 		}
 		
-		public float BufferData(PcmFrame frame)
+		public float BufferPcmFrame(PcmFrame frame)
 		{
 			_lastBytesReadCount += frame.ByteSize;
 			_processedSamplesCount += frame.Samples.Length;

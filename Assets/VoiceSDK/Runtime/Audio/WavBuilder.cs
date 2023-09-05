@@ -22,5 +22,11 @@ namespace Gemelo.Voice.Audio
 			clip.SetData(waveData, 0);
 			return clip;
 		}
+
+		public override byte[] Decode(byte[] bytes)
+		{
+			//No need for decoding 
+			return bytes;
+		}
 	}
 }
