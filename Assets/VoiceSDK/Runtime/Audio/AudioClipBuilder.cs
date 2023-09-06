@@ -31,7 +31,7 @@ namespace Gemelo.Voice.Audio
 			_samplesBuffer = new List<float>();
 		}
 
-		public abstract byte[] Decode(byte[] bytes); 
+		public abstract List<PcmFrame> DecodeDataToPcm(byte[] bytes); 
 		public AudioClip CreateAudioClipStream(string name, int seconds = 30)
 		{
 #if UNITY_WEBGL && !UNITY_EDITOR

@@ -11,14 +11,18 @@ namespace Gemelo.Voice.Audio
 	{
 		private readonly MpegFile _mpegFile;
 		private readonly MemoryStream _stream;
+		private PcmFrame _currentFrame;
+		private readonly List<PcmFrame> _frames;
 		public Mp3Builder(int sampleRate, byte[] headerData) : base(sampleRate)
 		{
 			_stream = new MemoryStream();
 			_stream.Write(headerData);
 			_mpegFile = new MpegFile(_stream);
+			_currentFrame = new PcmFrame();	
+			_frames = new List<PcmFrame>();
 		}
 		
-		public override byte[] Decode(byte[] bytes)
+		public override List<PcmFrame> DecodeDataToPcm(byte[] bytes)
 		{
 			_stream.Write(bytes);
 			
@@ -29,12 +33,21 @@ namespace Gemelo.Voice.Audio
 			samplesCount += _mpegFile.ReadSamples(buffer, 0, (int)samplesToRead);
 			Debug.Log($"Stream L: [{_stream.Length}] P: [{_mpegFile.Position}/{_mpegFile.Length}] , S: [{samplesCount}/{samplesToRead}]");
 
-			var bytess = new List<byte>();
-			
-			for (int i = 0; i < buffer.Length; i++)
-				bytess.AddRange(BitConverter.GetBytes(buffer[i]));
+			WritePcmFrames(buffer);
 
-			return bytess.ToArray();
+			Debug.Log($"Created {_frames.Count}");
+			return _frames;
+		}
+
+		private void WritePcmFrames(float[] samples)
+		{
+			var more = _currentFrame.AddPcmData(samples, out var overflow);
+			_frames.Add(_currentFrame);
+
+			if (!more) return;
+			
+			_currentFrame = new PcmFrame();
+			WritePcmFrames(overflow);
 		}
 	}
 }

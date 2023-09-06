@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Gemelo.Voice.Audio
@@ -9,11 +10,14 @@ namespace Gemelo.Voice.Audio
 		private readonly WavHeaderData _header;
 		
 		private readonly WavDebugSave _debugSave;
-	
+		private PcmFrame _currentFrame;
+		private List<PcmFrame> _frames;
 		public WavBuilder(int sampleRate, byte[] data): base(sampleRate)
 		{
 			_data = data;
 			_header = new WavHeaderData(data);
+			_frames = new List<PcmFrame>();
+			_currentFrame = new PcmFrame();
 		}
 		public AudioClip CreateAudioClip(string name = "clip")
 		{
@@ -23,10 +27,23 @@ namespace Gemelo.Voice.Audio
 			return clip;
 		}
 
-		public override byte[] Decode(byte[] bytes)
+		public override List<PcmFrame> DecodeDataToPcm(byte[] bytes)
 		{
-			//No need for decoding 
-			return bytes;
+			WritePcmFrames(bytes);
+			Debug.Log($"Created frames: {_frames}");
+			return _frames;
+		}
+		
+		private void WritePcmFrames(Span<byte> rawData)
+		{
+			var more = _currentFrame.AddData(rawData.ToArray(), out var overflow);
+				
+			_frames.Add(_currentFrame);
+
+			if (!more) return;
+			
+			_currentFrame = new PcmFrame();
+			WritePcmFrames(overflow);
 		}
 	}
 }

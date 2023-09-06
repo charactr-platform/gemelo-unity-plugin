@@ -9,6 +9,7 @@ namespace Gemelo.Voice.Streaming
 	internal class StreamPcmDataProvider : IPcmDataProvider
 	{
 		public Action<PcmFrame> OnPcmFrame { get; set; }
+		public AudioClipBuilder AudioClipBuilder { get => _builder; }
 		private readonly MemoryStream _memory;
 		private readonly BinaryWriter _writer;
 		private AudioClipBuilder _builder;
@@ -88,6 +89,7 @@ namespace Gemelo.Voice.Streaming
 				
 				_memory.Seek(_bufferReadout, SeekOrigin.Begin);
 				_bufferReadout += _memory.Read(buffer);
+				
 				WritePcmFrames(buffer);
 					
 				for (int i = 0; i < _pcmFrames.Count; i++)
@@ -96,6 +98,7 @@ namespace Gemelo.Voice.Streaming
 						continue;
 					
 					_builder.BufferPcmFrame(frame);
+					
 					count++;
 					OnPcmFrame?.Invoke(frame);
 				}
@@ -106,14 +109,10 @@ namespace Gemelo.Voice.Streaming
 
 		private void WritePcmFrames(Span<byte> rawData)
 		{
-			var buffer = _builder.Decode(rawData.ToArray());
-			if (!_currentPcmFrame.AddData(buffer, out var overflow))
-				return;
-			
-			_pcmFrames.Enqueue(_currentPcmFrame);
-			
-			CreateNewPcmFrame();
-			WritePcmFrames(overflow);
+			foreach (var frame in _builder.DecodeDataToPcm(rawData.ToArray()))
+			{
+				_pcmFrames.Enqueue(frame);
+			}
 		}
 
 		public bool BufferLastFrame()
