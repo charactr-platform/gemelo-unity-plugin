@@ -231,6 +231,7 @@ namespace Gemelo.Voice.Tests
 			{
 				var pcmDataSize = buffer.Length;
 
+				//Debug.Log($"Time {mp3.Duration } {mp3.Length}");
 				if (readPosition < audio.Stream.Length)
 				{
 					readPosition += audio.CopyTo(mp3Stream, readPosition);
