@@ -91,7 +91,7 @@ namespace Gemelo.Voice.Streaming
 
 		public void CreateFrameData(Span<byte> data)
 		{
-			if (!_currentPcmFrame.AddData(data.ToArray(), out var overflow))
+			if (!_currentPcmFrame.AddPcmData(data.ToArray(), out var overflow))
 				return;
 			
 			_pcmFrames.Enqueue(_currentPcmFrame);
@@ -116,7 +116,6 @@ namespace Gemelo.Voice.Streaming
 			if (!_currentPcmFrame.HasData)
 				return false;
 			
-			_currentPcmFrame.WriteSamples(true);
 			frame = _currentPcmFrame;
 			return true;
 		}

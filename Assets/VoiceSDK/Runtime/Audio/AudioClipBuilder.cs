@@ -24,14 +24,74 @@ namespace Gemelo.Voice.Audio
 		private readonly int _sampleRate;
 		private List<float> _samplesBuffer;
 		private AudioClip _clip;
+		private PcmFrame _currentFrame;
+		private readonly Queue<PcmFrame> _frames;
 
 		protected AudioClipBuilder(int sampleRate)
 		{
 			_sampleRate = sampleRate;
 			_samplesBuffer = new List<float>();
+			_frames = new Queue<PcmFrame>();
+			CreatePcmFrame();
 		}
 
-		public abstract List<PcmFrame> DecodeDataToPcm(byte[] bytes); 
+		public abstract List<PcmFrame> ToPcmFrames(byte[] bytes); 
+		
+		protected List<PcmFrame> WritePcmFrames(float[] samples)
+		{
+			var nextFrame = _currentFrame.AddPcmData(samples, out var overflow);
+			_frames.Enqueue(_currentFrame);
+
+			if (!nextFrame)
+				return DequeueLastFrames();
+
+			CreatePcmFrame();
+			return WritePcmFrames(overflow);
+		}
+
+		protected List<PcmFrame> WritePcmFrames(byte[] samples)
+		{
+			var nextFrame = _currentFrame.AddPcmData(samples, out var overflow);
+			_frames.Enqueue(_currentFrame);
+
+			if (!nextFrame) 
+				return DequeueLastFrames();
+
+			CreatePcmFrame();
+			return WritePcmFrames(overflow);
+		}
+
+		public bool BufferLastFrame()
+		{
+			if (!_currentFrame.HasData)
+				return false;
+			
+			BufferPcmFrame(_currentFrame);
+			return true;
+		}
+		
+		private List<PcmFrame> DequeueLastFrames()
+		{
+			var list = new List<PcmFrame>();
+			
+			for (int i = 0; i < _frames.Count; i++)
+			{
+				if (_frames.TryDequeue(out var frame))
+					list.Add(frame);
+			}
+			
+
+			return list;
+		}
+		private void CreatePcmFrame()
+		{
+#if UNITY_WEBGL && !UNITY_EDITOR
+			_currentFrame = new PcmFrame(WebGlAudioBufferProcessor.BufferSize);
+#else
+			_currentFrame = new PcmFrame();
+#endif
+		}
+		
 		public AudioClip CreateAudioClipStream(string name, int seconds = 30)
 		{
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -46,11 +106,10 @@ namespace Gemelo.Voice.Audio
 		
 		public float BufferPcmFrame(PcmFrame frame)
 		{
-			_lastBytesReadCount += frame.ByteSize;
 			_processedSamplesCount += frame.Samples.Length;
 			_samplesBuffer.AddRange(frame.Samples);
 			var length = _processedSamplesCount / (_sampleRate * 1f);
-			Debug.Log($"BufferAdd: [{frame.ByteSize}/{_lastBytesReadCount}]bytes [{frame.Samples.Length}/{_processedSamplesCount}]samples [{length}s]");
+			Debug.Log($"BufferAdd: [{frame.Samples.Length}/{_processedSamplesCount}] samples [{length}s]");
 			return length;
 		}
 		

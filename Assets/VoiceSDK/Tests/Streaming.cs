@@ -260,19 +260,7 @@ namespace Gemelo.Voice.Tests
 			Assert.AreEqual(clip.samples, pcmWriteCount);
 		}
 
-		[UnityTest]
-		[RequiresPlayMode()]
-		public IEnumerator AudioStreamingManager_Play_Wav()
-		{
-			yield return ConvertAndPlayAudioByStreamingManager(Text, AudioDataType.Wav);
-		}
-		
-		[UnityTest]
-		[RequiresPlayMode()]
-		public IEnumerator AudioStreamingManager_Play_Mp3()
-		{
-			yield return ConvertAndPlayAudioByStreamingManager(Text, AudioDataType.Mp3);
-		}
+	
 		
 		private IEnumerator ConvertAndPlayAudioByStreamingManager(string text, AudioDataType dataType)
 		{
@@ -290,6 +278,34 @@ namespace Gemelo.Voice.Tests
 
 			yield return manager.Play();
 			Assert.IsTrue(manager.AudioEnd);
+		}
+		
+		[UnityTest]
+		[RequiresPlayMode()]
+		public IEnumerator AudioStreamingManager_Play_Short_Returns_Wav()
+		{
+			yield return ConvertAndPlayAudioByStreamingManager(Text, AudioDataType.Wav);
+		}
+		
+		[UnityTest]
+		[RequiresPlayMode()]
+		public IEnumerator AudioStreamingManager_Play_Short_Returns_Mp3()
+		{
+			yield return ConvertAndPlayAudioByStreamingManager(Text, AudioDataType.Mp3);
+		}
+		
+		[UnityTest]
+		[RequiresPlayMode()]
+		public IEnumerator AudioStreamingManager_Play_Long_Returns_Wav()
+		{
+			yield return ConvertAndPlayAudioByStreamingManager(LongText, AudioDataType.Wav);
+		}
+		
+		[UnityTest]
+		[RequiresPlayMode()]
+		public IEnumerator AudioStreamingManager_Play_Long_Returns_Mp3()
+		{
+			yield return ConvertAndPlayAudioByStreamingManager(LongText, AudioDataType.Mp3);
 		}
 	}
 }

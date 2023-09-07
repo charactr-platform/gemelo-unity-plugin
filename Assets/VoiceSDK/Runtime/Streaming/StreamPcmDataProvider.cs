@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Gemelo.Voice.Audio;
-using UnityEngine;
 
 namespace Gemelo.Voice.Streaming
 {
@@ -13,15 +11,11 @@ namespace Gemelo.Voice.Streaming
 		private readonly MemoryStream _memory;
 		private readonly BinaryWriter _writer;
 		private AudioClipBuilder _builder;
-		private PcmFrame _currentPcmFrame;
 		private int _bufferReadout = 0;
-		private readonly Queue<PcmFrame> _pcmFrames;
 		public StreamPcmDataProvider()
 		{
 			_memory = new MemoryStream();
 			_writer = new BinaryWriter(_memory);
-			_pcmFrames = new Queue<PcmFrame>();
-			CreateNewPcmFrame();
 		}
 		
 		public void AddRawData(byte[] data)
@@ -80,7 +74,7 @@ namespace Gemelo.Voice.Streaming
 		
 		public int BufferPcmFrames()
 		{
-			int count = 0;
+			var count = 0;
 			
 			while (HasData())
 			{
@@ -89,57 +83,30 @@ namespace Gemelo.Voice.Streaming
 				
 				_memory.Seek(_bufferReadout, SeekOrigin.Begin);
 				_bufferReadout += _memory.Read(buffer);
+
+				var frames = _builder.ToPcmFrames(buffer);
+
+				count = frames.Count;
 				
-				WritePcmFrames(buffer);
-					
-				for (int i = 0; i < _pcmFrames.Count; i++)
+				for (int i = 0; i < count; i++)
 				{
-					if (!_pcmFrames.TryDequeue(out var frame))
-						continue;
-					
+					var frame = frames[i];
 					_builder.BufferPcmFrame(frame);
-					
-					count++;
 					OnPcmFrame?.Invoke(frame);
 				}
 			}
 
 			return count;
 		}
-
-		private void WritePcmFrames(Span<byte> rawData)
-		{
-			foreach (var frame in _builder.DecodeDataToPcm(rawData.ToArray()))
-			{
-				_pcmFrames.Enqueue(frame);
-			}
-		}
-
+		
 		public bool BufferLastFrame()
 		{
-			if (!_currentPcmFrame.HasData)
-				return false;
-			
-			_currentPcmFrame.WriteSamples(true);
-			_builder.BufferPcmFrame(_currentPcmFrame);
-			
-			return true;
-		}
-
-		private void CreateNewPcmFrame()
-		{
-#if UNITY_WEBGL && !UNITY_EDITOR
-			_currentPcmFrame = new PcmFrame(WebGlAudioBufferProcessor.BufferSize);
-#else
-			_currentPcmFrame = new PcmFrame();
-#endif
+			return _builder.BufferLastFrame();
 		}
 		
 		public void Dispose()
 		{
-			_pcmFrames.Clear();
 			_writer.Close();
-			CreateNewPcmFrame();
 		}
 	}
 }

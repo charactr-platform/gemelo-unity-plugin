@@ -97,6 +97,7 @@ namespace Gemelo.Voice.Streaming
 			
 			if (processedCount == 0)
 				return;
+			
 			Debug.Log($"Added frames: {processedCount}");
 			AudioLength = AudioClipBuilder.ProcessedSamplesCount / (float)AudioClipBuilder.SampleRate;
 			TimeSamples = AudioClipBuilder.ProcessedSamplesCount + AudioClipBuilder.EmptySamples;

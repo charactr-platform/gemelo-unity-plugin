@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace Gemelo.Voice.Audio
@@ -7,70 +9,60 @@ namespace Gemelo.Voice.Audio
 	public class PcmFrame: IDisposable
 	{
 		public static int BlockSize = sizeof(short);//16bit per sample 
-		public int ByteSize => _bytesSize;
+		public int SamplesSize => _samplesSize;
 		public float[] Samples => _samples.ToArray();
-		public bool HasData => _bytes?.Length > 0 && _samples.IsEmpty;
+		public bool HasData => _samples.Count > 0;
 		
-		private MemoryStream _bytes;
-		private Memory<float> _samples;
-		private readonly int _bytesSize;
+		private List<float> _samples;
+		private readonly int _samplesSize;
 
 		public PcmFrame(int samplesCount = 4096)
 		{
-			_bytesSize = samplesCount * BlockSize;
-			_bytes = new MemoryStream();
-			_samples = new Memory<float>();
+			_samplesSize = samplesCount;
+			_samples = new List<float>();
 		}
 			
-		public bool AddData(byte[] data, out byte[] overflow)
+		public bool AddPcmData(ArraySegment<byte> data, out byte[] overflow)
 		{
-			if (_bytes.Length < ByteSize)
-				_bytes.Write(data);
-				
-			if (_bytes.Length >= ByteSize)
+			float[] samples = null;
+
+			var initialSize = _samples.Count;
+			var offset = (SamplesSize * BlockSize) - (initialSize * BlockSize);
+			
+			if (data.Count >= offset)
 			{
-				overflow = WriteSamples();
+				ConvertByteToFloat(data.Slice(0,offset).ToArray(), out samples);
+				overflow = data.Slice(offset, data.Count - offset).ToArray();
+				AddPcmData(samples, out _);
 				return true;
 			}
-				
+			
+			ConvertByteToFloat(data.ToArray(), out samples);
 			overflow = null;
-
-			return false;
-		}
-
-		public bool AddPcmData(float[] pcm, out float[] overflow)
-		{
-			pcm.AsMemory().CopyTo(_samples);
-			
-			var offset = ByteSize / BlockSize;
-
-			if (_samples.Length > offset)
-			{
-				overflow = _samples.Slice(offset).ToArray();
-				Debug.LogWarning($"Offset data: {overflow.Length}");
-				return true;
-			}
-			
-			overflow = Array.Empty<float>();
-			return false;
-		}
-		
-		public byte[] WriteSamples(bool endOfData = false)
-		{
-			var bytesCount = endOfData ? (int) _bytes.Length : ByteSize;
-
-			if (!_bytes.TryGetBuffer(out var segment))
-				return null;
-			
-			var frameBytes = segment.Slice(0, bytesCount);
-				
-			ConvertByteToFloat(frameBytes.ToArray(), out var samples);
-			
 			AddPcmData(samples, out _);
 			
-			var overflow = segment.Slice(bytesCount).ToArray();
+			return false;
+		}
 
-			return endOfData ? null : overflow;
+		public bool AddPcmData(ArraySegment<float> pcm, out float[] overflow)
+		{
+			var initialSize = _samples.Count;
+			var offset = SamplesSize - initialSize;
+			
+			if (pcm.Count >= offset)
+			{
+				_samples.AddRange(pcm.Slice(0, offset));
+
+				overflow = pcm.Slice(offset, pcm.Count - offset).ToArray();
+			
+				Debug.Log($"[AddPcmData ] Samples size: {initialSize} -> {_samples.Count}, Offset data: {overflow.Length}, PcmIn: {pcm.Count},  Offset: {offset}");
+				return true;
+			}
+			
+			_samples.AddRange(pcm);
+
+			overflow = Array.Empty<float>();
+			return false;
 		}
 		
 		public static void ConvertByteToFloat(byte[] data, out float[] waveData, int offset = 0)
@@ -94,9 +86,6 @@ namespace Gemelo.Voice.Audio
 		public void Dispose()
 		{
 			_samples = null;
-			_bytes.Dispose();
-			_bytes = null;
-			
 			GC.Collect();
 		}
 	}
