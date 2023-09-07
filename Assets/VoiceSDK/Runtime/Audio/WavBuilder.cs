@@ -25,12 +25,6 @@ namespace Gemelo.Voice.Audio
 			return clip;
 		}
 
-		public override List<PcmFrame> ToPcmFrames(byte[] bytes)
-		{
-			var frames = WritePcmFrames(bytes);
-			Debug.Log($"Created frames: {frames}");
-			return frames;
-		}
-		
+		public override List<PcmFrame> ToPcmFrames(byte[] bytes) => WritePcmFrames(bytes);
 	}
 }

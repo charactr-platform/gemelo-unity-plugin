@@ -16,7 +16,6 @@ namespace Gemelo.Voice.Audio
 		public int ProcessedSamplesCount => _processedSamplesCount;
 		public int SampleRate => _sampleRate;
 		
-		private int _lastBytesReadCount = 0;
 		private int _processedSamplesCount = 0;
 		private int _playbackPosition = 0;
 		private int _silenceSamplesCount = 0;
@@ -32,32 +31,29 @@ namespace Gemelo.Voice.Audio
 			_sampleRate = sampleRate;
 			_samplesBuffer = new List<float>();
 			_frames = new Queue<PcmFrame>();
-			CreatePcmFrame();
+			CreateNewPcmFrame();
 		}
 
 		public abstract List<PcmFrame> ToPcmFrames(byte[] bytes); 
 		
 		protected List<PcmFrame> WritePcmFrames(float[] samples)
 		{
-			var nextFrame = _currentFrame.AddPcmData(samples, out var overflow);
-			_frames.Enqueue(_currentFrame);
-
-			if (!nextFrame)
+			if (!_currentFrame.AddPcmData(samples, out var overflow))
 				return DequeueLastFrames();
-
-			CreatePcmFrame();
+			
+			//Enqueue full frame and create new one to write to 
+			_frames.Enqueue(_currentFrame);
+			CreateNewPcmFrame();
 			return WritePcmFrames(overflow);
 		}
-
+		
 		protected List<PcmFrame> WritePcmFrames(byte[] samples)
 		{
-			var nextFrame = _currentFrame.AddPcmData(samples, out var overflow);
-			_frames.Enqueue(_currentFrame);
-
-			if (!nextFrame) 
+			if (!_currentFrame.AddPcmData(samples, out var overflow))
 				return DequeueLastFrames();
-
-			CreatePcmFrame();
+			
+			_frames.Enqueue(_currentFrame);
+			CreateNewPcmFrame();
 			return WritePcmFrames(overflow);
 		}
 
@@ -73,17 +69,20 @@ namespace Gemelo.Voice.Audio
 		private List<PcmFrame> DequeueLastFrames()
 		{
 			var list = new List<PcmFrame>();
+
+			//Store size before decrementing queue, this is important
+			var queueSize = _frames.Count;
 			
-			for (int i = 0; i < _frames.Count; i++)
+			for (int i = 0; i < queueSize; i++)
 			{
 				if (_frames.TryDequeue(out var frame))
 					list.Add(frame);
 			}
 			
-
 			return list;
 		}
-		private void CreatePcmFrame()
+		
+		private void CreateNewPcmFrame()
 		{
 #if UNITY_WEBGL && !UNITY_EDITOR
 			_currentFrame = new PcmFrame(WebGlAudioBufferProcessor.BufferSize);

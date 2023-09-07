@@ -8,7 +8,6 @@ using UnityEngine;
 
 namespace Gemelo.Voice.Tests
 {
-	
 	internal class AudioStream
 	{
 		public MemoryStream Stream { get; }
