@@ -67,7 +67,7 @@ namespace Gemelo.Voice.Streaming
             var url = Configuration.STREAMING_API + $"?voiceId={voiceId}";
             
 #if UNITY_WEBGL && !UNITY_EDITOR
-            _streamingClient = new WebGlAudioStreamingClient(url, configuration, audioDataType, samplingRate, audioBufferLengthInSeconds);
+            _streamingClient = new WebGlAudioStreamingClient(url, configuration, audioDataType, audioBufferLengthInSeconds);
 #else
             _streamingClient = new DefaultAudioStreamingClient(url, configuration, audioDataType, samplingRate, audioBufferLengthInSeconds);
 #endif
