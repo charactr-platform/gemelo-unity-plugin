@@ -8,52 +8,69 @@ namespace Gemelo.Voice.Audio
 {
 	public class Mp3Builder : AudioClipBuilder
 	{
-		private readonly MemoryStream _stream, _mpegStream;
-		private readonly BinaryWriter _writer;
-		private long _writeCount;
-		private long _lastWriteCount;
+		private MemoryStream _stream, _mpegStream;
 		private MpegFile _mpegFile;
 		private readonly float[] _samplesBuffer;
-		private long _mpegPosition = 0;
-
+		private int _readout, _writeCount;
 		public Mp3Builder(int sampleRate, byte[] headerData) : base(sampleRate)
 		{
-			_samplesBuffer = new float[sampleRate * 1]; //1second
+			_samplesBuffer = new float[44100];
 			_stream = new MemoryStream();
-			_writer = new BinaryWriter(_stream);
-			_writer.Write(headerData);
-		
+			_mpegStream = new MemoryStream();
+			WriteToStream(headerData);
+			_mpegFile = new MpegFile(_mpegStream);
 		}
 
+		private void WriteToStream(Span<byte> data)
+		{
+			_stream.Write(data);
+			_readout += CopyTo(_mpegStream, _readout);
+		}
+		
 		public override List<PcmFrame> ToPcmFrames(byte[] bytes)
 		{
-			_writer.Write(bytes);
-		
+			WriteToStream(bytes);
+			
 			var frames = new List<PcmFrame>();
-
-			var samples = new ArraySegment<float>(_samplesBuffer);
 			
+			var chunkSize = 0;
 			var count = 0;
-			var readout = 0;
-			
-			_mpegFile = new MpegFile(_stream);
-			_mpegFile.Position = _mpegPosition;
+
+			var position = _stream.Position;
 			
 			do
 			{
-				count = _mpegFile.ReadSamples(samples.Array, 0, _samplesBuffer.Length);
-				readout += count;
+				count = _mpegFile.ReadSamples(_samplesBuffer, chunkSize, 4096);
+				chunkSize += count;
 				
-			} while (count > 0);
+			} while (position < _readout && chunkSize < _samplesBuffer.Length - 4096);
+			 
+			frames.AddRange(WritePcmFrames(_samplesBuffer.AsSpan(0, chunkSize).ToArray()));
 
-			
-			Debug.Log($"Stream, Bytes: [{_stream.Length}], ReadOut: {readout}");
-
-			frames.AddRange(WritePcmFrames(samples.Slice(0, readout).ToArray()));
+			_writeCount += chunkSize;
+			Debug.Log($"Stream Eof: {_mpegFile.Reader.EndOfStream}, Bytes: [{_stream.Length}], Samples: {chunkSize}/{_writeCount}");
 			Debug.Log($"Created {frames.Count}");
-			_mpegPosition = _mpegFile.Position;
+
 			return frames;
 		}
 		
+		public int CopyTo(Stream stream, long offset)
+		{
+			byte[] buffer = new byte[128];
+
+			int bytesRead = 0, totalRead = 0;
+
+			_stream.Seek(offset, SeekOrigin.Begin);
+			stream.Seek(offset, SeekOrigin.Begin);
+
+			while ((bytesRead = _stream.Read(buffer, 0, buffer.Length)) > 0)
+			{
+				stream.Write(buffer, 0, bytesRead);
+				totalRead += bytesRead;
+			}
+			stream.Seek(offset, SeekOrigin.Begin);
+			stream.Flush();
+			return totalRead;
+		}
 	}
 }

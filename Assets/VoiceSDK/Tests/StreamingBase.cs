@@ -218,7 +218,7 @@ namespace Gemelo.Voice.Tests
 			var mp3Stream = new MemoryStream();
 			long readPosition = audio.CopyTo(mp3Stream, 0);
 
-			mp3 = new MpegFile(mp3Stream);
+			mp3 = new MpegFile(audio.Stream);
 			Assert.AreEqual(1, mp3.Channels);
 			Assert.AreEqual(audio.SampleRate, mp3.SampleRate);
 
@@ -230,17 +230,16 @@ namespace Gemelo.Voice.Tests
 			void PcmCallback(float[] buffer)
 			{
 				var pcmDataSize = buffer.Length;
-
-				//Debug.Log($"Time {mp3.Duration } {mp3.Length}");
+				
 				if (readPosition < audio.Stream.Length)
 				{
 					readPosition += audio.CopyTo(mp3Stream, readPosition);
 					Debug.Log($"OnCopy: {readPosition}/{audio.Stream.Length}");
 				}
+				
+				var pcmReadCount = mp3.ReadSamples(pcmSamples , index, pcmDataSize);
 
-				var pcmReadCount = mp3.ReadSamples(pcmSamples, index, pcmDataSize);
-
-				Debug.Log($"Samples: ReadCount: {pcmReadCount}, Samples: {index} / {expectedSamples}");
+				Debug.Log($"Samples Eof: {mp3.Reader.EndOfStream} ReadCount: {pcmReadCount}, Samples: {index} / {expectedSamples}");
 
 				index += pcmReadCount;
 

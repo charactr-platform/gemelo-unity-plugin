@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -36,7 +37,7 @@ namespace Gemelo.Voice.Audio
 
 		public abstract List<PcmFrame> ToPcmFrames(byte[] bytes); 
 		
-		protected List<PcmFrame> WritePcmFrames(float[] samples)
+		protected List<PcmFrame> WritePcmFrames(ArraySegment<float> samples)
 		{
 			if (!_currentFrame.AddPcmData(samples, out var overflow))
 				return DequeueLastFrames();
@@ -47,7 +48,7 @@ namespace Gemelo.Voice.Audio
 			return WritePcmFrames(overflow);
 		}
 		
-		protected List<PcmFrame> WritePcmFrames(byte[] samples)
+		protected List<PcmFrame> WritePcmFrames(ArraySegment<byte> samples)
 		{
 			if (!_currentFrame.AddPcmData(samples, out var overflow))
 				return DequeueLastFrames();
