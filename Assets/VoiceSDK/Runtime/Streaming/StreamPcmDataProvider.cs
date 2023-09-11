@@ -64,9 +64,6 @@ namespace Gemelo.Voice.Streaming
 				case AudioDataType.Wav:
 					_builder = new WavBuilder(sampleRate, header);
 					break;
-				
-				case AudioDataType.None:
-					throw new Exception("AudioData type not selected!");
 			}
 			
 			return _builder;

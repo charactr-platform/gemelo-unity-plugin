@@ -55,9 +55,6 @@ namespace Gemelo.Voice.Streaming
 
 		protected string AddAudioFormat(string url)
 		{
-			if (DataType == AudioDataType.None)
-				throw new Exception("Please select AudioDataType!");
-			
 			switch (SampleRate)
 			{
 				//Some default sampling rate values

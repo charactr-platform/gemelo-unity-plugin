@@ -6,7 +6,6 @@ namespace Gemelo.Voice.Audio
 {
 	public enum AudioDataType
 	{
-		None = 0,
 		Wav = 1,
 		Mp3 = 2, 
 	}
