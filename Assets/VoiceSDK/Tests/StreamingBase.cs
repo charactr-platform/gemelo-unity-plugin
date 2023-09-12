@@ -8,11 +8,13 @@ using Gemelo.Voice.Audio;
 using Gemelo.Voice.Streaming;
 using NLayer;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using UnityEngine;
 using Task = System.Threading.Tasks.Task;
 
 namespace Gemelo.Voice.Tests
 {
+	
 	public class StreamingTestsData
 	{
 		protected const string Text = "Hello from Charactr Software Development Kit for Unity";

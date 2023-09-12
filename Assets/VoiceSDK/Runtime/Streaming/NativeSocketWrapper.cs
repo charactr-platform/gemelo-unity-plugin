@@ -80,23 +80,15 @@ namespace Gemelo.Voice.Streaming
 			do
 			{
 				result = await _ws.ReceiveAsync(rcvBuffer, _token.Token);
-				
-				if (result.MessageType == WebSocketMessageType.Binary)
-				{
-					var msgBytes = rcvBuffer.Skip(rcvBuffer.Offset).Take(result.Count).ToArray();
-					OnData?.Invoke(msgBytes);
-				}
-				else
-				{
-					Debug.LogWarning("Bad data:"+ result.MessageType);
-				}
-			} 
-			while (result.CloseStatus == null);
 
-			rcvBytes = null;
-			rcvBuffer = null;
-			GC.Collect();
-			
+				if (result.MessageType != WebSocketMessageType.Binary) 
+					continue;
+				
+				var msgBytes = rcvBuffer.Skip(rcvBuffer.Offset).Take(result.Count).ToArray();
+				OnData?.Invoke(msgBytes);
+				
+			} while (result.MessageType != WebSocketMessageType.Close);
+
 			if (result.CloseStatus == WebSocketCloseStatus.NormalClosure)
 			{
 				await Close();

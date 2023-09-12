@@ -4,10 +4,11 @@ using Gemelo.Voice.Audio;
 
 namespace Gemelo.Voice.Streaming
 {
-	internal class StreamPcmDataProvider : IPcmDataProvider
+	public class StreamPcmDataProvider : IPcmDataProvider
 	{
 		public Action<PcmFrame> OnPcmFrame { get; set; }
 		public AudioClipBuilder AudioClipBuilder { get => _builder; }
+		
 		private readonly MemoryStream _memory;
 		private readonly BinaryWriter _writer;
 		private AudioClipBuilder _builder;

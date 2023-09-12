@@ -114,8 +114,8 @@ namespace Gemelo.Voice.Tests
 
 			int bytesRead = 0, totalRead = 0;
 
-			Stream.Seek(offset, SeekOrigin.Begin);
-			stream.Seek(offset, SeekOrigin.Begin);
+			Stream.Position = offset;
+			stream.Position = offset;
 
 			while ((bytesRead = Stream.Read(buffer, 0, buffer.Length)) > 0)
 			{

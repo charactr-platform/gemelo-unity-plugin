@@ -8,10 +8,16 @@ namespace Gemelo.Voice.Audio
 {
 	public class Mp3Builder : AudioClipBuilder
 	{
-		private MemoryStream _stream, _mpegStream;
-		private MpegFile _mpegFile;
+		public MpegFile MpegFile { get => _mpegFile; }
+		
+		private readonly MemoryStream _stream;
+		private readonly MemoryStream _mpegStream;
+		private readonly MpegFile _mpegFile;
+		
 		private readonly float[] _samplesBuffer;
 		private int _readout, _writeCount;
+		private long _streamReadCount;
+		
 		public Mp3Builder(int sampleRate, byte[] headerData) : base(sampleRate)
 		{
 			_samplesBuffer = new float[44100];
@@ -24,6 +30,7 @@ namespace Gemelo.Voice.Audio
 		private void WriteToStream(Span<byte> data)
 		{
 			_stream.Write(data);
+			_stream.Flush();
 			_readout += CopyTo(_mpegStream, _readout);
 		}
 		
@@ -36,15 +43,21 @@ namespace Gemelo.Voice.Audio
 			var chunkSize = 0;
 			var count = 0;
 
-			var position = _stream.Position;
-			
-			do
+			_mpegFile.Position = _writeCount;
+
+			while (_mpegFile.Reader.HasNextFrame)
 			{
-				count = _mpegFile.ReadSamples(_samplesBuffer, chunkSize, 4096);
+				if (chunkSize + 1024 > _samplesBuffer.Length)
+				{
+					Debug.LogWarning("Overflow of data buffer");
+					break;
+				}
+
+				count = _mpegFile.ReadSamples(_samplesBuffer, chunkSize, 1024);
 				chunkSize += count;
-				
-			} while (position < _readout && chunkSize < _samplesBuffer.Length - 4096);
-			 
+			}
+			
+			
 			frames.AddRange(WritePcmFrames(_samplesBuffer.AsSpan(0, chunkSize).ToArray()));
 
 			_writeCount += chunkSize;
@@ -68,7 +81,7 @@ namespace Gemelo.Voice.Audio
 				stream.Write(buffer, 0, bytesRead);
 				totalRead += bytesRead;
 			}
-			stream.Seek(offset, SeekOrigin.Begin);
+		
 			stream.Flush();
 			return totalRead;
 		}

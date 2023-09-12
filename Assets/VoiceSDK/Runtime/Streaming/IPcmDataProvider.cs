@@ -3,8 +3,9 @@ using Gemelo.Voice.Audio;
 
 namespace Gemelo.Voice.Streaming
 {
-	internal interface IPcmDataProvider
+	public interface IPcmDataProvider
 	{
+		AudioClipBuilder AudioClipBuilder { get; }
 		Action<PcmFrame> OnPcmFrame { get; set; }
 		void AddRawData(byte[] data);
 		bool HasData();
