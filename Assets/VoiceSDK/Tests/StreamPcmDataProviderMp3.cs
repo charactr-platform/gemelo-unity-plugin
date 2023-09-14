@@ -1,8 +1,11 @@
-﻿using System.IO;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using Gemelo.Voice.Audio;
 using Gemelo.Voice.Streaming;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Gemelo.Voice.Tests
 {
@@ -27,6 +30,8 @@ namespace Gemelo.Voice.Tests
 			}	
 			
 			Assert.NotZero(_data.Length);
+			Assert.AreEqual(127329, _data.Length);
+			
 			_dataProvider = new StreamPcmDataProvider();
 			Assert.NotNull(_dataProvider);
 		}
@@ -104,13 +109,96 @@ namespace Gemelo.Voice.Tests
 			var lastBit = _data.Length - _data.Position;
 			
 			Assert.NotZero(lastBit);
+			
+			var lastBuffer = ReadNextByteSample((int) lastBit);
+			_dataProvider.AddRawData(lastBuffer);
+			
+			Assert.AreEqual(127329, _data.Position);
+			
+			Assert.NotZero(_dataProvider.BufferPcmFrames());
+				
+			Assert.IsTrue(_dataProvider.BufferLastFrame());
+	
+		}
+		
+		[UnityTest]
+		[RequiresPlayMode()]
+		public IEnumerator Load_Chunked_Data_Play_PCM_Samples_NotZero()
+		{
+			var clipBuilder = CreateAudioBuilderFromHeader();
+			Assert.NotNull(clipBuilder);
+			Assert.NotNull(_dataProvider.AudioClipBuilder);
+
+			var bytesCount = 1024;
+			
+			while (_data.Position + bytesCount < (_data.Length - 1 ) / 2)
+			{
+				_dataProvider.AddRawData(ReadNextByteSample(bytesCount));
+				_dataProvider.BufferPcmFrames();
+			}
+			
+			Assert.AreEqual(63488, _data.Position);
+
+			yield return new WaitForSeconds(8);
+			
+			var lastBit = _data.Length - _data.Position;
+			
+			Assert.NotZero(lastBit);
 
 			var lastBuffer = ReadNextByteSample((int) lastBit);
+			Assert.AreEqual(127329, _data.Position);
+			
+			_dataProvider.AddRawData(lastBuffer);
+			
+			Assert.NotZero(_dataProvider.BufferPcmFrames());
+			Assert.IsTrue(_dataProvider.BufferLastFrame());
+
+			
+			var clip = clipBuilder.CreateAudioClipStream("test",16);
+			
+			Assert.AreEqual(16f, clip.length); //Initial length of audio clip
+			Assert.AreEqual(44100, clip.frequency);
+			Assert.AreEqual(705600, clip.samples);
+			Assert.AreEqual(16f, clip.samples / clip.frequency); //Proper length from samples
+			
+			yield return AudioPlayer.PlayClipRoutineStatic(clip);
+		}
+		
+		[Test]
+		public void Load_Data_Play_PCM_Samples_NotZero()
+		{
+			var clipBuilder = CreateAudioBuilderFromHeader();
+			Assert.NotNull(clipBuilder);
+			Assert.NotNull(_dataProvider.AudioClipBuilder);
+
+			var bytesCount = 1024;
+			
+			while (_data.Position + bytesCount < _data.Length)
+			{
+				_dataProvider.AddRawData(ReadNextByteSample(bytesCount));
+			}
+
+			var lastBit = _data.Length - _data.Position;
+			
+			Assert.NotZero(lastBit);
+
+			var lastBuffer = ReadNextByteSample((int) lastBit);
+			Assert.AreEqual(127329, _data.Position);
+			
 			_dataProvider.AddRawData(lastBuffer);
 
 			Assert.NotZero(_dataProvider.BufferPcmFrames());
 				
 			Assert.IsTrue(_dataProvider.BufferLastFrame());
+			
+			var clip = clipBuilder.CreateAudioClipStream("test",16);
+
+			Assert.AreEqual(705600, _dataProvider.AudioClipBuilder.ProcessedSamplesCount);
+			
+			Assert.AreEqual(16f, clip.length); //Initial length of audio clip
+			Assert.AreEqual(44100, clip.frequency);
+			Assert.AreEqual(705600, clip.samples);
+			Assert.AreEqual(16f, clip.samples / clip.frequency); //Proper length from samples
 		}
 
 		private byte[] ReadNextByteSample(int bytesCount = 1024)

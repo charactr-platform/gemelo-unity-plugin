@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using NLayer;
 using UnityEngine;
 
@@ -15,9 +16,9 @@ namespace Gemelo.Voice.Audio
 		private readonly MpegFile _mpegFile;
 		
 		private readonly float[] _samplesBuffer;
-		private int _readout, _writeCount;
+		private int _readout, _samplesCount;
 		private long _streamReadCount;
-		
+		private long _readPosition = 0L;
 		public Mp3Builder(int sampleRate, byte[] headerData) : base(sampleRate)
 		{
 			_samplesBuffer = new float[44100];
@@ -33,6 +34,27 @@ namespace Gemelo.Voice.Audio
 			_stream.Flush();
 			_readout += CopyTo(_mpegStream, _readout);
 		}
+
+		private List<float> DecodeBytesToPcm(int readSize = 1024)
+		{
+			var count = 0;
+			var chunkSize = 0;
+
+			do
+			{
+				if (chunkSize + readSize > _samplesBuffer.Length)
+				{
+					Debug.LogWarning("Overflow of data buffer");
+					return _samplesBuffer.ToList();
+				}
+				
+				count = _mpegFile.ReadSamples(_samplesBuffer, chunkSize, readSize);
+				chunkSize += count;
+			
+			}	while (count > 0) ;
+
+			return _samplesBuffer.ToList().GetRange(0, chunkSize);
+		}
 		
 		public override List<PcmFrame> ToPcmFrames(byte[] bytes)
 		{
@@ -40,28 +62,17 @@ namespace Gemelo.Voice.Audio
 			
 			var frames = new List<PcmFrame>();
 			
-			var chunkSize = 0;
-			var count = 0;
-
-			_mpegFile.Position = _writeCount;
-
 			while (_mpegFile.Reader.HasNextFrame)
 			{
-				if (chunkSize + 1024 > _samplesBuffer.Length)
-				{
-					Debug.LogWarning("Overflow of data buffer");
-					break;
-				}
-
-				count = _mpegFile.ReadSamples(_samplesBuffer, chunkSize, 1024);
-				chunkSize += count;
+				var pcmSamples = DecodeBytesToPcm();
+				var pcmFrames = WritePcmFrames(pcmSamples.ToArray());
+				frames.AddRange(pcmFrames);
+				_samplesCount += pcmSamples.Count;
+				_readPosition = _stream.Position;
+				Debug.Log($"Position: {_readPosition} / {_stream.Length}");
 			}
 			
-			
-			frames.AddRange(WritePcmFrames(_samplesBuffer.AsSpan(0, chunkSize).ToArray()));
-
-			_writeCount += chunkSize;
-			Debug.Log($"Stream Eof: {_mpegFile.Reader.EndOfStream}, Bytes: [{_stream.Length}], Samples: {chunkSize}/{_writeCount}");
+			Debug.Log($"Stream Eof: {_mpegFile.Reader.EndOfStream}, Bytes: [{_stream.Length}], Samples: {_samplesCount}");
 			Debug.Log($"Created {frames.Count}");
 
 			return frames;
