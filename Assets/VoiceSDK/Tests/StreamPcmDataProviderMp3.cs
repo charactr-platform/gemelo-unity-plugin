@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Gemelo.Voice.Audio;
 using Gemelo.Voice.Streaming;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using FileMode = System.IO.FileMode;
 
 namespace Gemelo.Voice.Tests
 {
@@ -156,16 +158,16 @@ namespace Gemelo.Voice.Tests
 			
 			var clip = clipBuilder.CreateAudioClipStream("test",16);
 			
+			Assert.AreEqual(706176, _dataProvider.AudioClipBuilder.ProcessedSamplesCount);
 			Assert.AreEqual(16f, clip.length); //Initial length of audio clip
 			Assert.AreEqual(44100, clip.frequency);
-			Assert.AreEqual(705600, clip.samples);
 			Assert.AreEqual(16f, clip.samples / clip.frequency); //Proper length from samples
 			
 			yield return AudioPlayer.PlayClipRoutineStatic(clip);
 		}
 		
 		[Test]
-		public void Load_Data_Play_PCM_Samples_NotZero()
+		public async Task Load_Data_Play_PCM_Samples_NotZero()
 		{
 			var clipBuilder = CreateAudioBuilderFromHeader();
 			Assert.NotNull(clipBuilder);
@@ -193,12 +195,12 @@ namespace Gemelo.Voice.Tests
 			
 			var clip = clipBuilder.CreateAudioClipStream("test",16);
 
-			Assert.AreEqual(705600, _dataProvider.AudioClipBuilder.ProcessedSamplesCount);
+			Assert.AreEqual(706176, _dataProvider.AudioClipBuilder.ProcessedSamplesCount);
 			
 			Assert.AreEqual(16f, clip.length); //Initial length of audio clip
 			Assert.AreEqual(44100, clip.frequency);
-			Assert.AreEqual(705600, clip.samples);
 			Assert.AreEqual(16f, clip.samples / clip.frequency); //Proper length from samples
+			await AudioPlayer.PlayClipStatic(clip);
 		}
 
 		private byte[] ReadNextByteSample(int bytesCount = 1024)

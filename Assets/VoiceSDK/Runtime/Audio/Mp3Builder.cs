@@ -12,48 +12,61 @@ namespace Gemelo.Voice.Audio
 		public MpegFile MpegFile { get => _mpegFile; }
 		
 		private readonly MemoryStream _stream;
-		private readonly MemoryStream _mpegStream;
-		private readonly MpegFile _mpegFile;
+		private MpegFile _mpegFile;
 		
 		private readonly float[] _samplesBuffer;
 		private int _readout, _samplesCount;
 		private long _streamReadCount;
-		private long _readPosition = 0L;
+		private long _readPosition = 0L, _currentPosition;
+		private bool _endOfData;
 		public Mp3Builder(int sampleRate, byte[] headerData) : base(sampleRate)
 		{
 			_samplesBuffer = new float[44100];
 			_stream = new MemoryStream();
-			_mpegStream = new MemoryStream();
 			WriteToStream(headerData);
-			_mpegFile = new MpegFile(_mpegStream);
+			_mpegFile = new MpegFile(_stream);
 		}
 
 		private void WriteToStream(Span<byte> data)
 		{
 			_stream.Write(data);
 			_stream.Flush();
-			_readout += CopyTo(_mpegStream, _readout);
 		}
 
-		private List<float> DecodeBytesToPcm(int readSize = 1024)
+		private bool DecodeBytesToPcmSamples(out Span<float> pcmData, int readSize = 128, int totalReadSize = 1024)
 		{
-			var count = 0;
 			var chunkSize = 0;
-
+			
 			do
 			{
-				if (chunkSize + readSize > _samplesBuffer.Length)
+				if (chunkSize + readSize > totalReadSize)
 				{
 					Debug.LogWarning("Overflow of data buffer");
-					return _samplesBuffer.ToList();
+					pcmData = ReturnSamplesBufferRange(chunkSize);
+					return false;
 				}
 				
-				count = _mpegFile.ReadSamples(_samplesBuffer, chunkSize, readSize);
-				chunkSize += count;
-			
-			}	while (count > 0) ;
+				var count = _mpegFile.ReadSamples(_samplesBuffer, chunkSize, readSize);
+				
+				if (count == 0)
+				{
+					pcmData = ReturnSamplesBufferRange(chunkSize);
+					Debug.LogWarning("Decoder: no more data");
+					return true;
+				}
 
-			return _samplesBuffer.ToList().GetRange(0, chunkSize);
+				chunkSize += count;
+
+			}	while (chunkSize < totalReadSize);
+
+			pcmData = ReturnSamplesBufferRange(totalReadSize);
+
+			return false;
+		}
+
+		private Span<float> ReturnSamplesBufferRange(int length)
+		{
+			return _samplesBuffer.ToList().GetRange(0, length).ToArray();
 		}
 		
 		public override List<PcmFrame> ToPcmFrames(byte[] bytes)
@@ -61,40 +74,32 @@ namespace Gemelo.Voice.Audio
 			WriteToStream(bytes);
 			
 			var frames = new List<PcmFrame>();
-			
-			while (_mpegFile.Reader.HasNextFrame)
+
+			if (_endOfData)
 			{
-				var pcmSamples = DecodeBytesToPcm();
-				var pcmFrames = WritePcmFrames(pcmSamples.ToArray());
+				_mpegFile = new MpegFile(_stream);
+				_mpegFile.Position = (_samplesCount * 4);
+			}
+
+			var length = _mpegFile.Length / 2;
+			
+			while (_samplesCount < length)
+			{
+				_endOfData = DecodeBytesToPcmSamples(out var pcmData,128, 4096);
+
+				var pcmFrames = WritePcmFrames(pcmData.ToArray());
+				
 				frames.AddRange(pcmFrames);
-				_samplesCount += pcmSamples.Count;
-				_readPosition = _stream.Position;
-				Debug.Log($"Position: {_readPosition} / {_stream.Length}");
+				_samplesCount += pcmData.Length;
+
+				if (_endOfData)
+					break;
 			}
 			
-			Debug.Log($"Stream Eof: {_mpegFile.Reader.EndOfStream}, Bytes: [{_stream.Length}], Samples: {_samplesCount}");
+			Debug.Log($"Stream Eof: {_mpegFile.Reader.EndOfStream}, Bytes: [{_readPosition}/{_stream.Length}], Samples: {_samplesCount}");
 			Debug.Log($"Created {frames.Count}");
 
 			return frames;
-		}
-		
-		public int CopyTo(Stream stream, long offset)
-		{
-			byte[] buffer = new byte[128];
-
-			int bytesRead = 0, totalRead = 0;
-
-			_stream.Seek(offset, SeekOrigin.Begin);
-			stream.Seek(offset, SeekOrigin.Begin);
-
-			while ((bytesRead = _stream.Read(buffer, 0, buffer.Length)) > 0)
-			{
-				stream.Write(buffer, 0, bytesRead);
-				totalRead += bytesRead;
-			}
-		
-			stream.Flush();
-			return totalRead;
 		}
 	}
 }
