@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -11,11 +12,12 @@ using FileMode = System.IO.FileMode;
 
 namespace Gemelo.Voice.Tests
 {
-	public class StreamPcmDataProviderMp3
+	public class StreamPcmDataProviderToMp3Builder
 	{
 		private const string FileName = "gs-16b-1c-44100hz.mp3";
 		private IPcmDataProvider _dataProvider;
 		private MemoryStream _data;
+		
 		[SetUp]
 		public void Setup()
 		{
@@ -41,7 +43,7 @@ namespace Gemelo.Voice.Tests
 		[Test]
 		public void AudioBuilder_NotNull()
 		{
-			var builder = CreateAudioBuilderFromHeader();
+			var builder = CreateAudioBuilderFromHeader(Mp3Builder.MinimalHeaderSize);
 			Assert.NotNull(builder);
 			Assert.NotNull(_dataProvider.AudioClipBuilder);
 			Assert.IsInstanceOf<Mp3Builder>(_dataProvider.AudioClipBuilder);
@@ -60,6 +62,55 @@ namespace Gemelo.Voice.Tests
 		}
 
 		[Test]
+		public void MpegFile_FirstFrame_Bitrate_Equals_64kbps()
+		{
+			CreateAudioBuilderFromHeader();
+		
+			var mp3Builder = _dataProvider.AudioClipBuilder as Mp3Builder;
+			Assert.NotNull(mp3Builder);
+			var mpegFile = mp3Builder.MpegFile;
+			Assert.NotNull(mpegFile);
+			Assert.AreEqual(64000, mpegFile.Reader.BitRate);
+		}
+
+		[Test]
+		public void MpegFile_FirstFrame_SamplesPerFrame_Equals_1152()
+		{
+			CreateAudioBuilderFromHeader();
+		
+			var mp3Builder = _dataProvider.AudioClipBuilder as Mp3Builder;
+			Assert.NotNull(mp3Builder);
+			var mpegFile = mp3Builder.MpegFile;
+			Assert.NotNull(mpegFile);
+			Assert.AreEqual(Mp3Builder.SamplesPerDecoderFrame, mpegFile.Reader.SamplesPerFrame);
+		}
+
+		[Test]
+		public void Create_AudioBuilder_Throws_MoreDataNeeded()
+		{
+			Assert.Throws<Exception>(() => CreateAudioBuilderFromHeader(Mp3Builder.MinimalHeaderSize - 1));
+		}
+		
+		[Test]
+		public void Create_AudioBuilder_Decoder_Duration_Returns_False()
+		{
+			CreateAudioBuilderFromHeader(Mp3Builder.MinimalHeaderSize);
+			var mp3Builder = _dataProvider.AudioClipBuilder as Mp3Builder;
+			Assert.NotNull(mp3Builder);
+			Assert.IsFalse(mp3Builder.DecodeBytesToPcmSamples(out _));
+		}
+		
+		[Test]
+		public void Create_AudioBuilder_Decoder_Duration_Returns_True()
+		{
+			CreateAudioBuilderFromHeader(1300);
+			var mp3Builder = _dataProvider.AudioClipBuilder as Mp3Builder;
+			Assert.NotNull(mp3Builder);
+			Assert.IsTrue(mp3Builder.DecodeBytesToPcmSamples(out var pcm));
+			Assert.AreEqual(Mp3Builder.SamplesPerDecoderFrame, pcm.Length);
+		}
+		
+		[Test]
 		public void Load_Builder_PcmFrames_From_Buffer_NotZero()
 		{
 			CreateAudioBuilderFromHeader();
@@ -76,22 +127,24 @@ namespace Gemelo.Voice.Tests
 			Assert.IsTrue(mp3.MpegFile.Reader.EndOfStream);
 			Assert.IsFalse(mp3.MpegFile.Reader.HasNextFrame);
 		}
+
+		
 		[Test]
-		public void Load_Builder_PcmFrames_From_Buffer_NoFrames()
+		public void Load_Builder_PcmFrames_From_Buffer_EndOfData_Frame_NotZero()
 		{
-			CreateAudioBuilderFromHeader();
+			CreateAudioBuilderFromHeader(Mp3Builder.MinimalHeaderSize);
 			
-			var bytesCount = 128;
+			var bytesCount = 800;
 			var buffer = ReadNextByteSample(bytesCount);
 			var frames = _dataProvider.AudioClipBuilder.ToPcmFrames(buffer);
 			
 			Assert.NotNull(frames);
-			Assert.Zero(frames.Count);
+			Assert.NotNull(frames.Count);
 			
 			var mp3 = _dataProvider.AudioClipBuilder as Mp3Builder;
 			Assert.NotNull(mp3);
-			Assert.IsTrue(mp3.MpegFile.Reader.EndOfStream);
-			Assert.IsFalse(mp3.MpegFile.Reader.HasNextFrame);
+			Assert.IsFalse(mp3.MpegFile.Reader.EndOfStream);
+			Assert.IsTrue(mp3.MpegFile.Reader.HasNextFrame);
 		}
 		
 		[Test]
@@ -211,11 +264,10 @@ namespace Gemelo.Voice.Tests
 			return buffer;
 		}
 		
-		private AudioClipBuilder CreateAudioBuilderFromHeader()
+		private AudioClipBuilder CreateAudioBuilderFromHeader(int dataSize = 1024)
 		{
-			var size = 1024;
-			var buffer = ReadNextByteSample(size);
-			Assert.AreEqual(size, buffer.Length);
+			var buffer = ReadNextByteSample(dataSize);
+			Assert.AreEqual(dataSize, buffer.Length);
 			
 			_dataProvider.AddRawData(buffer);
 			return _dataProvider.CreateAudioBuilder(AudioDataType.Mp3, 44100);
