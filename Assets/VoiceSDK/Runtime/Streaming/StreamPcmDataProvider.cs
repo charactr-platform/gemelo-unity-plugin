@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Gemelo.Voice.Audio;
 
@@ -70,7 +71,7 @@ namespace Gemelo.Voice.Streaming
 			return _builder;
 		}
 		
-		public int BufferPcmFrames()
+		public int CreatePcmFramesFromData()
 		{
 			var count = 0;
 			
@@ -83,20 +84,25 @@ namespace Gemelo.Voice.Streaming
 				_bufferReadout += _memory.Read(buffer);
 
 				var frames = _builder.ToPcmFrames(buffer);
-
-				count = frames.Count;
-				
-				for (int i = 0; i < count; i++)
-				{
-					var frame = frames[i];
-					_builder.BufferPcmFrame(frame);
-					OnPcmFrame?.Invoke(frame);
-				}
+				count = BufferForAudioClip(frames);
 			}
 
 			return count;
 		}
-		
+
+		private int BufferForAudioClip(List<PcmFrame> frames)
+		{
+			var count = frames.Count;
+			
+			for (int i = 0; i < count ; i++)
+			{
+				var frame = frames[i];
+				_builder.BufferSamples(frame);
+				OnPcmFrame?.Invoke(frame);
+			}
+
+			return count;
+		}
 		public bool BufferLastFrame()
 		{
 			return _builder.BufferLastFrame();

@@ -124,8 +124,8 @@ namespace Gemelo.Voice.Tests
 			
 			var mp3 = _dataProvider.AudioClipBuilder as Mp3Builder;
 			Assert.NotNull(mp3);
-			Assert.IsTrue(mp3.MpegFile.Reader.EndOfStream);
-			Assert.IsFalse(mp3.MpegFile.Reader.HasNextFrame);
+			Assert.IsFalse(mp3.MpegFile.Reader.EndOfStream);
+			Assert.IsTrue(mp3.MpegFile.Reader.HasNextFrame);
 		}
 
 		
@@ -170,7 +170,7 @@ namespace Gemelo.Voice.Tests
 			
 			Assert.AreEqual(127329, _data.Position);
 			
-			Assert.NotZero(_dataProvider.BufferPcmFrames());
+			Assert.NotZero(_dataProvider.CreatePcmFramesFromData());
 				
 			Assert.IsTrue(_dataProvider.BufferLastFrame());
 	
@@ -184,17 +184,19 @@ namespace Gemelo.Voice.Tests
 			Assert.NotNull(clipBuilder);
 			Assert.NotNull(_dataProvider.AudioClipBuilder);
 
+			_dataProvider.CreatePcmFramesFromData();
+			
 			var bytesCount = 1024;
 			
 			while (_data.Position + bytesCount < (_data.Length - 1 ) / 2)
 			{
 				_dataProvider.AddRawData(ReadNextByteSample(bytesCount));
-				_dataProvider.BufferPcmFrames();
+				_dataProvider.CreatePcmFramesFromData();
 			}
 			
 			Assert.AreEqual(63488, _data.Position);
 
-			yield return new WaitForSeconds(8);
+			yield return new WaitForSeconds(1);
 			
 			var lastBit = _data.Length - _data.Position;
 			
@@ -205,7 +207,7 @@ namespace Gemelo.Voice.Tests
 			
 			_dataProvider.AddRawData(lastBuffer);
 			
-			Assert.NotZero(_dataProvider.BufferPcmFrames());
+			Assert.NotZero(_dataProvider.CreatePcmFramesFromData());
 			Assert.IsTrue(_dataProvider.BufferLastFrame());
 
 			
@@ -242,7 +244,7 @@ namespace Gemelo.Voice.Tests
 			
 			_dataProvider.AddRawData(lastBuffer);
 
-			Assert.NotZero(_dataProvider.BufferPcmFrames());
+			Assert.NotZero(_dataProvider.CreatePcmFramesFromData());
 				
 			Assert.IsTrue(_dataProvider.BufferLastFrame());
 			

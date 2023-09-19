@@ -62,7 +62,7 @@ namespace Gemelo.Voice.Audio
 			if (!_currentFrame.HasData)
 				return false;
 			
-			BufferPcmFrame(_currentFrame);
+			BufferSamples(_currentFrame);
 			return true;
 		}
 		
@@ -103,7 +103,7 @@ namespace Gemelo.Voice.Audio
 			return _clip;
 		}
 		
-		public float BufferPcmFrame(PcmFrame frame)
+		public float BufferSamples(PcmFrame frame)
 		{
 			_processedSamplesCount += frame.Samples.Length;
 			_samplesBuffer.AddRange(frame.Samples);

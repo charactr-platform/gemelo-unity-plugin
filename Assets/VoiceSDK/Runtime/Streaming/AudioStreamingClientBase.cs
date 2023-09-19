@@ -90,7 +90,7 @@ namespace Gemelo.Voice.Streaming
 		
 		private void BufferPcmFramesData()
 		{
-			var processedCount = _pcmDataProvider.BufferPcmFrames();
+			var processedCount = _pcmDataProvider.CreatePcmFramesFromData();
 			
 			if (processedCount == 0)
 				return;
