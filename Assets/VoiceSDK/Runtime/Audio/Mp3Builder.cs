@@ -9,6 +9,18 @@ namespace Gemelo.Voice.Audio
 {
 	public class Mp3Builder : AudioClipBuilder
 	{
+		public enum State
+		{
+			None,
+			End,
+			EndOfStream,
+			DecoderEndOfStream,
+			DecoderNoMoreFrames,
+			DecoderOk,
+			DataOverflow,
+			DataBufferEmpty
+		}
+		
 		public MpegFile MpegFile { get => _mpegFile; }
 		public const int SamplesPerDecoderFrame = 1152;
 		public const int MinimalHeaderSize = 500;
@@ -47,39 +59,41 @@ namespace Gemelo.Voice.Audio
 		/// <param name="chunkSize"></param>
 		/// <param name="outputSize"></param>
 		/// <returns></returns>
-		public bool DecodeBytesToPcmSamples(out Span<float> pcmData, int chunkSize = SamplesChunkRead, int outputSize = SamplesPerDecoderFrame)
+		public State DecodeBytesToPcmSamples(out Span<float> pcmData, int chunkSize = SamplesChunkRead, int outputSize = SamplesPerDecoderFrame)
 		{
-			var decodedDataLength = 0;
+			var decodedPcmSamples = 0;
+			
 			do
 			{
-				if (decodedDataLength + chunkSize > outputSize)
+				if (decodedPcmSamples + chunkSize > outputSize)
 				{
 					Debug.LogWarning("Overflow of data buffer");
-					pcmData = ReturnSamplesBufferRange(decodedDataLength);
-					return true;
+					pcmData = ReturnSamplesBufferRange(decodedPcmSamples);
+					return State.DataOverflow;
 				}
 				
 				if (CheckForDecoderEof())
 				{
-					pcmData = ReturnSamplesBufferRange(decodedDataLength);
-					return false;
+					pcmData = ReturnSamplesBufferRange(decodedPcmSamples);
+					return State.DecoderEndOfStream;
 				}
 				
-				var count = _mpegFile.ReadSamples(_samplesBuffer, decodedDataLength, chunkSize);
+				var count = _mpegFile.ReadSamples(_samplesBuffer, decodedPcmSamples, chunkSize);
+				
 				if (count == 0)
 				{
-					pcmData = ReturnSamplesBufferRange(decodedDataLength);
+					pcmData = ReturnSamplesBufferRange(decodedPcmSamples);
 					Debug.LogWarning($"Decoder: no more data, decoded frames: {_mpegFile.DecodedFrames}, eof: {_mpegFile.Reader.EndOfStream}");
-					return false;
+					return State.DecoderNoMoreFrames;
 				}
-
-				decodedDataLength += count;
 				
-			}	while (decodedDataLength != outputSize);
+				decodedPcmSamples += count;
+				
+			}	while (decodedPcmSamples < outputSize);
 			
-			pcmData = ReturnSamplesBufferRange(decodedDataLength);
+			pcmData = ReturnSamplesBufferRange(decodedPcmSamples);
 
-			return true;
+			return State.DecoderOk;
 		}
 
 		private Span<float> ReturnSamplesBufferRange(int length)
@@ -94,7 +108,7 @@ namespace Gemelo.Voice.Audio
 			var chunkReadDuration = (float) SamplesPerDecoderFrame / SampleRate;
 
 			//Calculate and add slight margin for VBR frames (10%)
-			var decodedDuration = (((float) framesProcessed * SamplesPerDecoderFrame) / SampleRate ) * 1.1f;
+			var decodedDuration = (((float) framesProcessed * SamplesPerDecoderFrame) / SampleRate );
 
 			var availableDuration = (float) (_stream.Length - MinimalHeaderSize) / _bytesPerSecond;
 			
@@ -104,27 +118,27 @@ namespace Gemelo.Voice.Audio
 				return true;
 			}
 			
-			Debug.LogWarning($"Decoder state: [{decodedDuration:F2}/{availableDuration:F2}]!");
-			
 			return false;
 		}
 		public override List<PcmFrame> ToPcmFrames(byte[] bytes)
 		{
 			WriteToStream(bytes);
 			
+			var state = State.None;
 			var frames = new List<PcmFrame>();
 			
-			while (CheckForDecoderEof() == false)
+			do
 			{
-				DecodeBytesToPcmSamples(out var pcmData);
-				
+				state = DecodeBytesToPcmSamples(out var pcmData);
+
 				var pcmFrames = WritePcmFrames(pcmData.ToArray());
 
 				frames.AddRange(pcmFrames);
 				_samplesCount += pcmData.Length;
-			} 
+
+			} while (state == State.DecoderOk);
 		
-			Debug.Log($"Stream Eof: {_mpegFile.Reader.EndOfStream}, Bytes: [{_stream.Length}], Samples: {_samplesCount}");
+			Debug.Log($"Stream State: {state}, Eof: {_mpegFile.Reader.EndOfStream}, Bytes: [{_stream.Length}], Samples: {_samplesCount}");
 
 			return frames;
 		}

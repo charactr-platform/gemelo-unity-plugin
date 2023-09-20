@@ -9,7 +9,8 @@ namespace Gemelo.Voice.Streaming
 	{
 		public Action<PcmFrame> OnPcmFrame { get; set; }
 		public AudioClipBuilder AudioClipBuilder { get => _builder; }
-		
+
+		private const int PreBufferSize = 4096;
 		private readonly MemoryStream _memory;
 		private readonly BinaryWriter _writer;
 		private AudioClipBuilder _builder;
@@ -28,7 +29,7 @@ namespace Gemelo.Voice.Streaming
 
 		public bool HasData()
 		{
-			return _bufferReadout + 1024 < _memory.Length;
+			return _bufferReadout + PreBufferSize < _memory.Length;
 		}
 
 		public AudioClipBuilder CreateAudioBuilder(AudioDataType dataType, int sampleRate)
