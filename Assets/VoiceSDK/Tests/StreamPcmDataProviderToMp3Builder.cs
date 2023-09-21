@@ -43,7 +43,7 @@ namespace Gemelo.Voice.Tests
 		[Test]
 		public void AudioBuilder_NotNull()
 		{
-			var builder = CreateAudioBuilderFromHeader(Mp3Builder.MinimalHeaderSize);
+			var builder = CreateAudioBuilderFromHeader(Mp3Builder.HeaderSize);
 			Assert.NotNull(builder);
 			Assert.NotNull(_dataProvider.AudioClipBuilder);
 			Assert.IsInstanceOf<Mp3Builder>(_dataProvider.AudioClipBuilder);
@@ -88,16 +88,16 @@ namespace Gemelo.Voice.Tests
 		[Test]
 		public void Create_AudioBuilder_Throws_MoreDataNeeded()
 		{
-			Assert.Throws<Exception>(() => CreateAudioBuilderFromHeader(Mp3Builder.MinimalHeaderSize - 1));
+			Assert.Throws<Exception>(() => CreateAudioBuilderFromHeader(Mp3Builder.HeaderSize - 1));
 		}
 		
 		[Test]
 		public void Create_AudioBuilder_Decoder_Duration_Returns_State_EndOfStream()
 		{
-			CreateAudioBuilderFromHeader(Mp3Builder.MinimalHeaderSize);
+			CreateAudioBuilderFromHeader(Mp3Builder.HeaderSize);
 			var mp3Builder = _dataProvider.AudioClipBuilder as Mp3Builder;
 			Assert.NotNull(mp3Builder);
-			Assert.AreEqual(Mp3Builder.State.DecoderEndOfStream, mp3Builder.DecodeBytesToPcmSamples(out _));
+			Assert.AreEqual(DecodingState.EndOfStream, mp3Builder.DecodeBytesToPcmSamples(out _));
 		}
 		
 		[Test]
@@ -106,7 +106,7 @@ namespace Gemelo.Voice.Tests
 			CreateAudioBuilderFromHeader(1300);
 			var mp3Builder = _dataProvider.AudioClipBuilder as Mp3Builder;
 			Assert.NotNull(mp3Builder);
-			Assert.AreEqual(Mp3Builder.State.DecoderOk, mp3Builder.DecodeBytesToPcmSamples(out var pcm));
+			Assert.AreEqual(DecodingState.Success, mp3Builder.DecodeBytesToPcmSamples(out var pcm));
 			Assert.AreEqual(Mp3Builder.SamplesPerDecoderFrame, pcm.Length);
 		}
 		
@@ -130,7 +130,7 @@ namespace Gemelo.Voice.Tests
 		[Test]
 		public void Load_Builder_PcmFrames_From_Buffer_EndOfData_NotZero()
 		{
-			CreateAudioBuilderFromHeader(Mp3Builder.MinimalHeaderSize);
+			CreateAudioBuilderFromHeader(Mp3Builder.HeaderSize);
 			
 			var buffer = ReadNextByteSample(1050);
 			var frames = _dataProvider.AudioClipBuilder.ToPcmFrames(buffer);
