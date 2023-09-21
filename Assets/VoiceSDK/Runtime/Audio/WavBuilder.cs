@@ -6,9 +6,10 @@ namespace Gemelo.Voice.Audio
 {
 	public class WavBuilder : AudioClipBuilder
 	{
+		public const int HeaderSize = 44;
 		private readonly Memory<byte> _data;
 		private readonly WavHeaderData _header;
-
+		
 		private readonly WavDebugSave _debugSave;
 		
 		public WavBuilder(int sampleRate, byte[] data) : base(sampleRate)

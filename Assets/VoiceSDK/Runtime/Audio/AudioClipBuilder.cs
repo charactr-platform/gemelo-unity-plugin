@@ -57,12 +57,15 @@ namespace Gemelo.Voice.Audio
 			return WritePcmFrames(overflow);
 		}
 
-		public bool BufferLastFrame()
+		public bool BufferLastFrame(out PcmFrame frame)
 		{
 			if (!_currentFrame.HasData)
+			{
+				frame = null;
 				return false;
+			}
 			
-			BufferSamples(_currentFrame);
+			frame = _currentFrame;
 			return true;
 		}
 		

@@ -2,23 +2,23 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Gemelo.Voice.Audio;
+using UnityEngine;
 
 namespace Gemelo.Voice.Streaming
 {
-	public class StreamPcmDataProvider : IPcmDataProvider
+	public class StreamPcmDataProvider : MemoryStream, IPcmDataProvider
 	{
 		public Action<PcmFrame> OnPcmFrame { get; set; }
 		public AudioClipBuilder AudioClipBuilder { get => _builder; }
 
-		private const int PreBufferSize = 4096;
-		private readonly MemoryStream _memory;
+		private const int PRE_BUFFER_SIZE = 4096;
+		
 		private readonly BinaryWriter _writer;
 		private AudioClipBuilder _builder;
-		private int _bufferReadout = 0;
+		private int _readPosition = 0;
 		public StreamPcmDataProvider()
 		{
-			_memory = new MemoryStream();
-			_writer = new BinaryWriter(_memory);
+			_writer = new BinaryWriter(this);
 		}
 		
 		public void AddRawData(byte[] data)
@@ -27,49 +27,33 @@ namespace Gemelo.Voice.Streaming
 			_writer.Flush();
 		}
 
-		public bool HasData()
-		{
-			return _bufferReadout + PreBufferSize < _memory.Length;
-		}
+		public bool HasData() => Length > _readPosition + PRE_BUFFER_SIZE;
 
 		public AudioClipBuilder CreateAudioBuilder(AudioDataType dataType, int sampleRate)
 		{
-			byte[] header = null;
-
-			var offset = 0;
-			_memory.Seek(offset, SeekOrigin.Begin);
-			
-			//Assuming 44 bytes for Wav file
-			if (dataType == AudioDataType.Wav)
-			{
-				var headerSize = 44;
-				header = new byte[headerSize];
-				_memory.Read(header, 0, headerSize);
-				offset = headerSize;
-			}
-
-			//And all current data for mp3,as we copy it later to another stream
-			if (dataType == AudioDataType.Mp3)
-			{
-				header = new byte[_memory.Length];
-				_memory.Read(header);
-				offset = header.Length;
-			}
-
-			_memory.Seek(offset, SeekOrigin.Begin);
+			Span<byte> header = null;
 			
 			switch (dataType)
 			{
 				case AudioDataType.Mp3:
-					_builder = new Mp3Builder(sampleRate, header);
+					ReadNextBuffer(out header, Mp3Builder.HeaderSize);
+					_builder = new Mp3Builder(sampleRate, header.ToArray());
 					break;
 				
 				case AudioDataType.Wav:
-					_builder = new WavBuilder(sampleRate, header);
+					ReadNextBuffer(out header, WavBuilder.HeaderSize);
+					_builder = new WavBuilder(sampleRate, header.ToArray());
 					break;
 			}
 			
 			return _builder;
+		}
+		
+		private int ReadNextBuffer(out Span<byte> buffer, int bytesCount = 1024)
+		{
+			buffer = GetBuffer().AsSpan(_readPosition, bytesCount);
+			_readPosition += buffer.Length;
+			return buffer.Length;
 		}
 		
 		public int CreatePcmFramesFromData()
@@ -78,19 +62,19 @@ namespace Gemelo.Voice.Streaming
 			
 			while (HasData())
 			{
-				var bufferSize = _memory.Seek(0, SeekOrigin.End) - _bufferReadout;
-				var buffer = new byte[bufferSize];
-				
-				_memory.Seek(_bufferReadout, SeekOrigin.Begin);
-				_bufferReadout += _memory.Read(buffer);
-
-				var frames = _builder.ToPcmFrames(buffer);
-				count = BufferForAudioClip(frames);
+				count += PushDataToBuilder();
 			}
 
 			return count;
 		}
 
+		private int PushDataToBuilder(int readSize = PRE_BUFFER_SIZE)
+		{
+			ReadNextBuffer(out var buffer, readSize);
+			var frames = _builder.ToPcmFrames(buffer.ToArray());
+			return BufferForAudioClip(frames);
+		}
+		
 		private int BufferForAudioClip(List<PcmFrame> frames)
 		{
 			var count = frames.Count;
@@ -104,14 +88,19 @@ namespace Gemelo.Voice.Streaming
 
 			return count;
 		}
+
 		public bool BufferLastFrame()
 		{
-			return _builder.BufferLastFrame();
-		}
+			var leftBytes = Position - _readPosition;
 		
-		public void Dispose()
-		{
-			_writer.Close();
+			PushDataToBuilder((int) leftBytes);
+
+			if (!_builder.BufferLastFrame(out var frame))
+				return false;
+
+			BufferForAudioClip(new List<PcmFrame>(){frame});
+			
+			return true;
 		}
 	}
 }
