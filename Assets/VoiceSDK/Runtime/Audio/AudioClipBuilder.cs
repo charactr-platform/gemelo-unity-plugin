@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 namespace Gemelo.Voice.Audio
@@ -15,10 +16,11 @@ namespace Gemelo.Voice.Audio
 		public int EmptySamples => _silenceSamplesCount;
 		public int ProcessedSamplesCount => _processedSamplesCount;
 		public int SampleRate => _sampleRate;
+		public float Duration => ProcessedSamplesCount / (float)SampleRate;
 		
 		private int _processedSamplesCount = 0;
 		private int _playbackPosition = 0;
-		private int _silenceSamplesCount = 0;
+		private int _silenceSamplesCount = 20000;
 		
 		private readonly int _sampleRate;
 		private List<float> _samplesBuffer;

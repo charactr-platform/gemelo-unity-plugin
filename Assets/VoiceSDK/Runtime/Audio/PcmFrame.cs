@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using UnityEngine;
 
 namespace Gemelo.Voice.Audio
 {
@@ -11,7 +8,7 @@ namespace Gemelo.Voice.Audio
 		public static int BlockSize = sizeof(short);//16bit per sample 
 		public int SamplesSize => _samplesSize;
 		public float[] Samples => _samples.ToArray();
-		public bool HasData => _samples.Count > 0;
+		public bool HasData => _samples.Count > 0 ;
 		
 		private List<float> _samples;
 		private readonly int _samplesSize;
@@ -57,8 +54,7 @@ namespace Gemelo.Voice.Audio
 				_samples.AddRange(pcm.Slice(0, offset));
 
 				overflow = pcm.Slice(offset, pcm.Count - offset).ToArray();
-			
-				Debug.Log($"[AddPcmData] Samples size: {initialSize} -> {_samples.Count}, Offset data: {overflow.Length}, PcmIn: {pcm.Count},  Offset: {offset}");
+				
 				return true;
 			}
 			

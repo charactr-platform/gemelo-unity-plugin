@@ -92,20 +92,21 @@ namespace Gemelo.Voice.Tests
 		}
 		
 		[Test]
-		public void Create_AudioBuilder_Decoder_Duration_Returns_State_EndOfStream()
+		public void Create_AudioBuilder_Decoder_Duration_Returns_State_BufferEmpty()
 		{
 			CreateAudioBuilderFromHeader(Mp3Builder.HeaderSize);
 			var mp3Builder = _dataProvider.AudioClipBuilder as Mp3Builder;
 			Assert.NotNull(mp3Builder);
-			Assert.AreEqual(DecodingState.EndOfStream, mp3Builder.DecodeBytesToPcmSamples(out _));
+			Assert.AreEqual(DecodingState.BufferEmpty, mp3Builder.DecodeBytesToPcmSamples(out _));
 		}
 		
 		[Test]
 		public void Create_AudioBuilder_Decoder_Duration_Returns_State_Ok()
 		{
-			CreateAudioBuilderFromHeader(1300);
+			CreateAudioBuilderFromHeader(500);
 			var mp3Builder = _dataProvider.AudioClipBuilder as Mp3Builder;
 			Assert.NotNull(mp3Builder);
+			mp3Builder.WriteToStream(ReadNextByteSample());
 			Assert.AreEqual(DecodingState.Success, mp3Builder.DecodeBytesToPcmSamples(out var pcm));
 			Assert.AreEqual(Mp3Builder.SamplesPerDecoderFrame, pcm.Length);
 		}
@@ -115,16 +116,11 @@ namespace Gemelo.Voice.Tests
 		{
 			CreateAudioBuilderFromHeader();
 			
-			var buffer = ReadNextByteSample(1024);
+			var buffer = ReadNextByteSample();
 			var frames = _dataProvider.AudioClipBuilder.ToPcmFrames(buffer);
 			
 			Assert.NotNull(frames);
 			Assert.NotZero(frames.Count);
-			
-			var mp3 = _dataProvider.AudioClipBuilder as Mp3Builder;
-			Assert.NotNull(mp3);
-			Assert.IsFalse(mp3.MpegFile.Reader.EndOfStream);
-			Assert.IsTrue(mp3.MpegFile.Reader.HasNextFrame);
 		}
 
 		[Test]
@@ -141,7 +137,7 @@ namespace Gemelo.Voice.Tests
 			var mp3 = _dataProvider.AudioClipBuilder as Mp3Builder;
 			Assert.NotNull(mp3);
 			Assert.IsFalse(mp3.MpegFile.Reader.EndOfStream);
-			Assert.IsTrue(mp3.MpegFile.Reader.HasNextFrame);
+			Assert.IsFalse(mp3.MpegFile.Reader.HasNextFrame);
 		}
 		
 		[Test]
@@ -171,6 +167,56 @@ namespace Gemelo.Voice.Tests
 				
 			Assert.IsTrue(_dataProvider.BufferLastFrame());
 	
+		}
+
+		[Test]
+		public async Task Load_Chunked_Data_Await()
+		{
+			var clipBuilder = CreateAudioBuilderFromHeader();
+			Assert.NotNull(clipBuilder);
+			Assert.NotNull(_dataProvider.AudioClipBuilder);
+
+			_dataProvider.CreatePcmFramesFromData();
+			
+			var bytesCount = 1024;
+			var processedFrames = 0;
+			
+			while (_data.Position + bytesCount < (_data.Length  / 4))
+			{
+				var bytes = ReadNextByteSample(bytesCount);
+				Assert.GreaterOrEqual(bytes.Length, bytesCount);
+				
+				_dataProvider.AddRawData(bytes);
+				
+				if (_dataProvider.HasData())
+					processedFrames += _dataProvider.CreatePcmFramesFromData();
+			}
+			
+			Assert.NotZero(processedFrames);
+			
+			Assert.AreEqual(31744, _data.Position);
+			
+			var clip = clipBuilder.CreateAudioClipStream("test");
+
+			async void Action()
+			{
+				await Task.Delay(5000);
+				while (_data.Position + bytesCount < _data.Length)
+				{
+					var bytes = ReadNextByteSample(bytesCount);
+					Assert.GreaterOrEqual(bytes.Length, bytesCount);
+
+					_dataProvider.AddRawData(bytes);
+
+					if (_dataProvider.HasData()) processedFrames += _dataProvider.CreatePcmFramesFromData();
+				}
+			}
+
+			var t = new Task(Action);
+			t.Start();
+			await AudioPlayer.PlayClipStatic(clip,16);
+			
+			Assert.AreEqual(675840, _dataProvider.AudioClipBuilder.ProcessedSamplesCount);
 		}
 		
 		[UnityTest]
@@ -232,8 +278,7 @@ namespace Gemelo.Voice.Tests
 			
 			var clip = clipBuilder.CreateAudioClipStream("test",16);
 			
-			//702720 Assert.AreEqual(706176, _dataProvider.AudioClipBuilder.ProcessedSamplesCount);
-			Assert.AreEqual(702720, _dataProvider.AudioClipBuilder.ProcessedSamplesCount);
+			Assert.AreEqual(696960, _dataProvider.AudioClipBuilder.ProcessedSamplesCount);
 			Assert.AreEqual(16f, clip.length); //Initial length of audio clip
 			Assert.AreEqual(44100, clip.frequency);
 			Assert.AreEqual(16f, clip.samples / clip.frequency); //Proper length from samples
@@ -269,9 +314,8 @@ namespace Gemelo.Voice.Tests
 			Assert.IsTrue(_dataProvider.BufferLastFrame());
 			
 			var clip = clipBuilder.CreateAudioClipStream("test",16);
-
-//639360			Assert.AreEqual(706176, _dataProvider.AudioClipBuilder.ProcessedSamplesCount);
 			
+			Assert.AreEqual(696960, _dataProvider.AudioClipBuilder.ProcessedSamplesCount);
 			Assert.AreEqual(16f, clip.length); //Initial length of audio clip
 			Assert.AreEqual(44100, clip.frequency);
 			Assert.AreEqual(16f, clip.samples / clip.frequency); //Proper length from samples

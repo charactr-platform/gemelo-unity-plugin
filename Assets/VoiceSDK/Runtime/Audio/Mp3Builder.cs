@@ -17,9 +17,9 @@ namespace Gemelo.Voice.Audio
 		public float DecodedDuration => ((float) _mpegFile.DecodedFrames * SamplesPerDecoderFrame) / SampleRate;
 		
 		private readonly MemoryStream _stream;
-		private readonly MpegFile _mpegFile;
 		private readonly float[] _samplesBuffer;
 		private readonly float _eofMargin;
+		private MpegFile _mpegFile;
 		private int _samplesCount, _writeCount;
 		public Mp3Builder(int sampleRate, byte[] headerData) : base(sampleRate)
 		{
@@ -41,7 +41,7 @@ namespace Gemelo.Voice.Audio
 			Debug.Log($"Mp3Builder: SampleRate [{SampleRate}] Bitrate [{Bitrate}] EofMargin [{_eofMargin}]");
 		}
 		
-		private void WriteToStream(Span<byte> data)
+		public void WriteToStream(Span<byte> data)
 		{
 			_writeCount += data.Length;
 			_stream.Write(data);
@@ -65,7 +65,6 @@ namespace Gemelo.Voice.Audio
 			{
 				if (DecodedDuration > AvailableDuration - _eofMargin)
 				{
-					Debug.Log($"Decoder buffer processed [{DecodedDuration:F2}/{AvailableDuration:F2}]!");
 					pcmData = ReturnSamplesBufferRange(decodedPcmSamples);
 					return DecodingState.BufferEmpty;
 				}
@@ -75,7 +74,7 @@ namespace Gemelo.Voice.Audio
 				if (count == 0)
 				{
 					pcmData = ReturnSamplesBufferRange(decodedPcmSamples);
-					Debug.LogError($"Decoder eof, frames: {_mpegFile.DecodedFrames}, eof: {_mpegFile.Reader.EndOfStream}");
+					Debug.LogWarning($"Decoder: EndOfStream, frames [{_mpegFile.DecodedFrames}], EOS: [{_mpegFile.Reader.EndOfStream}]");
 					return DecodingState.EndOfStream;
 				}
 
@@ -110,10 +109,19 @@ namespace Gemelo.Voice.Audio
 				_samplesCount += pcmData.Length;
 
 			} while (state == DecodingState.Success);
-
+			
 			Debug.Log($"State: {state}, Eof: {_mpegFile.Reader.EndOfStream}, Bytes: [{_writeCount}], Samples: {_samplesCount}");
 
+			if (state == DecodingState.EndOfStream)
+				ResetDecoder(_mpegFile.Position);
+			
 			return frames;
+		}
+
+		private void ResetDecoder(long position)
+		{
+			_mpegFile = new MpegFile(_stream);
+			_mpegFile.Position = position;
 		}
 	}
 }

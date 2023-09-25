@@ -48,11 +48,16 @@ namespace Gemelo.Voice.Streaming
 			return _builder;
 		}
 		
-		private int ReadNextBuffer(out Span<byte> buffer, int bytesCount = 1024)
+		private int ReadNextBuffer(out Span<byte> output, int bytesCount = 1024)
 		{
-			buffer = GetBuffer().AsSpan(_readPosition, bytesCount);
-			_readPosition += buffer.Length;
-			return buffer.Length;
+			var buffer = GetBuffer();
+
+			if (buffer.Length < bytesCount)
+				bytesCount = buffer.Length;
+			
+			output = buffer.AsSpan(_readPosition, bytesCount);
+			_readPosition += output.Length;
+			return output.Length;
 		}
 		
 		public int CreatePcmFramesFromData()

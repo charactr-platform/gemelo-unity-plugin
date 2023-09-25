@@ -14,7 +14,7 @@ namespace Gemelo.Voice.Streaming
 		public AudioDataType DataType => _dataType;
 		public int SampleRate => _sampleRate;
 		public bool BufferingCompleted { get; private set; }
-		public float AudioLength { get; private set; }
+		public float AudioLength => AudioClipBuilder.Duration;
 		public int TimeSamples { get; private set; }
 		private AudioClipBuilder AudioClipBuilder { get; set; }
 
@@ -96,7 +96,6 @@ namespace Gemelo.Voice.Streaming
 				return;
 			
 			Debug.Log($"Added frames: {processedCount}");
-			AudioLength = AudioClipBuilder.ProcessedSamplesCount / (float)AudioClipBuilder.SampleRate;
 			TimeSamples = AudioClipBuilder.ProcessedSamplesCount + AudioClipBuilder.EmptySamples;
 
 			if (_clip == null && AudioLength > 0.5f)
@@ -114,7 +113,6 @@ namespace Gemelo.Voice.Streaming
 			_frameCount = 1;
 			_totalFramesRead = 0;
 			BufferingCompleted = false;
-			AudioLength = 0f;
 			TimeSamples = 0;
 			_pcmDataProvider.OnPcmFrame = frame => OnPcmFrame(_frameCount, frame);
 		}
@@ -137,8 +135,7 @@ namespace Gemelo.Voice.Streaming
 			if (Initialized && !Connected && _totalFramesRead != 0)
 			{
 				_pcmDataProvider.BufferLastFrame();
-
-				Debug.Log($"Buffer loaded [{_totalFramesRead}]: {AudioLength}s");
+				Debug.Log($"Buffer loaded [{_totalFramesRead}] - [{AudioClipBuilder.ProcessedSamplesCount}]: {AudioLength}s");
 				_totalFramesRead = 0;
 				BufferingCompleted = true;
 			}
