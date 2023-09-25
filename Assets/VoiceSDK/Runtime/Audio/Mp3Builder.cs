@@ -65,7 +65,7 @@ namespace Gemelo.Voice.Audio
 			{
 				if (DecodedDuration > AvailableDuration - _eofMargin)
 				{
-					Debug.LogWarning($"Decoder buffer is running out [{DecodedDuration:F2}/{AvailableDuration:F2}]!");
+					Debug.Log($"Decoder buffer processed [{DecodedDuration:F2}/{AvailableDuration:F2}]!");
 					pcmData = ReturnSamplesBufferRange(decodedPcmSamples);
 					return DecodingState.BufferEmpty;
 				}
@@ -75,8 +75,7 @@ namespace Gemelo.Voice.Audio
 				if (count == 0)
 				{
 					pcmData = ReturnSamplesBufferRange(decodedPcmSamples);
-					Debug.LogError(
-						$"Decoder end, frames: {_mpegFile.DecodedFrames}, eof: {_mpegFile.Reader.EndOfStream}");
+					Debug.LogError($"Decoder eof, frames: {_mpegFile.DecodedFrames}, eof: {_mpegFile.Reader.EndOfStream}");
 					return DecodingState.EndOfStream;
 				}
 
