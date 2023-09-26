@@ -18,10 +18,9 @@ namespace Gemelo.Voice.Streaming
         public event Action OnAudioEnd, OnAudioReady;
 
         [SerializeField] private int voiceId = 151;
-        [Header("Audio data details")]
-        [SerializeField] private AudioDataType audioDataType = AudioDataType.Wav;
-        [SerializeField] private int samplingRate = 44100;
-        [SerializeField] private int audioBufferLengthInSeconds = 30;
+
+        [Header("Audio details")] [SerializeField]
+        private AudioParameters audioParameters;
         
         private IAudioStreamingClient _streamingClient;
         private IAverageProvider _averageProvider;
@@ -67,9 +66,10 @@ namespace Gemelo.Voice.Streaming
             var url = Configuration.STREAMING_API + $"?voiceId={voiceId}";
             
 #if UNITY_WEBGL && !UNITY_EDITOR
-            _streamingClient = new WebGlAudioStreamingClient(url, configuration, audioDataType, audioBufferLengthInSeconds);
+            audioParameters.SetSamplingRate(WebGlAudioBufferProcessor.GetSupportedSampleRate());
+            _streamingClient = new WebGlAudioStreamingClient(url, configuration, audioParameters);
 #else
-            _streamingClient = new DefaultAudioStreamingClient(url, configuration, audioDataType, samplingRate, audioBufferLengthInSeconds);
+            _streamingClient = new DefaultAudioStreamingClient(url, configuration, audioParameters);
 #endif
             _streamingClient.Connect();
 
@@ -127,8 +127,8 @@ namespace Gemelo.Voice.Streaming
         }
         
         public void SetVoiceId(int voice) => voiceId = voice;
-        public void SetSamplingRate(int rate) => samplingRate = rate;
-        public void SetMaxLenght(int lenght) => audioBufferLengthInSeconds = lenght;
-        public void SetAudioDataType(AudioDataType dataType) => audioDataType = dataType;
+        public void SetSamplingRate(int rate) => audioParameters.SetSamplingRate(rate);
+        public void SetMaxLenght(int lenght) => audioParameters.SetMaxLenght(lenght);
+        public void SetAudioDataType(AudioDataType dataType) => audioParameters.SetAudioDataType(dataType);
     }
 }
