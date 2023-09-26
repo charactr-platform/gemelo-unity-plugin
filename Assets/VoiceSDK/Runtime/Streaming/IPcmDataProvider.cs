@@ -9,7 +9,7 @@ namespace Gemelo.Voice.Streaming
 		Action<PcmFrame> OnPcmFrame { get; set; }
 		void AddRawData(byte[] data);
 		bool HasData();
-		AudioClipBuilder CreateAudioBuilder(AudioDataType dataType, int sampleRate);
+		AudioClipBuilder CreateAudioBuilder(AudioParameters audioParameters);
 		int CreatePcmFramesFromData();
 		bool BufferLastFrame();
 		void Dispose();

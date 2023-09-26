@@ -40,12 +40,17 @@ namespace Gemelo.Voice.Tests
 
 	private IEnumerator ConvertAndPlayStreamingManager(string text, AudioDataType dataType)
 	{
-		var gameobject = new GameObject("_audioStreamingManager");
-		var manager = gameobject.AddComponent<AudioStreamingManager>();
+		var gameObject = new GameObject("_audioStreamingManager");
+		var manager = gameObject.AddComponent<AudioStreamingManager>();
 
 		Assert.IsNotNull(manager);
 		Assert.IsTrue(manager.TryGetComponent<AudioPlayer>(out _));
+		
 		manager.SetAudioDataType(dataType);
+		Assert.NotNull(manager.AudioParameters);
+		Assert.IsInstanceOf<AudioParameters>(manager.AudioParameters);
+		Assert.AreEqual(dataType, manager.AudioParameters.AudioDataType);
+		
 		yield return manager.Convert(text);
 		Assert.IsNotNull(manager.AudioClip);
 		Assert.IsFalse(manager.AudioEnd);

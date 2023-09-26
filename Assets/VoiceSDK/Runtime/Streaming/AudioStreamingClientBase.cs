@@ -72,7 +72,7 @@ namespace Gemelo.Voice.Streaming
 			
 			if (hasData && AudioClipBuilder == null)
 			{
-				AudioClipBuilder = _pcmDataProvider.CreateAudioBuilder(DataType, SampleRate);
+				AudioClipBuilder = _pcmDataProvider.CreateAudioBuilder(_audioParameters);
 				Initialize();
 				return;
 			}

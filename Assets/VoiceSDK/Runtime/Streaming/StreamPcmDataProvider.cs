@@ -8,7 +8,7 @@ namespace Gemelo.Voice.Streaming
 	public class StreamPcmDataProvider : MemoryStream, IPcmDataProvider
 	{
 		public Action<PcmFrame> OnPcmFrame { get; set; }
-		public AudioClipBuilder AudioClipBuilder { get => _builder; }
+		public AudioClipBuilder AudioClipBuilder => _builder;
 
 		private const int PRE_BUFFER_SIZE = 4096;
 		
@@ -28,20 +28,20 @@ namespace Gemelo.Voice.Streaming
 
 		public bool HasData() => Length > _readPosition + PRE_BUFFER_SIZE;
 
-		public AudioClipBuilder CreateAudioBuilder(AudioDataType dataType, int sampleRate)
+		public AudioClipBuilder CreateAudioBuilder(AudioParameters parameters)
 		{
 			Span<byte> header = null;
 			
-			switch (dataType)
+			switch (parameters.AudioDataType)
 			{
 				case AudioDataType.MP3:
 					ReadNextBuffer(out header, Mp3Builder.HeaderSize);
-					_builder = new Mp3Builder(sampleRate, header.ToArray());
+					_builder = new Mp3Builder(parameters.SampleRate, header.ToArray());
 					break;
 				
 				case AudioDataType.WAV:
 					ReadNextBuffer(out header, WavBuilder.HeaderSize);
-					_builder = new WavBuilder(sampleRate, header.ToArray());
+					_builder = new WavBuilder(parameters.SampleRate, header.ToArray());
 					break;
 			}
 			
