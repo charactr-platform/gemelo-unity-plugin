@@ -1,15 +1,12 @@
 ﻿using Gemelo.Voice.Audio;
-using UnityEngine;
 
 namespace Gemelo.Voice.Streaming
 {
 	public class DefaultAudioStreamingClient : AudioStreamingClientBase, IAudioStreamingClient
 	{
 		private readonly NativeSocketWrapper _socket;
-		
 		//TODO: Use configuration data structure
-		public DefaultAudioStreamingClient(string url, Configuration configuration, AudioDataType dataType = AudioDataType.Wav, 
-			int sampleRate = 44100, int maxLenght = 30): base(configuration, dataType, sampleRate, maxLenght)
+		public DefaultAudioStreamingClient(string url, Configuration configuration, AudioParameters audioParameters): base(configuration, audioParameters)
 		{
 			_socket = new NativeSocketWrapper(AddAudioFormat(url));
 			_socket.OnOpen += OnOpen;

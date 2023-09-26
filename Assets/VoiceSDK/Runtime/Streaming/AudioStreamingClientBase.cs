@@ -11,8 +11,8 @@ namespace Gemelo.Voice.Streaming
 		public bool Connected => IsConnected();
 		public bool Initialized => _clip != null;
 		public AudioClip AudioClip => _clip;
-		public AudioDataType DataType => _dataType;
-		public int SampleRate => _sampleRate;
+		public AudioDataType DataType => _audioParameters.AudioDataType;
+		public int SampleRate => _audioParameters.SampleRate;
 		public bool BufferingCompleted { get; private set; }
 		public float AudioLength => AudioClipBuilder.Duration;
 		public int TimeSamples { get; private set; }
@@ -21,25 +21,19 @@ namespace Gemelo.Voice.Streaming
 		private readonly Queue<string> _commands;
 	
 		private readonly Configuration _configuration;
-		private readonly WavDebugSave _debugSave;
-	
-		private readonly AudioDataType _dataType;
-		private readonly int _maxClipLenght;
-		private readonly int _sampleRate;
+		private readonly AudioParameters _audioParameters;
 
 		private AudioClip _clip = null;
 		
 		private int _frameCount, _totalFramesRead;
 		private readonly IPcmDataProvider _pcmDataProvider;
 
-		protected AudioStreamingClientBase(Configuration configuration, AudioDataType dataType, int sampleRate, int maxClipLenght)
+		protected AudioStreamingClientBase(Configuration configuration, AudioParameters audioParameters)
 		{
 			_commands = new Queue<string>();
 			_pcmDataProvider = new StreamPcmDataProvider();
 			_configuration = configuration;
-			_maxClipLenght = maxClipLenght;
-			_dataType = dataType;
-			_sampleRate = sampleRate;
+			_audioParameters = audioParameters;
 		}
 
 		protected void EnqueueCommand(string command)
@@ -120,7 +114,7 @@ namespace Gemelo.Voice.Streaming
 		
 		private AudioClip CreateAudioClip()
 		{
-			var clip = AudioClipBuilder.CreateAudioClipStream("test", _maxClipLenght);
+			var clip = AudioClipBuilder.CreateAudioClipStream("test", _audioParameters.MaxClipLenght);
 			
 			if (clip.LoadAudioData() == false)
 				throw new Exception("Data not loaded");

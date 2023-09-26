@@ -12,8 +12,8 @@ namespace Gemelo.Voice.Streaming
 		private readonly GameObject _gameObject;
 		private WebGlAudioBufferProcessor _bufferProcessor;
 		
-		public WebGlAudioStreamingClient(string url, Configuration configuration, AudioDataType audioDataType = AudioDataType.Wav, int maxLength = 30) 
-			: base(configuration, audioDataType, WebGlAudioBufferProcessor.GetSupportedSampleRate(), maxLength)
+		public WebGlAudioStreamingClient(string url, Configuration configuration, AudioParameters audioParameters) 
+			: base(configuration, audioParameters)
 		{
 			if (SampleRate == -1)
 				throw new Exception("Can't read sample rate from Browser AudioContext!");
