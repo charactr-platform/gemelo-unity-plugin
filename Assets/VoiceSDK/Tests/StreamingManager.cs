@@ -14,28 +14,28 @@ namespace Gemelo.Voice.Tests
 	[RequiresPlayMode()]
 	public IEnumerator Stream_ShortText_Returns_Wav()
 	{
-		yield return ConvertAndPlayStreamingManager(Text, AudioDataType.Wav);
+		yield return ConvertAndPlayStreamingManager(Text, AudioDataType.WAV);
 	}
 
 	[UnityTest]
 	[RequiresPlayMode()]
 	public IEnumerator Stream_ShortText_Returns_Mp3()
 	{
-		yield return ConvertAndPlayStreamingManager(Text, AudioDataType.Mp3);
+		yield return ConvertAndPlayStreamingManager(Text, AudioDataType.MP3);
 	}
 
 	[UnityTest]
 	[RequiresPlayMode()]
 	public IEnumerator Stream_LongText_Returns_Wav()
 	{
-		yield return ConvertAndPlayStreamingManager(LongText, AudioDataType.Wav);
+		yield return ConvertAndPlayStreamingManager(LongText, AudioDataType.WAV);
 	}
 
 	[UnityTest]
 	[RequiresPlayMode()]
 	public IEnumerator Stream_LongText_Returns_Mp3()
 	{
-		yield return ConvertAndPlayStreamingManager(LongText, AudioDataType.Mp3);
+		yield return ConvertAndPlayStreamingManager(LongText, AudioDataType.MP3);
 	}
 
 	private IEnumerator ConvertAndPlayStreamingManager(string text, AudioDataType dataType)

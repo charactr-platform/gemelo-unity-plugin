@@ -15,6 +15,10 @@ namespace Gemelo.Voice.Streaming
         public IAudioPlayer AudioPlayer { get; private set; }
         public AudioClip AudioClip { get; private set; }
         public bool AudioEnd { get; private set; }
+        public AudioParameters AudioParameters { 
+            get => audioParameters ??= new AudioParameters();
+            private set => audioParameters = value;
+        }
         public event Action OnAudioEnd, OnAudioReady;
 
         [SerializeField] private int voiceId = 151;
@@ -127,8 +131,9 @@ namespace Gemelo.Voice.Streaming
         }
         
         public void SetVoiceId(int voice) => voiceId = voice;
-        public void SetSamplingRate(int rate) => audioParameters.SetSamplingRate(rate);
-        public void SetMaxLenght(int lenght) => audioParameters.SetMaxLenght(lenght);
-        public void SetAudioDataType(AudioDataType dataType) => audioParameters.SetAudioDataType(dataType);
+        public void SetSamplingRate(int rate) => AudioParameters.SetSamplingRate(rate);
+        public void SetMaxLenght(int lenght) => AudioParameters.SetMaxLenght(lenght);
+        public void SetAudioDataType(AudioDataType type) => AudioParameters.SetAudioDataType(type);
+        public void SetAudioParameters(AudioParameters parameters) => AudioParameters = parameters;
     }
 }

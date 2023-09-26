@@ -7,8 +7,8 @@ namespace Gemelo.Voice.Audio
 {
 	public enum AudioDataType
 	{
-		Wav = 1,
-		Mp3 = 2, 
+		WAV = 1,
+		MP3 = 2, 
 	}
 
 	public abstract class AudioClipBuilder

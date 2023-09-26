@@ -336,7 +336,7 @@ namespace Gemelo.Voice.Tests
 			Assert.AreEqual(dataSize, buffer.Length);
 			
 			_dataProvider.AddRawData(buffer);
-			return _dataProvider.CreateAudioBuilder(AudioDataType.Mp3, 44100);
+			return _dataProvider.CreateAudioBuilder(AudioDataType.MP3, 44100);
 		}
 	}
 }

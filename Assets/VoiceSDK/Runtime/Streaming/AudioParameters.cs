@@ -11,7 +11,7 @@ namespace Gemelo.Voice.Streaming
 		public int SampleRate => sampleRate;
 		public int MaxClipLenght => maxClipLength;
 		
-		[SerializeField] private AudioDataType audioDataType = AudioDataType.Mp3;
+		[SerializeField] private AudioDataType audioDataType = AudioDataType.MP3;
 		[SerializeField] private int sampleRate = 44100;
 		[SerializeField] private int maxClipLength = 30;
 		

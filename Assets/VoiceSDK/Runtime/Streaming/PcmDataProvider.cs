@@ -48,7 +48,7 @@ namespace Gemelo.Voice.Streaming
 				header = tempArray[0];
 				
 				//Assuming 44 bytes for Wav file
-				if (dataType == AudioDataType.Wav && header.Length > 44)
+				if (dataType == AudioDataType.WAV && header.Length > 44)
 				{
 					tempArray[0] = header.AsSpan(44).ToArray();
 					headerPushback = true;

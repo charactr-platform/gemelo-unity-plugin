@@ -34,12 +34,12 @@ namespace Gemelo.Voice.Streaming
 			
 			switch (dataType)
 			{
-				case AudioDataType.Mp3:
+				case AudioDataType.MP3:
 					ReadNextBuffer(out header, Mp3Builder.HeaderSize);
 					_builder = new Mp3Builder(sampleRate, header.ToArray());
 					break;
 				
-				case AudioDataType.Wav:
+				case AudioDataType.WAV:
 					ReadNextBuffer(out header, WavBuilder.HeaderSize);
 					_builder = new WavBuilder(sampleRate, header.ToArray());
 					break;

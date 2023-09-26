@@ -139,7 +139,7 @@ namespace Gemelo.Voice.Tests
 		[Test]
 		public async Task SendConvertMessage_AudioStreamWrapper_StatusNormalClosure()
 		{
-			var s = new AudioStream(_configuration, AudioDataType.Mp3, 44100);
+			var s = new AudioStream(_configuration, AudioDataType.MP3, 44100);
 
 			s.Connect();
 			await s.WaitForData(ByteSize);
@@ -207,7 +207,7 @@ namespace Gemelo.Voice.Tests
 		{
 			var readSize = 8192;
 			var expectedSamples = 171648;
-			var audio = new AudioStream(_configuration, AudioDataType.Mp3, 44100);
+			var audio = new AudioStream(_configuration, AudioDataType.MP3, 44100);
 
 			/*audio.Connect(LongText);*/
 

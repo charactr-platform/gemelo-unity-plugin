@@ -40,7 +40,7 @@ namespace Gemelo.Voice.Tests
 			_commands.Add(AudioStreamingClientBase.GetAuthCommand(configuration.ApiKey, configuration.ApiClient));
 			_commands.Add(AudioStreamingClientBase.GetConvertCommand(Text));
 
-			var mp3Params = dataType == AudioDataType.Mp3 ? $"&format=mp3&sr={sampleRate}" : string.Empty;
+			var mp3Params = dataType == AudioDataType.MP3 ? $"&format=mp3&sr={sampleRate}" : string.Empty;
 			_socket = new NativeSocketWrapper(Configuration.STREAMING_API + $"?voiceId={VoiceId}" + mp3Params);
 		}
 
