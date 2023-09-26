@@ -21,14 +21,13 @@ namespace Gemelo.Voice.Streaming
 		private readonly ClientWebSocket _ws;
 		private readonly CancellationTokenSource _token;
 		private readonly Uri _uri;
-		public NativeSocketWrapper(string url, int timeout = 5000)
+		public NativeSocketWrapper(string url)
 		{
 			_ws = new ClientWebSocket();
 			_ws.Options.SetRequestHeader("user-agent", Configuration.USER_AGENT);
 			
 			_uri = new Uri(url);
 			_token = new CancellationTokenSource();
-			_token.CancelAfter(timeout);
 		}
 
 		public async void Connect()
