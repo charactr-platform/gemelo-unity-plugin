@@ -10,8 +10,6 @@ namespace Gemelo.Voice.Audio
 		private readonly Memory<byte> _data;
 		private readonly WavHeaderData _header;
 		
-		private readonly WavDebugSave _debugSave;
-		
 		public WavBuilder(int sampleRate, byte[] data) : base(sampleRate)
 		{
 			_data = data;
