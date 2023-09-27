@@ -70,7 +70,7 @@ namespace Gemelo.Voice
 		{
 			var configuration = Resources.Load<Configuration>(FILENAME);
 			if (configuration == null)
-				throw new Exception("Create configuration settings first: Menu->Charactr->Configuration");
+				throw new Exception("Create configuration settings first in top menu: Tools->Gemelo.ai Voice->Configuration");
 			
 			return configuration;
 		}

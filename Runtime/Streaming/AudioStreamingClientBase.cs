@@ -11,28 +11,31 @@ namespace Gemelo.Voice.Streaming
 		public bool Connected => IsConnected();
 		public bool Initialized => _clip != null;
 		public AudioClip AudioClip => _clip;
+		public AudioDataType DataType => _audioParameters.AudioDataType;
+		public int SampleRate => _audioParameters.SampleRate;
 		public bool BufferingCompleted { get; private set; }
-		public float AudioLength { get; private set; }
+		public float AudioLength => AudioClipBuilder.Duration;
 		public int TimeSamples { get; private set; }
-		private WavBuilder WavBuilder { get; set; }
-		
-		private AudioClip _clip = null;
+		private AudioClipBuilder AudioClipBuilder { get; set; }
+
 		private readonly Queue<string> _commands;
-		private readonly Queue<byte[]> _dataQueue;
-		private int _frameCount, _totalFramesRead;
+	
 		private readonly Configuration _configuration;
-		private readonly WavDebugSave _debugSave;
-		private readonly Queue<PcmFrame> _pcmFrames;
-		private readonly int _maxClipLenght;
-		private PcmFrame _currentPcmFrame;
-		protected AudioStreamingClientBase(Configuration configuration, int maxClipLenght = 30)
+		private readonly AudioParameters _audioParameters;
+
+		private AudioClip _clip = null;
+		
+		private int _frameCount, _totalFramesRead;
+		private readonly IPcmDataProvider _pcmDataProvider;
+
+		protected AudioStreamingClientBase(Configuration configuration, AudioParameters audioParameters)
 		{
 			_commands = new Queue<string>();
-			_dataQueue = new Queue<byte[]>();
-			_pcmFrames = new Queue<PcmFrame>();
+			_pcmDataProvider = new StreamPcmDataProvider();
 			_configuration = configuration;
-			_maxClipLenght = maxClipLenght;
+			_audioParameters = audioParameters;
 		}
+
 		protected void EnqueueCommand(string command)
 		{
 			_commands.Enqueue(command);
@@ -41,137 +44,92 @@ namespace Gemelo.Voice.Streaming
 		//Invoke on main thread 
 		protected void OnData(byte[] data)
 		{
-			lock (_dataQueue)
-			{
-				_dataQueue.Enqueue(data);
-			}
+			_pcmDataProvider.AddRawData(data);
 		}
 
-		protected static string AddAudioFormat(string url, int samplingRate = 44100)
+		protected string AddAudioFormat(string url)
 		{
-			switch (samplingRate)
+			switch (SampleRate)
 			{
 				//Some default sampling rate values
 				case 48000:
 				case 44100:
 				case 32000:
 				case 22050:
-					Debug.Log($"Transcoder sampling rate set: {samplingRate}");
+					Debug.Log($"Transcoder sampling rate set: {SampleRate}");
 					break;
                 
 				default:
-					throw new Exception($"Can't set unsupported transcoder sampling rate: {samplingRate}");
+					throw new Exception($"Can't set unsupported transcoder sampling rate: {SampleRate}");
 			}
 			
-			return url + $"&format=wav&sr={samplingRate}";
+			return url + $"&format={DataType.ToString().ToLower()}&sr={SampleRate}";
 		}
 		
 		public void DepleteBufferQueue()
 		{
-			lock (_dataQueue)
+			var hasData = _pcmDataProvider.HasData();
+			
+			if (hasData && AudioClipBuilder == null)
 			{
-				bool HasData() => _dataQueue.Count > 0;
-				
-				if (HasData() && WavBuilder == null)
-				{
-					CreateWavBuilderFromHeader(_dataQueue.Dequeue());
-					return;
-				}
-
-				while (HasData())
-				{
-					CreateFrameData(_dataQueue.Dequeue());
-					
-					for (int i = 0; i < _pcmFrames.Count; i++)
-					{
-						if (_pcmFrames.TryDequeue(out var frame))
-							BufferPcmFrameData(frame);
-					}
-				}
+				AudioClipBuilder = _pcmDataProvider.CreateAudioBuilder(_audioParameters);
+				Initialize();
+				return;
 			}
+			
+			BufferPcmFramesData();
 
 			CheckForBufferEnd();
 		}
 		
-		private void CreateFrameData(Span<byte> data)
+		private void BufferPcmFramesData()
 		{
-			if (!_currentPcmFrame.AddData(data.ToArray(), out var overflow))
+			var processedCount = _pcmDataProvider.CreatePcmFramesFromData();
+			
+			if (processedCount == 0)
 				return;
 			
-			_pcmFrames.Enqueue(_currentPcmFrame);
-			
-			CreateNewPcmFrame();
-			CreateFrameData(overflow);
+			Debug.Log($"Added frames: {processedCount}");
+			TimeSamples = AudioClipBuilder.ProcessedSamplesCount + AudioClipBuilder.EmptySamples;
+
+			if (_clip == null && AudioLength > 0.5f)
+			{
+				Debug.Log($"Creating audio clip, buffered length: {AudioLength} sec.");
+				_clip = CreateAudioClip();
+			}
+
+			_frameCount += processedCount;
 		}
 		
-		private void BufferPcmFrameData(PcmFrame frame)
-		{
-			AudioLength = WavBuilder.BufferData(frame);
-			TimeSamples = WavBuilder.ProcessedSamplesCount + WavBuilder.EmptySamples;
-			
-			//WebGL needs first buffer before start of sampling
-			OnPcmFrame(_frameCount, frame);
-
-			//Buffer some data before we start audio play, 1 sec approx.
-			var startFrame = Mathf.RoundToInt((float) WavBuilder.SampleRate / frame.Samples.Length);
-			
-			if (_frameCount == startFrame)
-			{
-				Debug.Log($"Creating audio clip, buffered length: {AudioLength}sec.");
-				CreateAudioClip();
-			}
-			
-			frame.Dispose();
-			
-			_frameCount++;
-		}
-
-		private void CreateWavBuilderFromHeader(byte[] header)
+		private void Initialize()
 		{
 			_clip = null;
 			_frameCount = 1;
 			_totalFramesRead = 0;
 			BufferingCompleted = false;
-			AudioLength = 0f;
 			TimeSamples = 0;
-
-			CreateNewPcmFrame();
-			
-			WavBuilder = new WavBuilder(header);
+			_pcmDataProvider.OnPcmFrame = frame => OnPcmFrame(_frameCount, frame);
 		}
 
-		private void CreateNewPcmFrame()
+		
+		private AudioClip CreateAudioClip()
 		{
-#if UNITY_WEBGL && !UNITY_EDITOR
-			_currentPcmFrame = new PcmFrame(WebGlAudioBufferProcessor.BufferSize);
-#else
-			_currentPcmFrame = new PcmFrame();
-#endif
-		}
-		private void CreateAudioClip()
-		{
-			var clip = WavBuilder.CreateAudioClipStream("test", _maxClipLenght);
+			var clip = AudioClipBuilder.CreateAudioClipStream("test", _audioParameters.MaxClipLenght);
 			
 			if (clip.LoadAudioData() == false)
 				throw new Exception("Data not loaded");
 			
 			Debug.Log($"Loaded audio clip...{clip.loadState}");
 		
-			_clip = clip;
+			return clip;
 		}
 		
 		private void CheckForBufferEnd()
 		{
 			if (Initialized && !Connected && _totalFramesRead != 0)
 			{
-				if (_currentPcmFrame.HasData)
-				{
-					_currentPcmFrame.WriteSamples(true);
-					BufferPcmFrameData(_currentPcmFrame);
-					CreateNewPcmFrame();
-				}
-
-				Debug.Log($"Buffer loaded [{_totalFramesRead}]: {AudioLength}s");
+				_pcmDataProvider.BufferLastFrame();
+				Debug.Log($"Buffer loaded [{_totalFramesRead}] - [{AudioClipBuilder.ProcessedSamplesCount}]: {AudioLength}s");
 				_totalFramesRead = 0;
 				BufferingCompleted = true;
 			}
@@ -187,12 +145,11 @@ namespace Gemelo.Voice.Streaming
 		
 		public virtual void Dispose()
 		{
-			WavBuilder.Dispose();
-			WavBuilder = null;
+			AudioClipBuilder.Dispose();
+			AudioClipBuilder = null;
 			_clip = null;
 			_commands.Clear();
-			_dataQueue.Clear();
-			_pcmFrames.Clear();
+			_pcmDataProvider.Dispose();
 			Debug.Log("Disposed streaming client");
 		}
 		

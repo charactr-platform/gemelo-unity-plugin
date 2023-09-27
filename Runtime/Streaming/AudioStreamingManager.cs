@@ -15,15 +15,21 @@ namespace Gemelo.Voice.Streaming
         public IAudioPlayer AudioPlayer { get; private set; }
         public AudioClip AudioClip { get; private set; }
         public bool AudioEnd { get; private set; }
+        public AudioParameters AudioParameters { 
+            get => audioParameters ??= new AudioParameters();
+            private set => audioParameters = value;
+        }
         public event Action OnAudioEnd, OnAudioReady;
 
         [SerializeField] private int voiceId = 151;
 
+        [Header("Audio details")] [SerializeField]
+        private AudioParameters audioParameters;
+        
         private IAudioStreamingClient _streamingClient;
         private IAverageProvider _averageProvider;
         private int _samplesSize;
-        private int _samplingRate = 44100;
-        private int _maxLenght = 30;
+       
         private Configuration _configuration;
         private Queue<Action> _actions;
 
@@ -39,7 +45,6 @@ namespace Gemelo.Voice.Streaming
             if (AudioPlayer == null)
                 throw new Exception("Can't find required AudioPlayer component");
         }
-        
         
         public IAudioPlayer InitializePlayer(IAverageProvider provider, int samplesSize)
         {
@@ -65,9 +70,10 @@ namespace Gemelo.Voice.Streaming
             var url = Configuration.STREAMING_API + $"?voiceId={voiceId}";
             
 #if UNITY_WEBGL && !UNITY_EDITOR
-            _streamingClient = new WebGlAudioStreamingClient(url, configuration, _maxLenght);
+            audioParameters.SetSamplingRate(WebGlAudioBufferProcessor.GetSupportedSampleRate());
+            _streamingClient = new WebGlAudioStreamingClient(url, configuration, audioParameters);
 #else
-            _streamingClient = new DefaultAudioStreamingClient(url, configuration, _samplingRate, _maxLenght);
+            _streamingClient = new DefaultAudioStreamingClient(url, configuration, audioParameters);
 #endif
             _streamingClient.Connect();
 
@@ -124,19 +130,10 @@ namespace Gemelo.Voice.Streaming
             return true;
         }
         
-        public void SetVoiceId(int voice)
-        {
-            voiceId = voice;
-        }
-
-        public void SetSamplingRate(int rate)
-        {
-            _samplingRate = rate;
-        }
-
-        public void SetMaxLenght(int lenght)
-        {
-            _maxLenght = lenght;
-        }
+        public void SetVoiceId(int voice) => voiceId = voice;
+        public void SetSamplingRate(int rate) => AudioParameters.SetSamplingRate(rate);
+        public void SetMaxLenght(int lenght) => AudioParameters.SetMaxLenght(lenght);
+        public void SetAudioDataType(AudioDataType type) => AudioParameters.SetAudioDataType(type);
+        public void SetAudioParameters(AudioParameters parameters) => AudioParameters = parameters;
     }
 }
