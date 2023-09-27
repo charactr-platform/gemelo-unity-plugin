@@ -52,7 +52,7 @@ namespace Gemelo.Voice.Samples.Streaming
         {
             //Cache average provider settings, and sample size (smaller == faster update)
             _audioPlayer = streamingManager.InitializePlayer(new AverageProvider(boost), samplesPerFrame);
-            streamingManager.SetAudioDataType(useMp3Toggle.isOn ? AudioDataType.Mp3 : AudioDataType.Wav);
+            streamingManager.SetAudioDataType(useMp3Toggle.isOn ? AudioDataType.MP3 : AudioDataType.WAV);
 
             var buttonText = startButton.GetComponentInChildren<Text>();
             var count = autoplayToggle.isOn ? texts.Count : 1;
