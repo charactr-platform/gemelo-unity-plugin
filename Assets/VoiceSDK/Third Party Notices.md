@@ -11,3 +11,9 @@ Component Name: NativeWebSocket
 License Type: "Apache 2.0"
 
 [LINK](https://github.com/endel/NativeWebSocket)
+
+Component Name: NLayer 
+
+License Type: "MIT"
+
+[LINK](https://github.com/naudio/NLayer)

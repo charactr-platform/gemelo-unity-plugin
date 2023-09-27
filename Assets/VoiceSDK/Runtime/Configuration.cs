@@ -77,7 +77,6 @@ namespace Gemelo.Voice
 
 		public static bool Exists()
 		{
-			AssetDatabase.CreateFolder("Assets", "Resources");
 			return Resources.Load<Configuration>(FILENAME) != null;
 		}
 	}

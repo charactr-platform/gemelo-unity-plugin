@@ -29,7 +29,7 @@ namespace Gemelo.Voice.Samples.Streaming
         [SerializeField] private Button startButton;
         [SerializeField] private Toggle autoplayToggle;
         [SerializeField] private Slider analyzerSlider;
-
+        [SerializeField] private Toggle useMp3Toggle;
         [SerializeField] AudioStreamingManager streamingManager;
 
         [SerializeField] private List<VoiceDb> texts = new List<VoiceDb>()
@@ -52,10 +52,11 @@ namespace Gemelo.Voice.Samples.Streaming
         {
             //Cache average provider settings, and sample size (smaller == faster update)
             _audioPlayer = streamingManager.InitializePlayer(new AverageProvider(boost), samplesPerFrame);
+            streamingManager.SetAudioDataType(useMp3Toggle.isOn ? AudioDataType.Mp3 : AudioDataType.Wav);
 
             var buttonText = startButton.GetComponentInChildren<Text>();
             var count = autoplayToggle.isOn ? texts.Count : 1;
-
+           
             buttonText.text = "Playing...";
 
             for (int i = 0; i < count; i++)
