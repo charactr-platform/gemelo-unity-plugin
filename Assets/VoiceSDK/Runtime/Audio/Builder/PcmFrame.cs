@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Gemelo.Voice.Audio
 {
+	[Serializable]
 	public class PcmFrame: IDisposable
 	{
 		public static int BlockSize = sizeof(short);//16bit per sample 
@@ -10,7 +12,7 @@ namespace Gemelo.Voice.Audio
 		public float[] Samples => _samples.ToArray();
 		public bool HasData => _samples.Count > 0 ;
 		
-		private List<float> _samples;
+		[SerializeField] private List<float> _samples;
 		private readonly int _samplesSize;
 		private readonly string _id;
 		
@@ -19,6 +21,7 @@ namespace Gemelo.Voice.Audio
 			_samplesSize = samplesCount;
 			_samples = new List<float>();
 		}
+		
 		public PcmFrame(string id, int samplesCount = 4096) : this(samplesCount) => _id = id;
 		public override string ToString() => _id;
 		

@@ -1,11 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace Gemelo.Voice.Rest.Model
 {
-	public class VoicesResponse : List<VoiceDescription>, IAPIResponse { }
+	public class VoicesResponse : List<VoicePreviewItem>, IAPIResponse
+	{
+		public List<VoicePreviewItem> Data => this.ToList();
+	}
 	
-	public class LabelDescription
+	[Serializable]
+	public class VoiceLabel
 	{
 		[JsonProperty("category")]
 		public string Category { get; set; }
@@ -13,8 +19,9 @@ namespace Gemelo.Voice.Rest.Model
 		[JsonProperty("label")]
 		public string Label { get; set; }
 	}
-
-	public class VoiceDescription
+    
+	[Serializable]
+	public class VoicePreviewItem
 	{
 		[JsonProperty("id")]
 		public int Id { get; set; }
@@ -28,7 +35,17 @@ namespace Gemelo.Voice.Rest.Model
 		[JsonProperty("previewUrl")]
 		public string PreviewUrl { get; set; }
 
+		[JsonProperty("previewUrls")]
+		public List<string> PreviewUrls { get; set; }
+
+		[JsonProperty("rating")]
+		public double Rating { get; set; }
+
 		[JsonProperty("labels")]
-		public List<LabelDescription> Labels { get; set; }
+		public List<VoiceLabel> Labels { get; set; }
+
+		[JsonProperty("new",NullValueHandling = NullValueHandling.Ignore)]
+		public bool New { get; set; }
 	}
+
 }

@@ -7,6 +7,7 @@ namespace Gemelo.Voice.Audio
 	public class WavBuilder : AudioClipBuilder
 	{
 		public const int HeaderSize = 44;
+		
 		private readonly Memory<byte> _data;
 		private readonly WavHeaderData _header;
 		
@@ -16,8 +17,16 @@ namespace Gemelo.Voice.Audio
 			_header = new WavHeaderData(data);
 		}
 
+		public WavBuilder(int sampleRate) : base(sampleRate)
+		{
+			
+		}
+		
 		public AudioClip CreateAudioClip(string name = "clip")
 		{
+			if (_data.IsEmpty)
+				throw new Exception("Can't create AudioClip without data!");
+			
 			PcmFrame.ConvertByteToFloat(_data.ToArray(), out var waveData, _header.DataOffset);
 			var clip = AudioClip.Create(name, waveData.Length, _header.Channels, _header.SampleRate, false);
 			clip.SetData(waveData, 0);
