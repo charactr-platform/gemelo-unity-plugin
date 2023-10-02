@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Gemelo.Voice.Audio;
@@ -8,6 +9,7 @@ using Gemelo.Voice.Tests.Preview;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 using PropertyAttribute = NUnit.Framework.PropertyAttribute;
 
 namespace Gemelo.Voice.Tests
@@ -113,9 +115,12 @@ namespace Gemelo.Voice.Tests
             var preview = new VoicePreview(item);
             Assert.NotNull(preview);
             Assert.NotZero(preview.WriteAudioFrames(buffer));
-            var size = preview.ConvertToBinary();
+            var size = preview.EncodePcmFramesToData(out var fileName);
+            Assert.IsNotEmpty(fileName);
+            Assert.NotZero(size);
             return preview;
         }
+        
         private async Task<bool> ValidateHeaderData(VoicePreviewItem item)
         {
             Assert.IsNotEmpty(item.PreviewUrl);
@@ -145,9 +150,28 @@ namespace Gemelo.Voice.Tests
             Assert.NotNull(instance);
             var data = await GetVoicesResponse();
             var item = data.Data.First();
+          
             var result = await instance.AddVoicePreview(item);
             Assert.IsTrue(result);
+            var path = Configuration.GLOBAL_SAVE_PATH + DATABASE_FILE + ".asset";
+            AssetDatabase.CreateAsset(instance, path);
+            AssetDatabase.SaveAssetIfDirty(instance);
+            AssetDatabase.ImportAsset(path);
+            var database = AssetDatabase.LoadAssetAtPath<VoicesDatabase>(path);
+            Assert.NotNull(database);
+            var preview = database.GetVoicePreviewById(item.Id);
+            Assert.NotZero(preview.DecodeCacheDataToPcmFrames(preview.CacheFileName));
+        }
 
+        [Test]
+        public async Task Update_VoicesPreviewsDatabase_Save_Result_True()
+        {
+            var instance = VoicesDatabase.CreateInstance();
+            Assert.NotNull(instance);
+            var result= await instance.UpdatePreviewsDatabase();
+            
+            Assert.IsTrue(result.All(a=>a == true));
+            
             var path = Configuration.GLOBAL_SAVE_PATH + DATABASE_FILE + ".asset";
             AssetDatabase.CreateAsset(instance, path);
             AssetDatabase.SaveAssetIfDirty(instance);
@@ -159,11 +183,25 @@ namespace Gemelo.Voice.Tests
         [Test]
         public async Task Load_VoicePreviewDatabase_VoicePreview_PcmData_NotNull()
         {
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+            
             var database = Resources.Load<VoicesDatabase>(DATABASE_FILE);
             Assert.NotNull(database);
             Assert.IsInstanceOf<VoicesDatabase>(database);
-            var preview = database.GetVoicePreviewByName("Ivan");
-            await AudioPlayer.PlayClipStatic(preview.GenerateAudioClip());
+            var preview = database.GetVoicePreviewByName("Will");
+            Assert.NotZero(preview.DecodeCacheDataToPcmFrames(preview.CacheFileName));
+            var audioClip = preview.GenerateAudioClip();
+            stopWatch.Stop();
+            Debug.Log($"Time: {stopWatch.ElapsedMilliseconds}ms");
+            await AudioPlayer.PlayClipStatic(audioClip);
+        }
+
+        [Test]
+        public void Purge_CachePath_Files_NotEmpty()
+        {
+            var count = VoicesDatabase.PurgeCache();
+            Assert.NotZero(count);
         }
     }
 
