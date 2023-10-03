@@ -1,4 +1,3 @@
-using Charactr.VoiceSDK.Editor.Library;
 using Gemelo.Voice.Library;
 using UnityEditor;
 using UnityEngine.UIElements;

@@ -13,9 +13,8 @@ using NUnit.Framework;
 using UnityEngine;
 using CompressionLevel = System.IO.Compression.CompressionLevel;
 
-namespace Gemelo.Voice.Tests.Preview
+namespace Gemelo.Voice.Editor.Preview
 {
-
 	[Serializable]
 	public class PreviewItemData
 	{
@@ -89,7 +88,7 @@ namespace Gemelo.Voice.Tests.Preview
 		{
 			var unique = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString();
 			var fileName = $"{Id}_{unique}";
-			var path = VoicesDatabase.CachePath;
+			var path = Configuration.CachePath;
 			
 			Directory.CreateDirectory(path);
 			File.WriteAllBytes(Path.Combine(path, fileName), data);
@@ -98,13 +97,13 @@ namespace Gemelo.Voice.Tests.Preview
 
 		private byte[] ReadFromCache(string fileName)
 		{
-			var path = Path.Combine(VoicesDatabase.CachePath, fileName);
+			var path = Path.Combine(Configuration.CachePath, fileName);
 			return File.ReadAllBytes(path);
 		}
 		
 		public int DecodeCacheDataToPcmFrames(string fileName)
 		{
-			if (!File.Exists(Path.Combine(VoicesDatabase.CachePath, fileName)))
+			if (!File.Exists(Path.Combine(Configuration.CachePath, fileName)))
 			{
 				Debug.LogError("Can't find cache file, cache was purged?");
 				return 0;
@@ -155,7 +154,7 @@ namespace Gemelo.Voice.Tests.Preview
         
 		public static async Task<byte[]> GetAudioPreviewData(string previewUrl)
 		{
-			var configuration = Configuration.Load();
+			var configuration = Voice.Configuration.Load();
 			Assert.NotNull(configuration);
 			var http = new EditorRestClient(configuration, Debug.LogError);
 			return await http.GetDataAsync(previewUrl);

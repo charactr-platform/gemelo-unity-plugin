@@ -6,13 +6,12 @@ using Gemelo.Voice.Rest.Client;
 using Gemelo.Voice.Rest.Model;
 using UnityEngine;
 
-namespace Gemelo.Voice.Tests.Preview
+namespace Gemelo.Voice.Editor.Preview
 {
 	public class VoicesDatabase: ScriptableObject
 	{
 		public List<VoicePreview> Voices => voices;
-		public static string CachePath => Path.Combine(Application.temporaryCachePath, "PreviewCache");
-
+	
 		[SerializeField] private List<VoicePreview> voices;
 		public static VoicesDatabase CreateInstance()
 		{
@@ -50,13 +49,17 @@ namespace Gemelo.Voice.Tests.Preview
             
 			return voices[index];
 		}
-        
+
+		public static async Task<VoicesResponse> GetVoicesResponse()
+		{
+			var configuration = Voice.Configuration.Load();
+			var http = new EditorRestClient(configuration, message => Debug.LogError(message.Message));
+			return await http.GetAsync<VoicesResponse>(Voice.Configuration.VOICES_API);
+		}
 		public async Task<bool[]> UpdatePreviewsDatabase()
 		{
-			var configuration = Configuration.Load();
-			var http = new EditorRestClient(configuration, message => Debug.LogError(message.Message));
-			var voicesResponse = await http.GetAsync<VoicesResponse>(Configuration.VOICES_API);
-            
+			var voicesResponse = await GetVoicesResponse();
+			
 			voices = new List<VoicePreview>();
 
 			var tasks = new List<Task<bool>>();
@@ -78,14 +81,15 @@ namespace Gemelo.Voice.Tests.Preview
 
 		public static int PurgeCache()
 		{
-			var dirInfo = new DirectoryInfo(CachePath);
+			var dirInfo = new DirectoryInfo(Voice.Configuration.CachePath);
+			if (!dirInfo.Exists)
+				Debug.Log("Cache directory not found!");
+			
 			var files = dirInfo.GetFiles();
 			Debug.Log($"Found files: {files.Length}");
 			
 			foreach (var file in files)
-			{
 				file.Delete();
-			}
 
 			return files.Length;
 		}

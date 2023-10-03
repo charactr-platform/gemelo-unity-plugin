@@ -6,7 +6,7 @@
         "UnityEditor.TestRunner",
         "Gemelo.Voice",
         "Gemelo.Voice.Audio",
-        "Gemelo.Voice.Previce"
+        "Gemelo.Voice.Editor"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
