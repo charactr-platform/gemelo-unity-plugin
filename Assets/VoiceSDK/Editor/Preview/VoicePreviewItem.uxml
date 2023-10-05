@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/VoiceSDK/Editor/Library/CommonStyle.uss?fileID=7433441132597879392&amp;guid=00118f51d99b4ea45954e7e7e70cbe72&amp;type=3#CommonStyle" />
+    <ui:VisualElement class="inline">
+        <ui:Label text="Label" display-tooltip-when-elided="true" name="nameLabel" />
+        <ui:Button text="Button" display-tooltip-when-elided="true" name="playButton" />
+        <ui:Label text="Label" display-tooltip-when-elided="true" name="ratingLabel" />
+    </ui:VisualElement>
+</ui:UXML>

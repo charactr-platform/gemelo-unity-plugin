@@ -12,7 +12,7 @@ namespace Charactr.VoiceSDK.Editor.Preview
 	public class DatabaseInspector : UnityEditor.Editor
 	{
 		public VisualTreeAsset visualTreeAsset;
-		private Button _updateButton;
+		private Button _updateButton,_purgeButton;
 		private VisualElement _inspector;
 		private ListView _listView;
 	
@@ -24,12 +24,21 @@ namespace Charactr.VoiceSDK.Editor.Preview
 			// Load from default reference
 			visualTreeAsset.CloneTree(_inspector);
 			_updateButton = _inspector.Q<Button>("updateButton");
+			_purgeButton = _inspector.Q<Button>("purgeButton");
 			_listView = _inspector.Q<ListView>();
+		
 			_updateButton.RegisterCallback<ClickEvent>((e) => OnUpdateButton());
+			_purgeButton.RegisterCallback<ClickEvent>(e=> OnPurgeButton());
 			// Return the finished inspector UI
 			UpdateView();
 			
 			return _inspector;
+		}
+
+		private void OnPurgeButton()
+		{	
+			if (EditorUtility.DisplayDialog($"Are you sure?", $"Do You really want to purge cache of voice previews", "YES", "NO"))
+				VoicesDatabase.PurgeCache();
 		}
 
 		private void UpdateView()

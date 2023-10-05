@@ -39,7 +39,7 @@ namespace Gemelo.Voice.Rest.Model
 		public List<string> PreviewUrls { get; set; }
 
 		[JsonProperty("rating")]
-		public double Rating { get; set; }
+		public float Rating { get; set; }
 
 		[JsonProperty("labels")]
 		public List<VoiceLabel> Labels { get; set; }

@@ -5,5 +5,5 @@
         <ui:Button text="Update" display-tooltip-when-elided="true" name="updateButton" />
         <ui:Button text="Purge cache" display-tooltip-when-elided="true" name="purgeButton" />
     </ui:VisualElement>
-    <ui:ListView focusable="true" style="flex-basis: 80%;" />
+    <ui:ListView focusable="false" selection-type="None" picking-mode="Ignore" header-title="Voice Previews" show-add-remove-footer="false" show-foldout-header="false" show-border="true" virtualization-method="DynamicHeight" style="flex-basis: 80%;" />
 </ui:UXML>

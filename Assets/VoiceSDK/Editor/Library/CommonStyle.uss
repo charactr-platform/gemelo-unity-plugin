@@ -19,15 +19,14 @@
     margin-right: 110px;
     margin-left: initial;
     -unity-background-scale-mode: scale-to-fit;
-    background-image: resource("d_console.warnicon@2x");
+    background-image: resource('d_console.warnicon@2x');
 }
 
 .playIcon {
     padding-left: 140px;
     margin-right: 110px;
-    
     -unity-background-scale-mode: scale-to-fit;
-    background-image: resource("d_PlayButton@2x");
+    background-image: resource('d_PlayButton@2x');
 }
 
 .cloudIcon {
@@ -35,5 +34,24 @@
     margin-right: 110px;
     justify-content: flex-start;
     -unity-background-scale-mode: scale-to-fit;
-    background-image: resource("d_CloudConnect@2x");
+    background-image: resource('d_CloudConnect@2x');
+}
+
+.inline {
+    align-items: center;
+    flex-direction: row;
+    background-color: rgba(173, 50, 50, 255);
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-top: 0;
+    padding-bottom: 0;
+    max-height: 30px;
+    min-height: 30px;
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    justify-content: flex-start;
+    top: auto;
+    bottom: auto;
 }

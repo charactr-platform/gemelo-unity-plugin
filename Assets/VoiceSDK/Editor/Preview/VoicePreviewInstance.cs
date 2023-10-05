@@ -1,54 +1,62 @@
+using Gemelo.Voice.Audio;
 using UnityEditor;
-using UnityEditorInternal;
+using UnityEngine;
 using UnityEngine.UIElements;
-using PopupWindow = UnityEngine.UIElements.PopupWindow;
 
 namespace Gemelo.Voice.Editor.Preview
 {
 	public class VoicePreviewInstance
 	{
-		public VisualElement Container { get; private set; }
-		private PopupWindow _popup;
+		public VisualElement Container { get;}
 		private Button _playButton;
-		public VoicePreviewInstance(SerializedProperty property)
+		public VoicePreviewInstance(SerializedProperty property, VisualTreeAsset visualTreeAsset)
 		{
-			_popup = CreateWindow();
+			Container = visualTreeAsset.Instantiate();
 			RegisterElements(property);
 		}
-
+		
 		private void RegisterElements(SerializedProperty property)
 		{
-			_playButton = new Button
-			{
-				text = "Play",
-				style = { width = 200, height = 30f,}
-			};
-         _playButton.Add(new Label("Play preview: "));
-			_popup.Add(_playButton);
+			
+			var item = property.FindPropertyRelative("itemData");
+			var id = item.FindPropertyRelative("Id");
+			CreateLabel(item);
+			CreateDetailsLabel(item);
+			_playButton = CreatePlayButton(item, id.intValue);
+		}
+
+		private Label CreateLabel(SerializedProperty previewItem)
+		{
+			var name = previewItem.FindPropertyRelative("Name");
+			var id = previewItem.FindPropertyRelative("Id");
+			
+			var label = Container.Q<Label>("nameLabel");
+			label.text = $"{name.stringValue} ID:({id.intValue})";
+			
+			return label;
 		}
 		
-		private PopupWindow CreateWindow()
+		private Label CreateDetailsLabel(SerializedProperty previewItem)
 		{
-			Container = new VisualElement();
-			
-			var noneStyle = new StyleColor(StyleKeyword.None);
+			var rating = previewItem.FindPropertyRelative("Rating");
+			var label = Container.Q<Label>("ratingLabel");
+			label.text = $"Rating: {rating.floatValue}";
+			return label;
+		}
+		private Button CreatePlayButton(SerializedProperty property, int id)
+		{
+			var button = Container.Q<Button>("playButton");
+			button.text = "play";
 
-			var popupWindow = new PopupWindow
-			{
-				text = $"Preview for voice",
-				style =
-				{
-					backgroundColor = noneStyle,
-					borderBottomColor = noneStyle,
-					borderTopColor = noneStyle,
-					borderLeftColor = noneStyle,
-					borderRightColor = noneStyle,
-				}
-			};
-			
-			Container.Add(popupWindow);
-		
-			return popupWindow;
+			var database = property.serializedObject.targetObject as VoicesDatabase;
+			button.RegisterCallback<ClickEvent>(e=> OnPlayEvent(database, id));
+			return button;
+		}
+
+		private async void OnPlayEvent(VoicesDatabase database, int id)
+		{
+			var instance = database.GetVoicePreviewById(id);
+			await AudioPlayer.PlayClipStatic(instance.GenerateAudioClip());
 		}
 	}
 }

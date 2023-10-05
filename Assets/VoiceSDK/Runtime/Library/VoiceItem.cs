@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Gemelo.Voice.Editor.Preview;
 using Gemelo.Voice.Rest.Model;
 using UnityEditor;
 using UnityEngine;
@@ -36,7 +37,7 @@ namespace Gemelo.Voice.Library
         [SerializeField] private string text;
         [SerializeField] private int voiceId;
         [SerializeField] private AudioClip audioClip;
-        
+        [SerializeField] private VoicePreview voicePreview;
         public bool IsValid() => !string.IsNullOrEmpty(Text) && VoiceId > 0 && voiceId < 999;
         public ConvertRequest GetRequest()
         {
@@ -46,8 +47,15 @@ namespace Gemelo.Voice.Library
                 VoiceId = voiceId
             };
         }
+
+        public void SetVoicePreview(VoicePreview voicePreview)
+        {
+            this.voicePreview = voicePreview;
+        }
+        
         public async Task<AudioClip> GetAudioClip()
         {
+            
             if (!IsValid())
             {
                 Debug.LogError($"Can't convert voiceItem {Id}");

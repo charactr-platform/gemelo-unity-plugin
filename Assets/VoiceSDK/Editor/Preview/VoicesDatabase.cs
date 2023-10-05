@@ -10,6 +10,7 @@ namespace Gemelo.Voice.Editor.Preview
 {
 	public class VoicesDatabase: ScriptableObject
 	{
+		
 		public List<VoicePreview> Voices => voices;
 	
 		[SerializeField] private List<VoicePreview> voices;

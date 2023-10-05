@@ -3,6 +3,7 @@ using System.Buffers.Text;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +25,9 @@ namespace Gemelo.Voice.Editor.Preview
 		public float Duration;
 		public int DataOffset;
 		public string PreviewUrl;
+		public string Description;
+		public string[] Labels;
+		public float Rating;
 	}
 	
 	[Serializable]
@@ -58,6 +62,9 @@ namespace Gemelo.Voice.Editor.Preview
 				Id = item.Id,
 				Name = item.Name,
 				PreviewUrl = item.PreviewUrl,
+				Description = item.Description,
+				Rating = item.Rating,
+				Labels = item.Labels.Select(s=>s.Label).ToArray()
 			};
 			
 			_pcmFrames = new List<Audio.PcmFrame>();
