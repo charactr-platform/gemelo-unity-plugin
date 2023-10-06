@@ -1,9 +1,10 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
     <Style src="project://database/Assets/VoiceSDK/Editor/Library/CommonStyle.uss?fileID=7433441132597879392&amp;guid=00118f51d99b4ea45954e7e7e70cbe72&amp;type=3#CommonStyle" />
-    <ui:VisualElement style="margin-top: 10px;">
+    <ui:VisualElement name="container" style="margin-top: 10px;">
         <ui:Label text="VoicesPreviewDatabase" display-tooltip-when-elided="true" name="TitleLabel" class="topLabel" style="-unity-text-align: upper-center;" />
         <ui:Button text="Update" display-tooltip-when-elided="true" name="updateButton" />
         <ui:Button text="Purge cache" display-tooltip-when-elided="true" name="purgeButton" />
+        <ui:DropdownField label="Dropdown" index="-1" choices="def" name="previewsDropdown" />
     </ui:VisualElement>
     <ui:ListView focusable="false" selection-type="None" picking-mode="Ignore" header-title="Voice Previews" show-add-remove-footer="false" show-foldout-header="false" show-border="true" virtualization-method="DynamicHeight" style="flex-basis: 80%;" />
 </ui:UXML>

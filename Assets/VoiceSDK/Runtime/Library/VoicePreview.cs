@@ -45,9 +45,12 @@ namespace Gemelo.Voice.Editor.Preview
 		}
 
 		public string CacheFileName => previewDataName;
-		
+
+		public override string ToString() =>
+			$"{Name} - {previewDataName}";
+
 		public DateTimeOffset SaveTime => DateTimeOffset.FromUnixTimeMilliseconds(string.IsNullOrEmpty(previewDataName) ?
-														0 : long.Parse(previewDataName));
+														0 : long.Parse(previewDataName.Split("_")[1]));
 		
 		[SerializeField] private PreviewItemData itemData;
 		[SerializeField] private long previewDataSize;

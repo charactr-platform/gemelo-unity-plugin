@@ -2,7 +2,7 @@
     <Style src="project://database/Assets/VoiceSDK/Editor/Library/CommonStyle.uss?fileID=7433441132597879392&amp;guid=00118f51d99b4ea45954e7e7e70cbe72&amp;type=3#CommonStyle" />
     <ui:VisualElement class="inline">
         <ui:Label text="Label" display-tooltip-when-elided="true" name="nameLabel" />
-        <ui:Button text="Button" display-tooltip-when-elided="true" name="playButton" />
+        <ui:Button display-tooltip-when-elided="true" name="playButton" class="playIcon previewPlay" style="padding-left: 10px; height: auto; width: 0; margin-right: 3px; padding-right: 10px;" />
         <ui:Label text="Label" display-tooltip-when-elided="true" name="ratingLabel" />
     </ui:VisualElement>
 </ui:UXML>

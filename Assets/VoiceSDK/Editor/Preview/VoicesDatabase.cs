@@ -10,7 +10,7 @@ namespace Gemelo.Voice.Editor.Preview
 {
 	public class VoicesDatabase: ScriptableObject
 	{
-		
+		public const string FILE_ASSET = "VoicePreviewDatabase";
 		public List<VoicePreview> Voices => voices;
 	
 		[SerializeField] private List<VoicePreview> voices;
@@ -93,6 +93,12 @@ namespace Gemelo.Voice.Editor.Preview
 				file.Delete();
 
 			return files.Length;
+		}
+
+		public static VoicesDatabase Load()
+		{
+			//TODO: Check for file existence and for voices list size
+			return Resources.Load<VoicesDatabase>(FILE_ASSET);
 		}
 	}
 }

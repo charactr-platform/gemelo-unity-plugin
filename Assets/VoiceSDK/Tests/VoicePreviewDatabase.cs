@@ -18,7 +18,7 @@ namespace Gemelo.Voice.Tests
     {
         private const int PREVIEW_SAMPLE_RATE = 32000;
         private const int HEADER_SIZE = 76;
-        private const string DATABASE_FILE = "VoicePreviewDatabase";
+        
         [Test]
         public async Task GetVoicesRequest_Returns_NotEmpty()
         {
@@ -153,7 +153,7 @@ namespace Gemelo.Voice.Tests
           
             var result = await instance.AddVoicePreview(item);
             Assert.IsTrue(result);
-            var path = Configuration.GLOBAL_SAVE_PATH + DATABASE_FILE + ".asset";
+            var path = Configuration.GLOBAL_SAVE_PATH + VoicesDatabase.FILE_ASSET + ".asset";
             AssetDatabase.CreateAsset(instance, path);
             AssetDatabase.SaveAssetIfDirty(instance);
             AssetDatabase.ImportAsset(path);
@@ -172,7 +172,7 @@ namespace Gemelo.Voice.Tests
             
             Assert.IsTrue(result.All(a=>a == true));
             
-            var path = Configuration.GLOBAL_SAVE_PATH + DATABASE_FILE + ".asset";
+            var path = Configuration.GLOBAL_SAVE_PATH + VoicesDatabase.FILE_ASSET + ".asset";
             AssetDatabase.CreateAsset(instance, path);
             AssetDatabase.SaveAssetIfDirty(instance);
             AssetDatabase.ImportAsset(path);
@@ -185,8 +185,8 @@ namespace Gemelo.Voice.Tests
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
-            
-            var database = Resources.Load<VoicesDatabase>(DATABASE_FILE);
+
+            var database = VoicesDatabase.Load();
             Assert.NotNull(database);
             Assert.IsInstanceOf<VoicesDatabase>(database);
             var preview = database.GetVoicePreviewByName("Will");
