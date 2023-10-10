@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Gemelo.Voice.Audio;
 using UnityEditor;
 using UnityEngine;
@@ -11,12 +12,16 @@ namespace Gemelo.Voice.Editor.Preview
 		private readonly VisualElement _container;
 		private static VoicesDatabase _database;
 		private Button _playButton;
+		private SerializedProperty _property;
+		private int _id;
 		public VoicePreviewElement()
 		{
 			_container = LoadTreeAsset().Instantiate();
 			hierarchy.Add(_container);
 			_database = GetDatabase();
+			RegisterCallback<ClickEvent>(e => {Debug.Log("Item click!"); });
 		}
+		
 		public static VoicePreviewElement Create(SerializedProperty property)
 		{
 			var element = new VoicePreviewElement();
@@ -27,11 +32,24 @@ namespace Gemelo.Voice.Editor.Preview
 		public void RegisterProperty(SerializedProperty property)
 		{
 			var item = property.FindPropertyRelative("itemData");
-			CreateLabel(item);
-			CreateDetailsLabel(item);
-			_playButton = CreatePlayButton(item);
-		}
+			var id = item.FindPropertyRelative("Id").intValue;
+			
+			//Recycling view 
+			if (_property != null)
+			{
+				_playButton.UnregisterCallback<ClickEvent>(OnPlayEvent);
+			}
 
+			_id = id;
+			_property = property;
+
+			var audio = _property.FindPropertyRelative("audioDetails");
+			
+			CreateLabel(item);
+			CreateDetailsLabel(item, audio);
+			_playButton = CreatePlayButton();
+		}
+		
 		private Label CreateLabel(SerializedProperty previewItem)
 		{
 			var label = this.Q<Label>("nameLabel");
@@ -44,25 +62,31 @@ namespace Gemelo.Voice.Editor.Preview
 			return label;
 		}
 		
-		private Label CreateDetailsLabel(SerializedProperty previewItem)
+		private void CreateDetailsLabel(SerializedProperty previewItem, SerializedProperty audioDetails)
 		{
-			var label = this.Q<Label>("ratingLabel");
+			var label = this.Q<Button>("detailsButton");
 			var rating = previewItem.FindPropertyRelative("Rating");
-			label.text = $"Rating: {rating.floatValue}";
-			return label;
+			var bits = audioDetails.FindPropertyRelative("BitRate");
+			var hz = audioDetails.FindPropertyRelative("SampleRate");
+			var labels = previewItem.FindPropertyRelative("Labels");
+			label.text = $"Rating: {rating.floatValue}, Labels:{labels.GetArrayElementAtIndex(0).stringValue}  Audio: {bits.intValue} bit, {(hz.intValue/1000f):F1} kHz";
 		}
-		private Button CreatePlayButton(SerializedProperty previewItem)
+		
+		private Button CreatePlayButton()
 		{
 			var button = this.Q<Button>("playButton");
-			var id = previewItem.FindPropertyRelative("Id");
-			button.RegisterCallback<ClickEvent>(e=> OnPlayEvent(id.intValue));
+			button.RegisterCallback<ClickEvent>(OnPlayEvent);
 			return button;
 		}
+
+		private void OnPlayEvent(ClickEvent evt) =>
+			OnPlayEvent(_id);
 
 		private async void OnPlayEvent(int id)
 		{
 			var instance = _database.GetVoicePreviewById(id);
-			Debug.Log($"Playing voice: {instance}");
+			
+			Debug.Log($"Playing voice [{id}]: {instance}");
 			
 			_playButton.SetEnabled(false);
 			await AudioPlayer.PlayClipStatic(instance.GenerateAudioClip());

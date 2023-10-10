@@ -20,7 +20,8 @@ namespace Charactr.VoiceSDK.Editor.Preview
 		private VisualElement _inspector;
 		private ListView _listView;
 		private DropdownField _dropdown;
-		private SerializedProperty _voices;
+		private static SerializedProperty _voices;
+		
 		public override VisualElement CreateInspectorGUI()
 		{
 			_voices = serializedObject.FindProperty("voices");
@@ -33,23 +34,30 @@ namespace Charactr.VoiceSDK.Editor.Preview
 			_purgeButton = _inspector.Q<Button>("purgeButton");
 			_listView = _inspector.Q<ListView>();
 			_dropdown = _inspector.Q<DropdownField>();
-			_dropdown.RegisterCallback<ClickEvent>(e=> CreatePopup(_inspector, _dropdown));
+			_dropdown.RegisterCallback<ClickEvent>(e=> CreateDropdownList());
 			_updateButton.RegisterCallback<ClickEvent>((e) => OnUpdateButton());
 			_purgeButton.RegisterCallback<ClickEvent>(e=> OnPurgeButton());
-		
-			// Return the finished inspector UI
-			UpdateView();
-			
+
+			var list = LoadPreviewItems();
+			_listView = CreateList(list);
 			return _inspector;
 		}
 
+		private void CreateDropdownList()
+		{
+			CreatePreviewPopup(_inspector, _dropdown, (p) =>
+			{
+				_dropdown.value = p.propertyPath;
+			});
+		}
+		
 		private void OnPurgeButton()
 		{
 			if (EditorUtility.DisplayDialog($"Are you sure?", $"Do You really want to purge cache of voice previews", "YES", "NO"))
 				VoicesDatabase.PurgeCache();
 		}
 
-		private void CreatePopup(VisualElement parent, VisualElement button)
+		public void CreatePreviewPopup(VisualElement parent, VisualElement button, Action<SerializedProperty> onSelected)
 		{
 			var popup = new PopupWindow
 			{
@@ -72,34 +80,39 @@ namespace Charactr.VoiceSDK.Editor.Preview
 			popup.RegisterCallback<ClickEvent>(e=>
 			{
 				parent.Remove(popup);
-				_dropdown.value = items[list.selectedIndex].propertyPath;
+				onSelected.Invoke(items[list.selectedIndex]);
 			});
 			
 			popup.Add(list);
 			parent.Add(popup);
 		}
-		private void UpdateView()
-		{
-			var items = LoadPreviewItems();
-			_listView.makeItem = () => new VoicePreviewElement();
-			_listView.bindItem = (element, i) => (element as VoicePreviewElement).RegisterProperty(items[i]);
-			_listView.itemsSource = items;
-		}
-
+		
 		private ListView CreateList(List<SerializedProperty> items)
 		{
-			var listView = new ListView
-			{
-				makeItem = () => new VoicePreviewElement(),
-				bindItem = (element, i) => (element as VoicePreviewElement).RegisterProperty(items[i]),
-				itemsSource = items,
-			};
-			return listView;
+			_listView.itemsSource = items;
+			_listView.makeItem = () => new VoicePreviewElement();
+			_listView.bindItem = (element, i) => (element as VoicePreviewElement).RegisterProperty(items[i]);
+			return _listView;
 		}
 	
-		private List<SerializedProperty> LoadPreviewItems()
+		private void MakeALikeB(VisualElement A, VisualElement B)
+		{
+			A.style.position = B.style.position;
+			A.style.top = B.style.top;
+			A.style.bottom = B.style.bottom;
+			A.style.left = B.style.left;
+			A.style.right = B.style.right;
+ 
+			A.style.flexGrow = B.style.flexGrow;
+			A.style.flexShrink = B.style.flexShrink;
+			A.style.width = B.style.width;
+			A.style.height = B.style.height;
+			A.style.transformOrigin = B.style.transformOrigin;
+		}
+		private static List<SerializedProperty> LoadPreviewItems()
 		{
 			var fields = new List<SerializedProperty>();
+			
 			for (int i = 0; i < _voices.arraySize; i++)
 			{
 				var element = _voices.GetArrayElementAtIndex(i);

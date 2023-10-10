@@ -1,8 +1,8 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/VoiceSDK/Editor/Library/CommonStyle.uss?fileID=7433441132597879392&amp;guid=00118f51d99b4ea45954e7e7e70cbe72&amp;type=3#CommonStyle" />
-    <ui:VisualElement class="inline">
-        <ui:Label text="Label" display-tooltip-when-elided="true" name="nameLabel" />
-        <ui:Button display-tooltip-when-elided="true" name="playButton" class="playIcon previewPlay" style="padding-left: 10px; height: auto; width: 0; margin-right: 3px; padding-right: 10px;" />
-        <ui:Label text="Label" display-tooltip-when-elided="true" name="ratingLabel" />
+    <ui:VisualElement class="inline round" style="margin-left: 3px; margin-right: 3px; margin-top: 3px; margin-bottom: 3px; padding-left: 3px; padding-right: 3px; padding-top: 5px; padding-bottom: 2px; min-width: 100px; background-color: rgba(0, 0, 0, 0.3);">
+        <ui:Button display-tooltip-when-elided="true" name="playButton" focusable="false" class="playIcon previewPlay" style="padding-left: 10px; height: auto; width: 0; margin-right: 0; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; margin-top: 5px; -unity-text-align: lower-right; margin-left: 0; margin-bottom: 0;" />
+        <ui:Label text="Label" display-tooltip-when-elided="true" name="nameLabel" focusable="false" style="top: auto; bottom: auto; -unity-text-align: upper-left; height: 100%; align-items: auto; justify-content: space-around; margin-top: 5px; padding-top: 0; width: 38px; padding-left: 0; padding-right: 0; padding-bottom: 0; overflow: visible; flex-grow: 0.7; margin-left: 3px;" />
+        <ui:Button text="Details" display-tooltip-when-elided="true" name="detailsButton" style="padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; margin-top: 5px; white-space: nowrap; flex-direction: row; flex-grow: 1;" />
     </ui:VisualElement>
 </ui:UXML>

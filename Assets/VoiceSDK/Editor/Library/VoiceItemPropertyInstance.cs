@@ -225,11 +225,18 @@ namespace Gemelo.Voice.Editor.Library
 			
 			var id = VoiceField.intValue;
 
-			var preview = database.GetVoicePreviewById(id);
-			var obj = Property.serializedObject.targetObject as VoiceLibrary;
-			obj.GetItemById(_lastHash, out var voiceItem);
-			voiceItem.SetVoicePreview(preview);
-			PopupWindow.Add(new PropertyField(VoicePreview));
+			try
+			{
+				var preview = database.GetVoicePreviewById(id);
+				var obj = Property.serializedObject.targetObject as VoiceLibrary;
+				obj.GetItemById(_lastHash, out var voiceItem);
+				voiceItem.SetVoicePreview(preview);
+				PopupWindow.Add(new PropertyField(VoicePreview));
+			}
+			catch (Exception e)
+			{
+				Debug.LogWarning($"Cant add preview item [{id}]");
+			}
 		}
 
 		public void CreateWindow()

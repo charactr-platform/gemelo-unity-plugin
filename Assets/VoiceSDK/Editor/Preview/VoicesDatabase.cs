@@ -57,6 +57,7 @@ namespace Gemelo.Voice.Editor.Preview
 			var http = new EditorRestClient(configuration, message => Debug.LogError(message.Message));
 			return await http.GetAsync<VoicesResponse>(Voice.Configuration.VOICES_API);
 		}
+		
 		public async Task<bool[]> UpdatePreviewsDatabase()
 		{
 			var voicesResponse = await GetVoicesResponse();

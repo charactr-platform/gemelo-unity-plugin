@@ -17,17 +17,23 @@ using CompressionLevel = System.IO.Compression.CompressionLevel;
 namespace Gemelo.Voice.Editor.Preview
 {
 	[Serializable]
-	public class PreviewItemData
+	public struct PreviewItemData
 	{
 		public string Name;
 		public int Id;
-		public int SampleRate;
-		public float Duration;
-		public int DataOffset;
 		public string PreviewUrl;
 		public string Description;
 		public string[] Labels;
 		public float Rating;
+	}
+
+	[Serializable]
+	public struct AudioDetails
+	{
+		public int SampleRate;
+		public int BitRate;
+		public float Duration;
+		public int DataOffset;
 	}
 	
 	[Serializable]
@@ -44,6 +50,11 @@ namespace Gemelo.Voice.Editor.Preview
 			get => itemData.Id;
 		}
 
+		public AudioDetails AudioDetails
+		{
+			get => audioDetails;
+		}
+		
 		public string CacheFileName => previewDataName;
 
 		public override string ToString() =>
@@ -53,6 +64,7 @@ namespace Gemelo.Voice.Editor.Preview
 														0 : long.Parse(previewDataName.Split("_")[1]));
 		
 		[SerializeField] private PreviewItemData itemData;
+		[SerializeField] private AudioDetails audioDetails;
 		[SerializeField] private long previewDataSize;
 		[SerializeField] private string previewDataName;
 		
@@ -138,7 +150,7 @@ namespace Gemelo.Voice.Editor.Preview
 
 		private AudioClip CreateAudioClipFromPcmFrames(List<PcmFrame> data)
 		{
-			var builder = new WavBuilder(itemData.SampleRate);
+			var builder = new WavBuilder(audioDetails.SampleRate);
 			
 			foreach (var pcmFrame in data)
 				builder.BufferSamples(pcmFrame);
@@ -146,7 +158,7 @@ namespace Gemelo.Voice.Editor.Preview
 			if (builder.BufferLastFrame(out var frame))
 				builder.BufferSamples(frame);
 
-			itemData.Duration = builder.Duration;
+			audioDetails.Duration = builder.Duration;
 			
 			return builder.CreateAudioClipStream(itemData.Name, Mathf.CeilToInt(builder.Duration));
 		}
@@ -154,8 +166,13 @@ namespace Gemelo.Voice.Editor.Preview
 		public int WriteAudioFrames(byte[] data)
 		{
 			var header = new WavHeaderData(data);
-			itemData.DataOffset = header.DataOffset;
-			itemData.SampleRate = header.SampleRate;
+			
+			audioDetails = new AudioDetails()
+			{
+				SampleRate = header.SampleRate,
+				DataOffset = header.DataOffset,
+				BitRate = header.BitDepth
+			};
 			
 			var wavBuilder = new WavBuilder(header.SampleRate, data.AsSpan(0, header.DataOffset).ToArray());
 			_pcmFrames.AddRange(wavBuilder.ToPcmFrames(data.AsSpan(header.DataOffset).ToArray()));

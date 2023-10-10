@@ -29,6 +29,13 @@
     background-image: resource('d_PlayButton@2x');
 }
 
+.rateIcon {
+    padding-left: 0;
+    margin-right: 0;
+    -unity-background-scale-mode: scale-to-fit;
+    background-image: resource('d_PlayButton@2x');
+}
+
 .cloudIcon {
     padding-left: 120px;
     margin-right: 110px;
@@ -40,7 +47,7 @@
 .inline {
     align-items: center;
     flex-direction: row;
-    background-color: rgba(173, 50, 50, 255);
+    background-color: rgb(173, 50, 50);
     padding-left: 2px;
     padding-right: 2px;
     padding-top: 0;
@@ -54,4 +61,35 @@
     justify-content: flex-start;
     top: auto;
     bottom: auto;
+}
+
+.round {
+    align-items: center;
+    flex-direction: row;
+    background-color: rgb(173, 50, 50);
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    max-height: 30px;
+    min-height: 30px;
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    justify-content: flex-start;
+    top: auto;
+    bottom: auto;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-top-left-radius: 7px;
+    border-bottom-left-radius: 7px;
+    border-top-right-radius: 7px;
+    border-bottom-right-radius: 7px;
+    border-left-color: rgba(111, 111, 111, 255);
+    border-right-color: rgba(111, 111, 111, 255);
+    border-top-color: rgba(111, 111, 111, 255);
+    border-bottom-color: rgba(111, 111, 111, 255);
 }
