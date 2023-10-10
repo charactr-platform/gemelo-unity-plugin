@@ -64,7 +64,7 @@ namespace Gemelo.Voice.Editor.Preview
 			{
 				Id = item.Id,
 				Name = item.Name,
-				PreviewUrl = item.PreviewUrl,
+				PreviewUrl = item.Url,
 				Description = item.Description,
 				Rating = item.Rating,
 				Labels = item.Labels.Select(s=>s.Label).ToArray()

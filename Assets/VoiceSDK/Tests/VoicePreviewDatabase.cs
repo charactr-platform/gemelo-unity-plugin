@@ -40,7 +40,7 @@ namespace Gemelo.Voice.Tests
             Assert.NotNull(data);
             var item = data.Data.First();
             Assert.NotNull(item);
-            var buffer = await EditorHttp.GetDataAsync(item.PreviewUrl);
+            var buffer = await EditorHttp.GetDataAsync(item.Url);
             Assert.IsNotEmpty(buffer);
 
             var headerBuffer = buffer.AsSpan(0, HEADER_SIZE).ToArray();
@@ -69,7 +69,7 @@ namespace Gemelo.Voice.Tests
                 var voice = data[index];
                 Assert.NotNull(voice);
 
-                if (string.IsNullOrEmpty(voice.PreviewUrl))
+                if (string.IsNullOrEmpty(voice.Url))
                 {
                     Debug.LogWarning($"No preview: voice index: {index}, {voice.Name}");
                     continue;
@@ -108,8 +108,8 @@ namespace Gemelo.Voice.Tests
         
         private async Task<VoicePreview> CreateVoicePreviewFromVoiceItem(VoicePreviewItem item)
         {
-            Assert.IsNotEmpty(item.PreviewUrl);
-            var buffer = await VoicePreview.GetAudioPreviewData(item.PreviewUrl);
+            Assert.IsNotEmpty(item.Url);
+            var buffer = await VoicePreview.GetAudioPreviewData(item.Url);
             Assert.IsNotEmpty(buffer);
 
             var preview = new VoicePreview(item);
@@ -123,9 +123,9 @@ namespace Gemelo.Voice.Tests
         
         private async Task<bool> ValidateHeaderData(VoicePreviewItem item)
         {
-            Assert.IsNotEmpty(item.PreviewUrl);
+            Assert.IsNotEmpty(item.Url);
             
-            var buffer = await VoicePreview.GetAudioPreviewData(item.PreviewUrl);
+            var buffer = await VoicePreview.GetAudioPreviewData(item.Url);
             var header = new WavHeaderData(buffer.AsSpan(0, HEADER_SIZE).ToArray());
             Assert.GreaterOrEqual(header.SampleRate, PREVIEW_SAMPLE_RATE);
             Assert.GreaterOrEqual(header.DataOffset, WavBuilder.HeaderSize);

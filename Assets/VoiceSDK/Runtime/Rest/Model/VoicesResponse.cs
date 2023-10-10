@@ -23,6 +23,11 @@ namespace Gemelo.Voice.Rest.Model
 	[Serializable]
 	public class VoicePreviewItem
 	{
+		public string Url
+		{
+			get => PreviewUrls?.Count > 0 ? PreviewUrls[0] : string.Empty;
+		}
+		
 		[JsonProperty("id")]
 		public int Id { get; set; }
 
@@ -31,9 +36,6 @@ namespace Gemelo.Voice.Rest.Model
 
 		[JsonProperty("description")]
 		public string Description { get; set; }
-
-		[JsonProperty("previewUrl")]
-		public string PreviewUrl { get; set; }
 
 		[JsonProperty("previewUrls")]
 		public List<string> PreviewUrls { get; set; }

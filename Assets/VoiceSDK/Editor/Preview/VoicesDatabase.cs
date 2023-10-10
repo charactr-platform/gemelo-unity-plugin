@@ -67,7 +67,7 @@ namespace Gemelo.Voice.Editor.Preview
 			
 			foreach (var voiceData in voicesResponse)
 			{
-				if (string.IsNullOrEmpty(voiceData.PreviewUrl))
+				if (string.IsNullOrEmpty(voiceData.Url))
 				{
 					Debug.LogWarning($"Can't download preview, missing URL: {voiceData.Name}");
 					continue;
@@ -82,17 +82,25 @@ namespace Gemelo.Voice.Editor.Preview
 
 		public static int PurgeCache()
 		{
+			var count = 0;
+			
 			var dirInfo = new DirectoryInfo(Voice.Configuration.CachePath);
+			
 			if (!dirInfo.Exists)
+			{
 				Debug.Log("Cache directory not found!");
+				return count;
+			}
 			
-			var files = dirInfo.GetFiles();
-			Debug.Log($"Found files: {files.Length}");
-			
-			foreach (var file in files)
+			foreach (var file in  dirInfo.GetFiles())
+			{
 				file.Delete();
+				count++;
+			}
 
-			return files.Length;
+			Debug.Log($"Purged files count: {count}");
+			
+			return count;
 		}
 
 		public static VoicesDatabase Load()
