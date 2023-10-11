@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Gemelo.Voice.Rest.Client;
 using Gemelo.Voice.Rest.Model;
@@ -33,22 +34,37 @@ namespace Gemelo.Voice.Editor.Preview
 			return true;
 		}
 
-		public VoicePreview GetVoicePreviewByName(string itemName)
+		public bool GetVoicePreviewByName(string itemName, out VoicePreview voicePreview)
 		{
+			voicePreview = null;
 			var index = voices.FindIndex(f => f.Name.Equals(itemName));
-			if (index < 0)
-				throw new Exception($"Item with name [{itemName}] not found!");
-            
-			return voices[index];
+			if (index < 0) return false;
+			voicePreview = voices[index];
+			return true;
 		}
 
-		public VoicePreview GetVoicePreviewById(int itemId)
+		public bool GetVoicePreviewById(int itemId, out VoicePreview voicePreview)
 		{
+			voicePreview = null;
 			var index = voices.FindIndex(f => f.Id == itemId);
-			if (index < 0)
-				throw new Exception($"Item with name [{name}] not found!");
-            
-			return voices[index];
+			if (index < 0) return false;
+			voicePreview = voices[index];
+			return true;
+		}
+
+		public bool GetBestVoicePreview(out VoicePreview voicePreview)
+		{
+			voicePreview = null;
+			var bestRate = voices.Max(m => m.Rating);
+			var best = voices.FirstOrDefault(f => f.Rating.Equals(bestRate));
+			
+			if (best != null)
+			{
+				voicePreview = best;
+				return true;
+			}
+
+			return false;
 		}
 
 		public static async Task<VoicesResponse> GetVoicesResponse()

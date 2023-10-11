@@ -53,11 +53,14 @@ namespace Gemelo.Voice.Editor.Preview
 		private Label CreateLabel(SerializedProperty previewItem)
 		{
 			var label = this.Q<Label>("nameLabel");
-			
+			var labelsValue = string.Empty;
 			var name = previewItem.FindPropertyRelative("Name");
-			var id = previewItem.FindPropertyRelative("Id");
+			var labels = previewItem.FindPropertyRelative("Labels");
 			
-			label.text = $"{name.stringValue} ID:({id.intValue})";
+			if (labels.isArray && labels.arraySize > 0)
+				labelsValue = $"({labels.GetArrayElementAtIndex(0).stringValue})";
+			
+			label.text = $"{name.stringValue} "+labelsValue;
 			
 			return label;
 		}
@@ -68,8 +71,8 @@ namespace Gemelo.Voice.Editor.Preview
 			var rating = previewItem.FindPropertyRelative("Rating");
 			var bits = audioDetails.FindPropertyRelative("BitRate");
 			var hz = audioDetails.FindPropertyRelative("SampleRate");
-			var labels = previewItem.FindPropertyRelative("Labels");
-			label.text = $"Rating: {rating.floatValue}, Labels:{labels.GetArrayElementAtIndex(0).stringValue}  Audio: {bits.intValue} bit, {(hz.intValue/1000f):F1} kHz";
+		
+			label.text = $"Rating: {rating.floatValue}, Audio: {bits.intValue} bit, {(hz.intValue/1000f):F1} kHz";
 		}
 		
 		private Button CreatePlayButton()
@@ -84,7 +87,11 @@ namespace Gemelo.Voice.Editor.Preview
 
 		private async void OnPlayEvent(int id)
 		{
-			var instance = _database.GetVoicePreviewById(id);
+			if(!_database.GetVoicePreviewById(id, out var instance))
+			{
+				Debug.LogError($"Can't Get Voice Preview with Id = [{id}]");
+				return;
+			}
 			
 			Debug.Log($"Playing voice [{id}]: {instance}");
 			

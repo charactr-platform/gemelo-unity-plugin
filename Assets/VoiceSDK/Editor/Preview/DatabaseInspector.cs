@@ -94,21 +94,6 @@ namespace Charactr.VoiceSDK.Editor.Preview
 			_listView.bindItem = (element, i) => (element as VoicePreviewElement).RegisterProperty(items[i]);
 			return _listView;
 		}
-	
-		private void MakeALikeB(VisualElement A, VisualElement B)
-		{
-			A.style.position = B.style.position;
-			A.style.top = B.style.top;
-			A.style.bottom = B.style.bottom;
-			A.style.left = B.style.left;
-			A.style.right = B.style.right;
- 
-			A.style.flexGrow = B.style.flexGrow;
-			A.style.flexShrink = B.style.flexShrink;
-			A.style.width = B.style.width;
-			A.style.height = B.style.height;
-			A.style.transformOrigin = B.style.transformOrigin;
-		}
 		private static List<SerializedProperty> LoadPreviewItems()
 		{
 			var fields = new List<SerializedProperty>();

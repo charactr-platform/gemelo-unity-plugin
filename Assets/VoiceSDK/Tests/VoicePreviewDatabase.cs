@@ -159,7 +159,7 @@ namespace Gemelo.Voice.Tests
             AssetDatabase.ImportAsset(path);
             var database = AssetDatabase.LoadAssetAtPath<VoicesDatabase>(path);
             Assert.NotNull(database);
-            var preview = database.GetVoicePreviewById(item.Id);
+            Assert.IsTrue(database.GetVoicePreviewById(item.Id, out var preview));
             Assert.NotZero(preview.DecodeCacheDataToPcmFrames(preview.CacheFileName));
         }
 
@@ -189,7 +189,7 @@ namespace Gemelo.Voice.Tests
             var database = VoicesDatabase.Load();
             Assert.NotNull(database);
             Assert.IsInstanceOf<VoicesDatabase>(database);
-            var preview = database.GetVoicePreviewByName("Will");
+            Assert.IsTrue(database.GetVoicePreviewByName("Will", out var preview));
             Assert.NotZero(preview.DecodeCacheDataToPcmFrames(preview.CacheFileName));
             var audioClip = preview.GenerateAudioClip();
             stopWatch.Stop();

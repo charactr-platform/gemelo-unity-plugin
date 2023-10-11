@@ -1,12 +1,16 @@
 using System;
 using System.Globalization;
+using System.Linq;
+using Charactr.VoiceSDK.Editor.Preview;
 using Gemelo.Voice.Audio;
 using Gemelo.Voice.Editor.Preview;
 using Gemelo.Voice.Library;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.UIElements;
+using Button = UnityEngine.UIElements.Button;
 using PopupWindow = UnityEngine.UIElements.PopupWindow;
 
 namespace Gemelo.Voice.Editor.Library
@@ -187,8 +191,6 @@ namespace Gemelo.Voice.Editor.Library
 
 		public void RegisterVisualElements(VoicesDatabase database)
 		{
-
-			
 			Label = new Label();
 			IdField = new IntegerField("ID");
 			IdField.isReadOnly = true;
@@ -225,18 +227,92 @@ namespace Gemelo.Voice.Editor.Library
 			
 			var id = VoiceField.intValue;
 
-			try
+			if (!database.GetVoicePreviewById(id, out var preview))
 			{
-				var preview = database.GetVoicePreviewById(id);
-				var obj = Property.serializedObject.targetObject as VoiceLibrary;
-				obj.GetItemById(_lastHash, out var voiceItem);
-				voiceItem.SetVoicePreview(preview);
-				PopupWindow.Add(new PropertyField(VoicePreview));
+				Debug.LogError($"Cant add preview item [{id}]");
+				OverrideSelectVoicePreview(voiceField);
 			}
-			catch (Exception e)
+			else 
+				OverrideVoiceIdWithPreview(voiceField, preview);
+		}
+
+		private void OverrideWithIntField(IntegerField integerField)
+		{
+			integerField[0].style.unityTextAlign = new StyleEnum<TextAnchor>(TextAnchor.MiddleLeft);
+			var intField = integerField[1];
+			intField.style.flexGrow = 0;
+			intField.SetEnabled(false);
+		}
+
+		private void OverrideSelectVoicePreview(IntegerField integerField)
+		{
+			OverrideWithIntField(integerField);
+			var button = new Button();
+			button.text = "[Select voice]";
+			
+			button.RegisterCallback<ClickEvent>((e) =>
 			{
-				Debug.LogWarning($"Cant add preview item [{id}]");
+				ListPopupWindow.ShowWindow();
+			});
+			integerField.Add(button);
+		}
+
+		
+		private class ListPopupWindow: EditorWindow
+		{
+			private Button _button;
+			public static void ShowWindow()
+			{
+				var wnd = CreateInstance<ListPopupWindow>();
+				wnd.ShowAuxWindow();
 			}
+			private void CreateGUI()
+			{
+				var root = CreatePopup();
+
+				rootVisualElement.Add(root);
+				
+			}
+			
+			private PopupWindow CreatePopup()
+			{
+				var popup = new PopupWindow
+				{
+					text = "Title",
+					style =
+					{
+						position = new StyleEnum<Position>(Position.Relative),
+						flexBasis = new StyleLength(StyleKeyword.Auto),
+						flexGrow = 1,
+						borderTopLeftRadius = 0,
+						borderTopRightRadius = 0
+					}
+				};
+				return popup;
+			}
+		}
+		
+		
+		private void OverrideVoiceIdWithPreview(IntegerField integerField, VoicePreview preview)
+		{
+			OverrideWithIntField(integerField);
+			
+			var library = Property.serializedObject.targetObject as VoiceLibrary;
+			library.GetItemById(_lastHash, out var voiceItem);
+			voiceItem.SetVoicePreview(preview);
+			
+			var voicePreviewField = new PropertyField(VoicePreview)
+			{
+				style =
+				{
+					alignSelf = new StyleEnum<Align>(Align.Stretch),
+					flexBasis = new StyleLength(StyleKeyword.Auto),
+					flexGrow = 1,
+					maxHeight =  integerField.style.maxHeight
+				}
+			};
+			
+			integerField.Add(voicePreviewField);
 		}
 
 		public void CreateWindow()

@@ -50,6 +50,10 @@ namespace Gemelo.Voice.Editor.Preview
 			get => itemData.Id;
 		}
 
+		public float Rating
+		{
+			get => itemData.Rating;
+		}
 		public AudioDetails AudioDetails
 		{
 			get => audioDetails;
