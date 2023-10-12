@@ -41,7 +41,7 @@ namespace Gemelo.Voice.Streaming
 				
 				case AudioDataType.WAV:
 					ReadNextBuffer(out header, WavBuilder.HeaderSize);
-					_builder = new WavBuilder(parameters.SampleRate, header.ToArray());
+					_builder = new WavBuilder(parameters.SampleRate, parameters.BitDepth, header.ToArray());
 					break;
 			}
 			

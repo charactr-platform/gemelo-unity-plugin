@@ -17,7 +17,7 @@ namespace Gemelo.Voice.Tests
     public class VoicePreviewDatabase: TestBase
     {
         private const int PREVIEW_SAMPLE_RATE = 32000;
-        private const int HEADER_SIZE = 76;
+        private const int HEADER_SIZE = 44;
         
         [Test]
         public async Task GetVoicesRequest_Returns_NotEmpty()
@@ -35,7 +35,33 @@ namespace Gemelo.Voice.Tests
         }
         
         [Test]
-        public async Task Load_Voice_Preview_ToWavBuilder_NotNull()
+        public async Task Load_32bit_Beta_Voice_Preview_ToWavBuilder_NotNull()
+        {
+            var data = await GetVoicesResponse();
+            Assert.NotNull(data);
+            var item = data.Data.FirstOrDefault(f => f.Name.Contains("beta", StringComparison.OrdinalIgnoreCase));
+            Assert.NotNull(item);
+            var buffer = await EditorHttp.GetDataAsync(item.Url);
+            Assert.IsNotEmpty(buffer);
+
+            var headerBuffer = buffer.AsSpan(0, HEADER_SIZE).ToArray();
+            var header = new WavHeaderData(headerBuffer);
+            Assert.GreaterOrEqual(PREVIEW_SAMPLE_RATE, header.SampleRate);
+            Assert.AreEqual(false, header.IsExtensibeWav);
+            Assert.AreEqual(1, header.Channels);
+            Assert.AreEqual(32, header.BitDepth);
+            Assert.AreEqual(HEADER_SIZE, header.DataOffset);
+            
+            var builder = new WavBuilder(PREVIEW_SAMPLE_RATE, header.BitDepth, headerBuffer);
+            Assert.NotNull(builder);
+            Assert.AreEqual(32,builder.BitDepth);
+            var frames = builder.ToPcmFrames(buffer.AsSpan(HEADER_SIZE).ToArray());
+            Assert.IsNotEmpty(frames);
+            Assert.AreEqual(32,frames[0].BitDepth);
+        }
+
+        [Test]
+        public async Task Load_16bit_Voice_Preview_ToWavBuilder_NotNull()
         {
             var data = await GetVoicesResponse();
             Assert.NotNull(data);
@@ -47,15 +73,17 @@ namespace Gemelo.Voice.Tests
             var headerBuffer = buffer.AsSpan(0, HEADER_SIZE).ToArray();
             var header = new WavHeaderData(headerBuffer);
             Assert.GreaterOrEqual(PREVIEW_SAMPLE_RATE,header.SampleRate);
-            Assert.AreEqual(true, header.IsExtensibeWav);
+            Assert.AreEqual(false, header.IsExtensibeWav);
             Assert.AreEqual(1, header.Channels);
             Assert.AreEqual(16, header.BitDepth);
             Assert.AreEqual(HEADER_SIZE, header.DataOffset);
             
-            var builder = new WavBuilder(PREVIEW_SAMPLE_RATE, headerBuffer);
+            var builder = new WavBuilder(PREVIEW_SAMPLE_RATE, header.BitDepth, headerBuffer);
             Assert.NotNull(builder);
+            Assert.AreEqual(16,builder.BitDepth);
             var frames = builder.ToPcmFrames(buffer.AsSpan(HEADER_SIZE).ToArray());
             Assert.IsNotEmpty(frames);
+            Assert.AreEqual(16,frames[0].BitDepth);
         }
 
         [Test]

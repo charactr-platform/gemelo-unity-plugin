@@ -7,18 +7,26 @@ namespace Gemelo.Voice.Audio
 	[Serializable]
 	public class PcmFrame: IDisposable
 	{
-		public static int BlockSize = sizeof(short);//16bit per sample 
+		public static int BlockSize16 = sizeof(short);
+		public static int BlockSize32 = sizeof(float);
+		public int BlockSize => _blockSize;
 		public int SamplesSize => _samplesSize;
 		public float[] Samples => _samples.ToArray();
 		public bool HasData => _samples.Count > 0 ;
+		public int BitDepth => _bitDepth;
 		
 		[SerializeField] private List<float> _samples;
+		
 		private readonly int _samplesSize;
 		private readonly string _id;
+		private readonly int _bitDepth;
+		private readonly int _blockSize;
 		
-		public PcmFrame(int samplesCount = 4096)
+		public PcmFrame(int samplesCount = 4096, int bitDepth = 16)
 		{
+			_bitDepth = bitDepth;
 			_samplesSize = samplesCount;
+			_blockSize = BitDepthToBlockSize(bitDepth);
 			_samples = new List<float>();
 		}
 		
@@ -34,13 +42,13 @@ namespace Gemelo.Voice.Audio
 			
 			if (data.Count > offset)
 			{
-				ConvertByteToFloat(data.Slice(0,offset).ToArray(), out samples);
+				ConvertByteToFloat(data.Slice(0,offset).ToArray(), out samples,0, _blockSize);
 				overflow = data.Slice(offset, data.Count - offset).ToArray();
 				AddPcmData(samples, out _);
 				return true;
 			}
 			
-			ConvertByteToFloat(data.ToArray(), out samples);
+			ConvertByteToFloat(data.ToArray(), out samples,0, _blockSize);
 			overflow = null;
 			AddPcmData(samples, out _);
 			
@@ -68,17 +76,24 @@ namespace Gemelo.Voice.Audio
 			return false;
 		}
 		
-		public static void ConvertByteToFloat(byte[] data, out float[] waveData, int offset = 0)
+		public static int BitDepthToBlockSize(int bitDepth) => bitDepth > 16 ? BlockSize32 : BlockSize16;
+		public static void ConvertByteToFloat(byte[] data, out float[] waveData, int offset = 0, int blockSize = 2)
 		{
 			var i = 0;
 			
-			var samplesSize = (data.Length - offset) / BlockSize;
+			var samplesSize = (data.Length - offset) / blockSize;
 			waveData = new float[samplesSize];
 
 			while (i < samplesSize)
 			{
-				var pos = (i * BlockSize) + offset;
-				var v = (float)BitConverter.ToInt16(data, pos) / short.MaxValue;
+				var pos = (i * blockSize) + offset;
+				float v = 0;
+
+				if (blockSize == BlockSize32)
+					v = BitConverter.ToSingle(data, pos);
+				else
+					v = (float) BitConverter.ToInt16(data, pos) / short.MaxValue;
+				
 				waveData[i] = v;
 				++i;
 			}

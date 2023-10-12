@@ -31,7 +31,7 @@ namespace Gemelo.Voice.Editor.Preview
 	public struct AudioDetails
 	{
 		public int SampleRate;
-		public int BitRate;
+		public int BitDepth;
 		public float Duration;
 		public int DataOffset;
 	}
@@ -154,7 +154,7 @@ namespace Gemelo.Voice.Editor.Preview
 
 		private AudioClip CreateAudioClipFromPcmFrames(List<PcmFrame> data)
 		{
-			var builder = new WavBuilder(audioDetails.SampleRate);
+			var builder = new WavBuilder(audioDetails.SampleRate, audioDetails.BitDepth);
 			
 			foreach (var pcmFrame in data)
 				builder.BufferSamples(pcmFrame);
@@ -175,10 +175,10 @@ namespace Gemelo.Voice.Editor.Preview
 			{
 				SampleRate = header.SampleRate,
 				DataOffset = header.DataOffset,
-				BitRate = header.BitDepth
+				BitDepth = header.BitDepth
 			};
 			
-			var wavBuilder = new WavBuilder(header.SampleRate, data.AsSpan(0, header.DataOffset).ToArray());
+			var wavBuilder = new WavBuilder(header.SampleRate, header.BitDepth, data.AsSpan(0, header.DataOffset).ToArray());
 			_pcmFrames.AddRange(wavBuilder.ToPcmFrames(data.AsSpan(header.DataOffset).ToArray()));
 			return _pcmFrames.Count;
 		}

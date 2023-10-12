@@ -69,7 +69,7 @@ namespace Gemelo.Voice.Editor.Preview
 		{
 			var label = this.Q<Button>("detailsButton");
 			var rating = previewItem.FindPropertyRelative("Rating");
-			var bits = audioDetails.FindPropertyRelative("BitRate");
+			var bits = audioDetails.FindPropertyRelative("BitDepth");
 			var hz = audioDetails.FindPropertyRelative("SampleRate");
 		
 			label.text = $"Rating: {rating.floatValue}, Audio: {bits.intValue} bit, {(hz.intValue/1000f):F1} kHz";
