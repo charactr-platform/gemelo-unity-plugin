@@ -19,8 +19,6 @@ namespace Gemelo.Voice.Audio
 			SampleRate = AudioFormat = Channels = BitDepth = DataOffset = -1;
 			IsExtensibeWav = false;
 			
-		
-			
 			if (!IsWavFile(ref data))
 				throw new Exception("Can't find WAVE file header");
 

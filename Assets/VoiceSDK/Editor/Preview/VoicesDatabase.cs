@@ -11,6 +11,7 @@ namespace Gemelo.Voice.Editor.Preview
 {
 	public class VoicesDatabase: ScriptableObject
 	{
+
 		public const string FILE_ASSET = "VoicePreviewDatabase";
 		public List<VoicePreview> Voices => voices;
 	
@@ -20,18 +21,22 @@ namespace Gemelo.Voice.Editor.Preview
 			return ScriptableObject.CreateInstance<VoicesDatabase>();
 		}
 
-		public async Task<bool> AddVoicePreview(VoicePreviewItem previewItem)
+		public async Task<bool> AddVoicePreview(VoicePreviewItem previewItem, IProgress<bool> onProgress)
 		{
 			voices ??= new List<VoicePreview>();
 
 			var preview = new VoicePreview(previewItem);
 
-			if (await preview.GetVoicePreviewData() == false)
-				return false;
-            
-			voices.Add(preview);
-			Debug.Log($"Added voice preview for Voice: {preview.Name}");
-			return true;
+			var success = await preview.GetVoicePreviewData();
+			
+			if (success)
+			{
+				voices.Add(preview);
+				Debug.Log($"Added voice preview for Voice: {preview.Name}");
+			}
+			
+			onProgress.Report(success);
+			return success;
 		}
 
 		public bool GetVoicePreviewByName(string itemName, out VoicePreview voicePreview)
@@ -75,24 +80,25 @@ namespace Gemelo.Voice.Editor.Preview
 			return await http.GetAsync<VoicesResponse>(url);
 		}
 		
-		public async Task<bool[]> UpdatePreviewsDatabase()
+		public async Task<bool[]> UpdatePreviewsDatabase(IProgress<float> onProgress)
 		{
 			var voicesResponse = await GetVoicesResponse();
 			
 			voices = new List<VoicePreview>();
 
 			var tasks = new List<Task<bool>>();
+
+			var completedCount = 0;
+			var totalCount = voicesResponse.Count;
+			var progress = new Progress<bool>((p) =>
+			{
+				completedCount++;
+				onProgress.Report((float) completedCount / totalCount);
+			});
 			
 			foreach (var voiceData in voicesResponse)
 			{
-				if (string.IsNullOrEmpty(voiceData.Url))
-				{
-					Debug.LogWarning($"Can't download preview, missing URL: {voiceData.Name}");
-					continue;
-				}
-				
-				var t = AddVoicePreview(voiceData);
-				tasks.Add(t);
+				await AddVoicePreview(voiceData, progress);
 			}
 
 			return await Task.WhenAll(tasks);
@@ -121,6 +127,13 @@ namespace Gemelo.Voice.Editor.Preview
 			return count;
 		}
 
+		public static void Clean()
+		{
+			var instance = Load();
+			instance.Voices.Clear();
+			PurgeCache();
+		}
+		
 		public static VoicesDatabase Load()
 		{
 			//TODO: Check for file existence and for voices list size

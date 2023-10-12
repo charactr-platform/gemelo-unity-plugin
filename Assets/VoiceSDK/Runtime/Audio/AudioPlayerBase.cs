@@ -94,7 +94,6 @@ namespace Gemelo.Voice.Audio
 			//Called from static method, destroy GameObject on Dispose
 			if (gameObject.hideFlags == HideFlags.HideAndDontSave)
 			{
-				Debug.Log($"Destroying AudioPlayer game object:{name}");
 				DestroyImmediate(gameObject, false);
 			}
 		}

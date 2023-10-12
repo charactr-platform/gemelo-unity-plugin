@@ -90,6 +90,7 @@ namespace Gemelo.Voice.Tests
         public async Task Load_AllVoices_Header_SampleRate_Equals32000()
         {
             var data = await GetVoicesResponse();
+            
             Assert.NotNull(data);
             var tasks = new List<Task<bool>>();
             
@@ -155,6 +156,13 @@ namespace Gemelo.Voice.Tests
             Assert.IsNotEmpty(item.Url);
             
             var buffer = await VoicePreview.GetAudioPreviewData(item.Url);
+            
+            if (buffer == null)
+            {
+                Debug.Log($"DownloadError: {item.Id} - {item.Name} - {item.Url}");
+                return false;
+            }
+            
             var header = new WavHeaderData(buffer.AsSpan(0, HEADER_SIZE).ToArray());
             Assert.GreaterOrEqual(header.SampleRate, PREVIEW_SAMPLE_RATE);
             Assert.GreaterOrEqual(header.DataOffset, WavBuilder.HeaderSize);
@@ -180,7 +188,9 @@ namespace Gemelo.Voice.Tests
             var data = await GetVoicesResponse();
             var item = data.Data.First();
           
-            var result = await instance.AddVoicePreview(item);
+            var result = await instance.AddVoicePreview(item, 
+                new Progress<bool>((s)=>Debug.Log("Success: "+ s)));
+            
             Assert.IsTrue(result);
             var path = Configuration.GLOBAL_SAVE_PATH + VoicesDatabase.FILE_ASSET + ".asset";
             AssetDatabase.CreateAsset(instance, path);
@@ -197,8 +207,16 @@ namespace Gemelo.Voice.Tests
         {
             var instance = VoicesDatabase.CreateInstance();
             Assert.NotNull(instance);
-            var result= await instance.UpdatePreviewsDatabase();
             
+            var progress = 0f;
+            var pro = new Progress<float>((p) =>
+            {
+                Debug.Log($"Progress {p}");
+            });
+            
+            var result= await instance.UpdatePreviewsDatabase(pro);
+            
+            Assert.AreEqual(1f, progress);
             Assert.IsTrue(result.All(a=>a == true));
             
             var path = Configuration.GLOBAL_SAVE_PATH + VoicesDatabase.FILE_ASSET + ".asset";

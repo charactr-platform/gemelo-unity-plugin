@@ -4,7 +4,6 @@
         <ui:Label text="VoicesPreviewDatabase" display-tooltip-when-elided="true" name="TitleLabel" class="topLabel" style="-unity-text-align: upper-center;" />
         <ui:Button text="Update" display-tooltip-when-elided="true" name="updateButton" />
         <ui:Button text="Purge cache" display-tooltip-when-elided="true" name="purgeButton" />
-        <ui:DropdownField label="Dropdown" index="-1" choices="def" name="previewsDropdown" />
     </ui:VisualElement>
     <ui:ListView focusable="false" selection-type="None" picking-mode="Ignore" header-title="Voice Previews" show-add-remove-footer="false" show-foldout-header="false" show-border="true" virtualization-method="DynamicHeight" style="flex-basis: 80%; width: auto; height: auto; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;" />
 </ui:UXML>

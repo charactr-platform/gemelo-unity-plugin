@@ -195,8 +195,16 @@ namespace Gemelo.Voice.Editor.Preview
 		{
 			if (string.IsNullOrEmpty(itemData.PreviewUrl))
 				throw new Exception("Can't download voice preview, URL is empty");
-            
-			var frames = WriteAudioFrames(await GetAudioPreviewData(itemData.PreviewUrl));
+
+			var data = await GetAudioPreviewData(itemData.PreviewUrl);
+
+			if (data == null)
+			{
+				Debug.LogError("Can't download data from remote resource.");
+				return false;
+			}
+			
+			var frames = WriteAudioFrames(data);
 			
 			previewDataSize = EncodePcmFramesToData(out previewDataName);
 			
