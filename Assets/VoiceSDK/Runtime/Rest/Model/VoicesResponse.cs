@@ -42,6 +42,9 @@ namespace Gemelo.Voice.Rest.Model
 
 		[JsonProperty("rating")]
 		public float Rating { get; set; }
+		
+		[JsonProperty("disabled")]
+		public bool Disabled { get; set; }
 
 		[JsonProperty("labels")]
 		public List<VoiceLabel> Labels { get; set; }

@@ -28,9 +28,10 @@ namespace Gemelo.Voice.Tests
             Assert.NotNull(voices.Data.First());
         }
 
-        private async Task<VoicesResponse> GetVoicesResponse()
+        private async Task<VoicesResponse> GetVoicesResponse(bool all = true)
         {
-            return await EditorHttp.GetAsync<VoicesResponse>(Configuration.VOICES_API);
+            var url = Configuration.VOICES_API + (all ? "?show=all" : string.Empty);  
+            return await EditorHttp.GetAsync<VoicesResponse>(url);
         }
         
         [Test]
