@@ -15,7 +15,7 @@ using PopupWindow = UnityEngine.UIElements.PopupWindow;
 
 namespace Gemelo.Voice.Editor.Library
 {
-	internal class VoiceItemPropertyInstance
+	internal partial class VoiceItemPropertyInstance
 	{
 		public enum ItemState
 		{
@@ -241,58 +241,27 @@ namespace Gemelo.Voice.Editor.Library
 			integerField[0].style.unityTextAlign = new StyleEnum<TextAnchor>(TextAnchor.MiddleLeft);
 			var intField = integerField[1];
 			intField.style.flexGrow = 0;
+			intField.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
 			intField.SetEnabled(false);
 		}
 
 		private void OverrideSelectVoicePreview(IntegerField integerField)
 		{
 			OverrideWithIntField(integerField);
-			var button = new Button();
-			button.text = "[Select voice]";
 			
+			var button = new Button
+			{
+				text = "[Select voice]"
+			};
+			button.AddToClassList(".round");
 			button.RegisterCallback<ClickEvent>((e) =>
 			{
-				ListPopupWindow.ShowWindow();
+				DatabaseListView.ShowWindow();
 			});
 			integerField.Add(button);
 		}
 
-		
-		private class ListPopupWindow: EditorWindow
-		{
-			private Button _button;
-			public static void ShowWindow()
-			{
-				var wnd = CreateInstance<ListPopupWindow>();
-				wnd.ShowAuxWindow();
-			}
-			private void CreateGUI()
-			{
-				var root = CreatePopup();
 
-				rootVisualElement.Add(root);
-				
-			}
-			
-			private PopupWindow CreatePopup()
-			{
-				var popup = new PopupWindow
-				{
-					text = "Title",
-					style =
-					{
-						position = new StyleEnum<Position>(Position.Relative),
-						flexBasis = new StyleLength(StyleKeyword.Auto),
-						flexGrow = 1,
-						borderTopLeftRadius = 0,
-						borderTopRightRadius = 0
-					}
-				};
-				return popup;
-			}
-		}
-		
-		
 		private void OverrideVoiceIdWithPreview(IntegerField integerField, VoicePreview preview)
 		{
 			OverrideWithIntField(integerField);

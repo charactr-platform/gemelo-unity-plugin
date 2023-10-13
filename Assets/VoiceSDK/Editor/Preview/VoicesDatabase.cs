@@ -136,8 +136,15 @@ namespace Gemelo.Voice.Editor.Preview
 		
 		public static VoicesDatabase Load()
 		{
-			//TODO: Check for file existence and for voices list size
-			return Resources.Load<VoicesDatabase>(FILE_ASSET);
+			if (_instance != null)
+				return _instance;
+			
+			_instance = Resources.Load<VoicesDatabase>(FILE_ASSET);
+			Debug.Log($"Loaded database previews instance, previews count: {_instance.Voices.Count}");
+
+			return _instance;
 		}
+
+		private static VoicesDatabase _instance;
 	}
 }

@@ -9,7 +9,6 @@ namespace Gemelo.Voice.Editor.Library
 	[CustomPropertyDrawer(typeof(VoiceItem))]
 	public class VoiceItemProperty : PropertyDrawer
 	{
-		private VoicesDatabase Database => _database ??= LoadVoicesDatabase();
 
 		private static VoicesDatabase _database;
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -18,15 +17,10 @@ namespace Gemelo.Voice.Editor.Library
 			
 			// Create a new VisualElement to be the root the property UI
 			instance.CreateWindow();
-			instance.RegisterVisualElements(Database);
+			instance.RegisterVisualElements(VoicesDatabase.Load());
 			instance.UpdateState();
 			// Return the finished UI
 			return instance.Container;
-		}
-
-		private VoicesDatabase LoadVoicesDatabase()
-		{
-			return Resources.Load<VoicesDatabase>("VoicePreviewDatabase");
 		}
 	}
 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Gemelo.Voice.Editor.Library;
 using Gemelo.Voice.Editor.Preview;
 using UnityEditor;
 using UnityEngine;
@@ -14,7 +15,7 @@ namespace Charactr.VoiceSDK.Editor.Preview
 {
 	
 	[CustomEditor(typeof(VoicesDatabase))]
-	public partial class DatabaseInspector : UnityEditor.Editor
+	public class DatabaseInspector : UnityEditor.Editor
 	{
 		public VisualTreeAsset visualTreeAsset;
 		private Button _updateButton,_purgeButton;
@@ -32,12 +33,12 @@ namespace Charactr.VoiceSDK.Editor.Preview
 			visualTreeAsset.CloneTree(_inspector);
 			_updateButton = _inspector.Q<Button>("updateButton");
 			_purgeButton = _inspector.Q<Button>("purgeButton");
-			_listView = _inspector.Q<ListView>();
+			_listView = _inspector.Q<TemplateContainer>("databaseListView").Q<ListView>();
 			_updateButton.RegisterCallback<ClickEvent>((e) => OnUpdateButton());
 			_purgeButton.RegisterCallback<ClickEvent>(e=> OnPurgeButton());
 
-			var list = LoadPreviewItems();
-			_listView = CreateList(list);
+			
+			//DatabaseListView.CreateList(_listView, LoadPreviewItems());
 			return _inspector;
 		}
 		
@@ -50,45 +51,8 @@ namespace Charactr.VoiceSDK.Editor.Preview
 				Selection.objects = null;
 			}
 		}
-
-		public void CreatePreviewPopup(VisualElement parent, VisualElement button, Action<SerializedProperty> onSelected)
-		{
-			var popup = new PopupWindow
-			{
-				text = "Title",
-				style =
-				{
-					width = 300,
-					height = 300,
-					position = new StyleEnum<Position>(Position.Absolute),
-					top = button.contentRect.center.y + 50,
-					left = button.contentRect.center.x - 150,
-					borderTopLeftRadius = 0,
-					borderTopRightRadius = 0
-				}
-			};
-			
-			var items = LoadPreviewItems();
-			var list = CreateList(items);
-			
-			popup.RegisterCallback<ClickEvent>(e=>
-			{
-				parent.Remove(popup);
-				onSelected.Invoke(items[list.selectedIndex]);
-			});
-			
-			popup.Add(list);
-			parent.Add(popup);
-		}
 		
-		private ListView CreateList(List<SerializedProperty> items)
-		{
-			_listView.itemsSource = items;
-			_listView.makeItem = () => new VoicePreviewElement();
-			_listView.bindItem = (element, i) => (element as VoicePreviewElement).RegisterProperty(items[i]);
-			return _listView;
-		}
-		private static List<SerializedProperty> LoadPreviewItems()
+		private List<SerializedProperty> LoadPreviewItems()
 		{
 			var fields = new List<SerializedProperty>();
 			
@@ -100,7 +64,6 @@ namespace Charactr.VoiceSDK.Editor.Preview
 			}
 			return fields;
 		}
-
 
 		private ProgressUpdater _updateProgress;
 
