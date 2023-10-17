@@ -1,21 +1,18 @@
 using System;
 using System.Globalization;
-using System.Linq;
-using Charactr.VoiceSDK.Editor.Preview;
 using Gemelo.Voice.Audio;
 using Gemelo.Voice.Editor.Preview;
 using Gemelo.Voice.Library;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.UIElements;
 using Button = UnityEngine.UIElements.Button;
 using PopupWindow = UnityEngine.UIElements.PopupWindow;
 
 namespace Gemelo.Voice.Editor.Library
 {
-	internal partial class VoiceItemPropertyInstance
+	internal class VoiceItemPropertyInstance
 	{
 		public enum ItemState
 		{
@@ -105,9 +102,9 @@ namespace Gemelo.Voice.Editor.Library
 			State = ItemState.Download;
 			SetButtonFunctionFromState();
 
-			if (Property.serializedObject.targetObject is VoiceLibrary library)
+			if (TargetLibrary != null)
 			{
-				await library.AddAudioClip(CalculateCurrentHash());
+				await TargetLibrary.AddAudioClip(CalculateCurrentHash());
 				AudioClipField.serializedObject.Update();
 				UpdateState();
 				field.visible = true;
@@ -115,7 +112,8 @@ namespace Gemelo.Voice.Editor.Library
 			else
 				throw new Exception("Target object not set, or is not VoiceLibrary!");
 		}
-		
+
+		private VoiceLibrary TargetLibrary => (Property.serializedObject.targetObject as VoiceLibrary);
 		private void SetButtonFunctionFromState()
 		{
 			var buttonLabel = UpdateButton.Q<Label>();
@@ -256,7 +254,7 @@ namespace Gemelo.Voice.Editor.Library
 			button.AddToClassList(".round");
 			button.RegisterCallback<ClickEvent>((e) =>
 			{
-				DatabaseListView.ShowWindow();
+				DatabaseListView.ShowChangeWindow(_lastHash, TargetLibrary);
 			});
 			integerField.Add(button);
 		}

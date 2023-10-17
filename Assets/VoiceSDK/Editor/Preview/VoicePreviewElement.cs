@@ -49,7 +49,6 @@ namespace Gemelo.Voice.Editor.Preview
 			var item = property.FindPropertyRelative("itemData");
 			var id = item.FindPropertyRelative("Id").intValue;
 			var audio = property.FindPropertyRelative("audioDetails");
-			
 		
 			//Recycling view 
 			if (_property != null)

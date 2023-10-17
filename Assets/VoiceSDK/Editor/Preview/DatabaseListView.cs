@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Gemelo.Voice.Editor.Preview;
+using Gemelo.Voice.Library;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -12,27 +13,49 @@ namespace Gemelo.Voice.Editor.Library
 	public class DatabaseListView : EditorWindow
 	{
 		public VisualTreeAsset visualTreeAsset;
+		public static event Action<VoicePreview> OnPreviewSelected;
 		
 		private Button _button;
 		private ListView _listView;
-		private SerializedProperty _voiceItemProperty;
+		private SerializedProperty _voicePreviewProperty;
+
+		private int _voiceItemId = -1;
+		private VoiceLibrary _targetLibrary;
+		
+		private const string TITLE = "Preview and select voice:";
+		private static Dictionary<VoicePreview, SerializedProperty> _itemsDictionary;
 		public static void ShowWindow()
 		{
 			var wnd = CreateInstance<DatabaseListView>();
-			wnd.ShowAuxWindow();
+			wnd.Show();
 		}
-
+		
 		public static void ShowChangeWindow(SerializedProperty element)
 		{
 			var wnd = CreateInstance<DatabaseListView>();
-			wnd.RegisterVoicePreview(element);
+			wnd.RegisterVoiceItem(element);
+			wnd.titleContent = new GUIContent(TITLE);
 			wnd.ShowAuxWindow();
 		}
 		
-		public void RegisterVoicePreview(SerializedProperty voiceItem)
+		public static void ShowChangeWindow(int itemId, VoiceLibrary targetLibrary)
 		{
-			_voiceItemProperty = voiceItem;
-			ChangeVoiceIdPropertyValue(voiceItem);
+			var wnd = CreateInstance<DatabaseListView>();
+			wnd.RegisterItemId(itemId, targetLibrary);
+			wnd.titleContent = new GUIContent(TITLE);
+			wnd.ShowAuxWindow();
+		}
+
+		private void RegisterVoiceItem(SerializedProperty voiceItem)
+		{
+			_voicePreviewProperty = voiceItem;
+			_targetLibrary = voiceItem.serializedObject.targetObject as VoiceLibrary;
+		}
+
+		private void RegisterItemId(int id, VoiceLibrary targetLibrary)
+		{
+			_voiceItemId = id;
+			_targetLibrary = targetLibrary;
 		}
 		
 		private void CreateGUI()
@@ -49,44 +72,78 @@ namespace Gemelo.Voice.Editor.Library
 		
 		public static List<SerializedProperty> LoadPreviewItems()
 		{
-			var serializedObject = new SerializedObject(VoicesDatabase.Load());
+			_itemsDictionary = new Dictionary<VoicePreview, SerializedProperty>();
 			var fields = new List<SerializedProperty>();
+			var database = VoicesDatabase.Load();
+			var serializedObject = new SerializedObject(database);
 			var voices = serializedObject.FindProperty("voices");
 			
 			for (int i = 0; i < voices.arraySize; i++)
 			{
-				var element = voices.GetArrayElementAtIndex(i);
-				fields.Add(element);
-				Debug.Log("Added element "+ i + " "+ element.displayName);
+				var element = database.Voices[i];
+				var property = voices.GetArrayElementAtIndex(i);
+				
+				_itemsDictionary.Add(element, property);
+				fields.Add(property);
+				Debug.Log($"Added element {i} - id: {element.Id}");
 			}
 			return fields;
 		}
 		
-		public static void CreateList(ListView listView, List<SerializedProperty> items)
+		private void CreateList(ListView listView, List<SerializedProperty> items)
 		{
 			if (listView == null)
 				throw new Exception("Can't find list view object");
 			
 			listView.itemsSource = items;
-			listView.makeItem = () => new VoicePreviewElement(true);
+			listView.makeItem = CreatePreviewElement;
 			listView.bindItem = (element, i) => (element as VoicePreviewElement).RegisterProperty(items[i]);
-			listView.onItemsChosen += objects =>
-			{
-				Debug.Log("choosen" + objects.First());
-			};
 		}
 
-		private void ChangeVoiceIdPropertyValue(SerializedProperty property)
+		private VoicePreviewElement CreatePreviewElement()
 		{
-			//var item = property.FindPropertyRelative("voiceId");
-			//var id = item.intValue;
-			Debug.Log("Property value: "+property);
+			var element = new VoicePreviewElement(true);
+			element.RegisterOnSelect(OnSelectedItem);
+			return element;
 		}
+
+		private void OnSelectedItem(int id)
+		{
+			VoicePreview preview = null;
+			SerializedProperty element = null;
+			try
+			{
+				var item = _itemsDictionary.First(f => f.Key.Id == id);
+				preview = item.Key;
+				element = item.Value;
+			}
+			catch (Exception e)
+			{
+				Debug.LogError("Can't find preview in database!");
+				return;
+			}
+		
+			Debug.Log(preview.Name);
+
+			if (_voiceItemId > -1)
+			{
+				_targetLibrary.SetVoicePreviewForItemId(_voiceItemId, preview);
+			}
+			else
+			{
+			
+				var itemData = _voicePreviewProperty.FindPropertyRelative("itemData");
+				var originalVoiceId = itemData.FindPropertyRelative("Id");
+				_targetLibrary.SetVoicePreviewForItemVoiceId(originalVoiceId.intValue, preview);
+			}
+			Close();
+		}
+		
 		private PopupWindow CreatePopup()
 		{
 			var popup = new PopupWindow
 			{
-				text = "Title",
+				text = "Click 'Select' to change current voice",
 				style =
 				{
 					position = new StyleEnum<Position>(Position.Relative),

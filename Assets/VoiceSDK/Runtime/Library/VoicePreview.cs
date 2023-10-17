@@ -200,7 +200,7 @@ namespace Gemelo.Voice.Editor.Preview
 
 			if (data == null)
 			{
-				Debug.LogError("Can't download data from remote resource.");
+				Debug.LogError($"Can't download data from remote resource, id: {itemData.Id}");
 				return false;
 			}
 			

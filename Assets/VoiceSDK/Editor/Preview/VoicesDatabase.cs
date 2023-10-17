@@ -98,7 +98,8 @@ namespace Gemelo.Voice.Editor.Preview
 			
 			foreach (var voiceData in voicesResponse)
 			{
-				await AddVoicePreview(voiceData, progress);
+				var task = AddVoicePreview(voiceData, progress);
+				tasks.Add(task);
 			}
 
 			return await Task.WhenAll(tasks);

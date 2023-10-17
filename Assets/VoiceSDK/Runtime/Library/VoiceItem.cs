@@ -20,15 +20,14 @@ namespace Gemelo.Voice.Library
         public int VoiceId
         {
             get => voiceId;
-            set => voiceId = value;
         }
-
+        
         public AudioClip AudioClip
         {
             get => audioClip;
             set => audioClip = value;
         }
-
+        
         public int Id
         {
             get { return Mathf.Abs(text.GetHashCode() + voiceId); }
@@ -48,14 +47,19 @@ namespace Gemelo.Voice.Library
             };
         }
 
+        public VoiceItem(int voiceId)
+        {
+            this.voiceId = voiceId;
+        }
+        
         public void SetVoicePreview(VoicePreview voicePreview)
         {
+            this.voiceId = voicePreview.Id;
             this.voicePreview = voicePreview;
         }
         
         public async Task<AudioClip> GetAudioClip()
         {
-            
             if (!IsValid())
             {
                 Debug.LogError($"Can't convert voiceItem {Id}");
