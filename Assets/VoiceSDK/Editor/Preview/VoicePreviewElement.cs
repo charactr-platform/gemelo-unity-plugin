@@ -128,10 +128,14 @@ namespace Gemelo.Voice.Editor.Preview
 			
 			for (int i = 1; i < labels.arraySize; i++)
 			{
-				labelsList.Add(labels.GetArrayElementAtIndex(i).stringValue);
+				var value = labels.GetArrayElementAtIndex(i).stringValue;
+				if (i % 6 == 0)
+					value = value.Insert(0,"\n");
+				
+				labelsList.Add(value);
 			}
 
-			return string.Join(" , ", labelsList);
+			return string.Join(", ", labelsList);
 		}
 
 		private PopupWindow CreatePopup()

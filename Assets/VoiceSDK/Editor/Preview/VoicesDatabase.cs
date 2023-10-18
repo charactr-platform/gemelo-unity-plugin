@@ -5,22 +5,37 @@ using System.Linq;
 using System.Threading.Tasks;
 using Gemelo.Voice.Rest.Client;
 using Gemelo.Voice.Rest.Model;
+using UnityEditor;
 using UnityEngine;
 
 namespace Gemelo.Voice.Editor.Preview
 {
 	public class VoicesDatabase: ScriptableObject
 	{
-
 		public const string FILE_ASSET = "VoicePreviewDatabase";
 		public List<VoicePreview> Voices => voices;
+
+		private static VoicesDatabase _instance;
 	
 		[SerializeField] private List<VoicePreview> voices;
-		public static VoicesDatabase CreateInstance()
+		
+		public static VoicesDatabase CreateInstance(bool writeAsset = false)
 		{
-			return ScriptableObject.CreateInstance<VoicesDatabase>();
-		}
+			var instance = ScriptableObject.CreateInstance<VoicesDatabase>();
+			
+#if UNITY_EDITOR
+			if (writeAsset)
+			{
+				var path = Voice.Configuration.GLOBAL_SAVE_PATH + FILE_ASSET + ".asset";
+				AssetDatabase.CreateAsset(instance, path);
+				AssetDatabase.SaveAssetIfDirty(instance);
+				AssetDatabase.ImportAsset(path);
+			}
+#endif
 
+			return instance;
+		}
+		
 		public async Task<bool> AddVoicePreview(VoicePreviewItem previewItem, IProgress<bool> onProgress)
 		{
 			voices ??= new List<VoicePreview>();
@@ -51,12 +66,20 @@ namespace Gemelo.Voice.Editor.Preview
 		public bool GetVoicePreviewById(int itemId, out VoicePreview voicePreview)
 		{
 			voicePreview = null;
-			var index = voices.FindIndex(f => f.Id == itemId);
-			if (index < 0) return false;
+			
+			if (!PreviewExists(itemId, out var index))
+				return false;
+			
 			voicePreview = voices[index];
 			return true;
 		}
 
+		public bool PreviewExists(int itemId, out int index)
+		{
+			index = voices.FindIndex(f => f.Id == itemId);
+			return index >= 0;
+		}
+		
 		public bool GetBestVoicePreview(out VoicePreview voicePreview)
 		{
 			voicePreview = null;
@@ -140,12 +163,25 @@ namespace Gemelo.Voice.Editor.Preview
 			if (_instance != null)
 				return _instance;
 			
-			_instance = Resources.Load<VoicesDatabase>(FILE_ASSET);
-			Debug.Log($"Loaded database previews instance, previews count: {_instance.Voices.Count}");
+			if (Exists)
+			{
+				_instance = Resources.Load<VoicesDatabase>(FILE_ASSET);
+				Debug.Log($"Loaded database previews instance, previews count: {_instance.Voices.Count}");
+			}
+			else
+			{
+				_instance = CreateInstance(true);
+			}
+
+			if (_instance.Voices?.Count == 0)
+			{
+				//TODO: Create external update window
+				Selection.activeObject = _instance;
+			}
 
 			return _instance;
 		}
-
-		private static VoicesDatabase _instance;
+		
+		public static bool Exists => Resources.Load<VoicesDatabase>(FILE_ASSET) != null;
 	}
 }
