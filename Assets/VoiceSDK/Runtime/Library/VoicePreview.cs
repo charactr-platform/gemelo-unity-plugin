@@ -1,11 +1,9 @@
 using System;
-using System.Buffers.Text;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using System.Threading.Tasks;
 using Gemelo.Voice.Audio;
 using Gemelo.Voice.Rest.Client;
@@ -59,20 +57,14 @@ namespace Gemelo.Voice.Editor.Preview
 			get => audioDetails;
 		}
 		
-		public string CacheFileName => previewDataName;
+		public string CacheFilePath => Path.Combine(Configuration.CachePath, dataFileName);
+		public bool CacheExists => File.Exists(CacheFilePath);
+		public override string ToString() => $"{Name} - {dataFileName}";
 
-		public override string ToString() =>
-			$"{Name} - {previewDataName}";
-
-		public DateTimeOffset SaveTime => DateTimeOffset.FromUnixTimeMilliseconds(string.IsNullOrEmpty(previewDataName) ?
-														0 : long.Parse(previewDataName.Split("_")[1]));
-		
 		[SerializeField] private PreviewItemData itemData;
 		[SerializeField] private AudioDetails audioDetails;
 		[SerializeField] private long previewDataSize;
-		[SerializeField] private string previewDataName;
-		
-		private List<Audio.PcmFrame> _pcmFrames;
+		[SerializeField] private string dataFileName;
 		
 		public VoicePreview(VoicePreviewItem item)
 		{
@@ -85,28 +77,28 @@ namespace Gemelo.Voice.Editor.Preview
 				Rating = item.Rating,
 				Labels = item.Labels.Select(s=>s.Label).ToArray()
 			};
-			
-			_pcmFrames = new List<Audio.PcmFrame>();
 		}
 
-		public long EncodePcmFramesToData(out string fileName)
+		public long EncodePcmFramesToCache(List<PcmFrame> pcmFrames, out string fileName)
 		{
 			var size = 0L;
-			fileName = string.Empty;
-			
+
 			using (var memory = new MemoryStream())
 			{
 				using (Stream stream = new DeflateStream(memory, CompressionLevel.Optimal, true))
 				{
 					var binaryFormatter = new BinaryFormatter();
-					binaryFormatter.Serialize(stream, _pcmFrames);
+					binaryFormatter.Serialize(stream, pcmFrames);
 					stream.Flush();
 				}
-
+				
 				fileName = WriteToFileCache(memory.GetBuffer());
 				size = memory.Length;
 			}
-
+			
+			//Assign dataFileName property
+			dataFileName = fileName;
+			
 			return size;
 		}
 
@@ -121,42 +113,49 @@ namespace Gemelo.Voice.Editor.Preview
 			return fileName;
 		}
 
-		private byte[] ReadFromCache(string fileName)
+		private byte[] ReadFromCache()
 		{
-			var path = Path.Combine(Configuration.CachePath, fileName);
-			return File.ReadAllBytes(path);
+			return File.ReadAllBytes(CacheFilePath);
 		}
 		
-		public int DecodeCacheDataToPcmFrames(string fileName)
+		public bool DecodeCacheDataToPcmFrames(out List<PcmFrame> frames)
 		{
-			if (!File.Exists(Path.Combine(Configuration.CachePath, fileName)))
+			frames = null;
+			
+			if (!CacheExists)
 			{
-				Debug.LogError("Can't find cache file, cache was purged?");
-				return 0;
+				Debug.LogError($"Can't find cache data [{CacheFilePath}],\ncache was purged?");
+				return false;
 			}
-				
-			using (var memory = new MemoryStream(ReadFromCache(fileName)))
+			
+			using (var memory = new MemoryStream(ReadFromCache()))
 			{
 				using (Stream stream = new DeflateStream(memory, CompressionMode.Decompress, true))
 				{
 					var binaryFormatter = new BinaryFormatter();
-					_pcmFrames = (List<PcmFrame>)binaryFormatter.Deserialize(stream);
+					frames = (List<PcmFrame>)binaryFormatter.Deserialize(stream);
 				}
 			}
 
-			return _pcmFrames.Count;
+			return frames != null && frames.Count > 0;
 		}
 		
 		public AudioClip GenerateAudioClip()
 		{
-			return CreateAudioClipFromPcmFrames(_pcmFrames);
+			if (!DecodeCacheDataToPcmFrames(out var frames))
+				throw new Exception("Can't load cache data, please update cache database");
+
+			return GenerateAudioClip(frames);
 		}
 
-		private AudioClip CreateAudioClipFromPcmFrames(List<PcmFrame> data)
+		public AudioClip GenerateAudioClip(List<PcmFrame> frames)
 		{
+			if (frames== null || frames.Count == 0)
+				throw new Exception("Can't create audio clip, data is empty");
+			
 			var builder = new WavBuilder(audioDetails.SampleRate, audioDetails.BitDepth);
 			
-			foreach (var pcmFrame in data)
+			foreach (var pcmFrame in frames)
 				builder.BufferSamples(pcmFrame);
 
 			if (builder.BufferLastFrame(out var frame))
@@ -167,7 +166,7 @@ namespace Gemelo.Voice.Editor.Preview
 			return builder.CreateAudioClipStream(itemData.Name, Mathf.CeilToInt(builder.Duration));
 		}
         
-		public int WriteAudioFrames(byte[] data)
+		public List<PcmFrame> WriteAudioFrames(byte[] data)
 		{
 			var header = new WavHeaderData(data);
 			
@@ -179,19 +178,18 @@ namespace Gemelo.Voice.Editor.Preview
 			};
 			
 			var wavBuilder = new WavBuilder(header.SampleRate, header.BitDepth, data.AsSpan(0, header.DataOffset).ToArray());
-			_pcmFrames.AddRange(wavBuilder.ToPcmFrames(data.AsSpan(header.DataOffset).ToArray()));
-			return _pcmFrames.Count;
+			return wavBuilder.ToPcmFrames(data.AsSpan(header.DataOffset).ToArray());
 		}
         
 		public static async Task<byte[]> GetAudioPreviewData(string previewUrl)
 		{
-			var configuration = Voice.Configuration.Load();
+			var configuration = Configuration.Load();
 			Assert.NotNull(configuration);
 			var http = new EditorRestClient(configuration, Debug.LogError);
 			return await http.GetDataAsync(previewUrl);
 		}
 
-		public async Task<bool> GetVoicePreviewData()
+		public async Task<bool> FetchVoicePreviewData()
 		{
 			if (string.IsNullOrEmpty(itemData.PreviewUrl))
 				throw new Exception("Can't download voice preview, URL is empty");
@@ -203,14 +201,13 @@ namespace Gemelo.Voice.Editor.Preview
 				Debug.LogError($"Can't download data from remote resource, id: {itemData.Id}");
 				return false;
 			}
-			
+
 			var frames = WriteAudioFrames(data);
+			previewDataSize = EncodePcmFramesToCache(frames, out dataFileName);
 			
-			previewDataSize = EncodePcmFramesToData(out previewDataName);
+			Debug.Log($"Saved PcmFrames: {frames.Count}, filename: {dataFileName}, size: {previewDataSize / 1024f:F2}kb");
 			
-			Debug.Log($"Saved PcmFrames: {frames}, filename: {previewDataName}");
-			
-			return frames != 0 && previewDataSize != 0;
+			return frames.Count != 0 && previewDataSize != 0;
 		}
 	}
 }

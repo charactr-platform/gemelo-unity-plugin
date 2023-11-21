@@ -36,22 +36,23 @@ namespace Gemelo.Voice.Editor.Preview
 			return instance;
 		}
 		
-		public async Task<bool> AddVoicePreview(VoicePreviewItem previewItem, IProgress<bool> onProgress)
+		public async Task<bool> AddVoicePreview(VoicePreviewItem previewItem, IProgress<float> onProgress)
 		{
 			voices ??= new List<VoicePreview>();
 
 			var preview = new VoicePreview(previewItem);
-
-			var success = await preview.GetVoicePreviewData();
 			
-			if (success)
+			onProgress.Report(0.5f);
+			
+			if (await preview.FetchVoicePreviewData())
 			{
 				voices.Add(preview);
 				Debug.Log($"Added voice preview for Voice: {preview.Name}");
+				onProgress.Report(0.5f);
+				return true;
 			}
 			
-			onProgress.Report(success);
-			return success;
+			return false;
 		}
 
 		public bool GetVoicePreviewByName(string itemName, out VoicePreview voicePreview)
@@ -111,23 +112,32 @@ namespace Gemelo.Voice.Editor.Preview
 
 			var tasks = new List<Task<bool>>();
 
-			var completedCount = 0;
+			var completedCount = 0F;
 			var totalCount = voicesResponse.Count;
-			var progress = new Progress<bool>((p) =>
+			
+			var progress = new Progress<float>((p) =>
 			{
-				completedCount++;
-				onProgress.Report((float) completedCount / totalCount);
+				completedCount += p;
+				onProgress.Report(completedCount / totalCount);
 			});
 			
+#if UNITY_EDITOR
+			var so = new SerializedObject(this);
+#endif
 			foreach (var voiceData in voicesResponse)
 			{
 				var task = AddVoicePreview(voiceData, progress);
 				tasks.Add(task);
 			}
 
-			return await Task.WhenAll(tasks);
+			var taskAll = await Task.WhenAll(tasks);
+#if UNITY_EDITOR
+			so.Update();
+			so.ApplyModifiedPropertiesWithoutUndo();
+#endif
+			return taskAll;
 		}
-
+		
 		public static int PurgeCache()
 		{
 			var count = 0;

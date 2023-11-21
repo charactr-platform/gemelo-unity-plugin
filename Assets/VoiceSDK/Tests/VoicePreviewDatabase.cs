@@ -8,9 +8,7 @@ using Gemelo.Voice.Editor.Preview;
 using Gemelo.Voice.Rest.Model;
 using NUnit.Framework;
 using UnityEditor;
-using UnityEngine;
 using Debug = UnityEngine.Debug;
-using PropertyAttribute = NUnit.Framework.PropertyAttribute;
 
 namespace Gemelo.Voice.Tests
 {
@@ -144,8 +142,8 @@ namespace Gemelo.Voice.Tests
 
             var preview = new VoicePreview(item);
             Assert.NotNull(preview);
-            Assert.NotZero(preview.WriteAudioFrames(buffer));
-            var size = preview.EncodePcmFramesToData(out var fileName);
+            var data = preview.WriteAudioFrames(buffer);
+            var size = preview.EncodePcmFramesToCache(data, out var fileName);
             Assert.IsNotEmpty(fileName);
             Assert.NotZero(size);
             return preview;
@@ -189,7 +187,7 @@ namespace Gemelo.Voice.Tests
             var item = data.Data.First();
           
             var result = await instance.AddVoicePreview(item, 
-                new Progress<bool>((s)=>Debug.Log("Success: "+ s)));
+                new Progress<float>((s)=> Debug.Log("Progress: " + s)));
             
             Assert.IsTrue(result);
             var path = Configuration.GLOBAL_SAVE_PATH + VoicesDatabase.FILE_ASSET + ".asset";
@@ -199,7 +197,8 @@ namespace Gemelo.Voice.Tests
             var database = AssetDatabase.LoadAssetAtPath<VoicesDatabase>(path);
             Assert.NotNull(database);
             Assert.IsTrue(database.GetVoicePreviewById(item.Id, out var preview));
-            Assert.NotZero(preview.DecodeCacheDataToPcmFrames(preview.CacheFileName));
+            Assert.IsTrue(preview.DecodeCacheDataToPcmFrames(out var frames));
+            Assert.IsNotEmpty(frames);
         }
 
         [Test]
@@ -209,15 +208,15 @@ namespace Gemelo.Voice.Tests
             Assert.NotNull(instance);
             
             var progress = 0f;
-            var pro = new Progress<float>((p) =>
+            
+            var result = await instance.UpdatePreviewsDatabase(new Progress<float>((p) =>
             {
-                Debug.Log($"Progress {p}");
-            });
+                progress = p;
+                Debug.Log($"Progress {progress}");
+            }));
             
-            var result= await instance.UpdatePreviewsDatabase(pro);
-            
-            Assert.AreEqual(1f, progress);
-            Assert.IsTrue(result.All(a=>a == true));
+            Assert.IsTrue(result.All(a=> a == true));
+            Assert.GreaterOrEqual(progress, 0.99f);
             
             var path = Configuration.GLOBAL_SAVE_PATH + VoicesDatabase.FILE_ASSET + ".asset";
             AssetDatabase.CreateAsset(instance, path);
@@ -236,9 +235,11 @@ namespace Gemelo.Voice.Tests
             var database = VoicesDatabase.Load();
             Assert.NotNull(database);
             Assert.IsInstanceOf<VoicesDatabase>(database);
-            Assert.IsTrue(database.GetVoicePreviewByName("Will", out var preview));
-            Assert.NotZero(preview.DecodeCacheDataToPcmFrames(preview.CacheFileName));
-            var audioClip = preview.GenerateAudioClip();
+            Assert.IsTrue(database.GetBestVoicePreview(out var preview));
+            Assert.IsTrue(await preview.FetchVoicePreviewData());
+            Assert.IsTrue(preview.DecodeCacheDataToPcmFrames(out var frames));
+            Assert.IsNotEmpty(frames);
+            var audioClip = preview.GenerateAudioClip(frames);
             stopWatch.Stop();
             Debug.Log($"Time: {stopWatch.ElapsedMilliseconds}ms");
             await AudioPlayer.PlayClipStatic(audioClip);
@@ -250,9 +251,5 @@ namespace Gemelo.Voice.Tests
             var count = VoicesDatabase.PurgeCache();
             Assert.NotZero(count);
         }
-    }
-
-    public class VoicesListAttribute: PropertyAttribute {
-    
     }
 }
