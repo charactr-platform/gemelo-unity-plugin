@@ -16,7 +16,7 @@ namespace Gemelo.Voice
 		public const string API_KEY = "X-Api-Key";
 		public const string SAVE_PATH = GLOBAL_SAVE_PATH+FILENAME+".asset";
 		public const string GLOBAL_SAVE_PATH = "Assets/Resources/";
-		public static string CachePath => Application.temporaryCachePath+ "/PreviewCache";
+		public static string CachePath => Application.persistentDataPath + "/PreviewCache";
 
 		private const string FILENAME = "Configuration";
 
