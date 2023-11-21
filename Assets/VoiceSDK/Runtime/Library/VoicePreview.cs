@@ -170,14 +170,16 @@ namespace Gemelo.Voice.Editor.Preview
 		{
 			var header = new WavHeaderData(data);
 			
-			audioDetails = new AudioDetails()
+			var wavBuilder = new WavBuilder(header.SampleRate, header.BitDepth, data.AsSpan(0, header.DataOffset).ToArray());
+			
+			audioDetails = new AudioDetails
 			{
 				SampleRate = header.SampleRate,
 				DataOffset = header.DataOffset,
-				BitDepth = header.BitDepth
+				BitDepth = header.BitDepth,
+				Duration = wavBuilder.Duration
 			};
 			
-			var wavBuilder = new WavBuilder(header.SampleRate, header.BitDepth, data.AsSpan(0, header.DataOffset).ToArray());
 			return wavBuilder.ToPcmFrames(data.AsSpan(header.DataOffset).ToArray());
 		}
         
