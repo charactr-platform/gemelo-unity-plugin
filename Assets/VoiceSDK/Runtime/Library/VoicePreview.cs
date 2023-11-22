@@ -96,7 +96,7 @@ namespace Gemelo.Voice.Editor.Preview
 				size = memory.Length;
 			}
 			
-			//Assign dataFileName property
+			//Assign dataFileName property, for tests
 			dataFileName = fileName;
 			
 			return size;
@@ -104,8 +104,7 @@ namespace Gemelo.Voice.Editor.Preview
 
 		private string WriteToFileCache(byte[] data)
 		{
-			var unique = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString();
-			var fileName = $"{Id}_{unique}";
+			var fileName = $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}{Id}";
 			var path = Configuration.CachePath;
 			
 			Directory.CreateDirectory(path);
@@ -196,15 +195,20 @@ namespace Gemelo.Voice.Editor.Preview
 			if (string.IsNullOrEmpty(itemData.PreviewUrl))
 				throw new Exception("Can't download voice preview, URL is empty");
 
-			var data = await GetAudioPreviewData(itemData.PreviewUrl);
-
-			if (data == null)
+			byte[] data = null;
+			
+			try
 			{
-				Debug.LogError($"Can't download data from remote resource, id: {itemData.Id}");
+				data = await GetAudioPreviewData(itemData.PreviewUrl);
+			}
+			catch (Exception e)
+			{
+				Debug.LogError($"Can't download data from remote resource, id: {itemData.Id}, Exception: {e.Message}");
 				return false;
 			}
 
 			var frames = WriteAudioFrames(data);
+			
 			previewDataSize = EncodePcmFramesToCache(frames, out dataFileName);
 			
 			Debug.Log($"Saved PcmFrames: {frames.Count}, filename: {dataFileName}, size: {previewDataSize / 1024f:F2}kb");

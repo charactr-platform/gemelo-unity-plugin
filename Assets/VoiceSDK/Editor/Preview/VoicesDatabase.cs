@@ -121,9 +121,6 @@ namespace Gemelo.Voice.Editor.Preview
 				onProgress.Report(completedCount / totalCount);
 			});
 			
-#if UNITY_EDITOR
-			var so = new SerializedObject(this);
-#endif
 			foreach (var voiceData in voicesResponse)
 			{
 				var task = AddVoicePreview(voiceData, progress);
@@ -131,10 +128,7 @@ namespace Gemelo.Voice.Editor.Preview
 			}
 
 			var taskAll = await Task.WhenAll(tasks);
-#if UNITY_EDITOR
-			so.Update();
-			so.ApplyModifiedPropertiesWithoutUndo();
-#endif
+			
 			return taskAll;
 		}
 		

@@ -13,7 +13,7 @@ namespace Charactr.VoiceSDK.Editor.Preview
 	public class DatabaseInspector : UnityEditor.Editor
 	{
 		public VisualTreeAsset visualTreeAsset;
-		private Button _updateButton,_purgeButton;
+		private Button _updateButton, _purgeButton;
 		private VisualElement _inspector;
 		private Label _statusLabel;
 		private static SerializedProperty _voices;
@@ -86,18 +86,27 @@ namespace Charactr.VoiceSDK.Editor.Preview
 
 			var message = "Start update operation on all items ?";
 			
-			if (!EditorUtility.DisplayDialog("Start update",message , "YES", "CANCEL"))
-				return;
+			if (!EditorUtility.DisplayDialog("Start update", message , "YES", "CANCEL")) return;
 			
 			_updateProgress = new ProgressUpdater(ShowProgress);
 			EditorApplication.update += OnUpdate;
 			await library.UpdatePreviewsDatabase(_updateProgress);
 			EditorApplication.update -= OnUpdate;
 			_updateProgress = null;
-			
-			Selection.SetActiveObjectWithContext(target, library);
 			EditorUtility.ClearProgressBar();
-		}
+
+			if (serializedObject.UpdateIfRequiredOrScript())
+			{
+				EditorUtility.SetDirty(library);
+				AssetDatabase.SaveAssetIfDirty(library);
+				Debug.Log("Saved database changes"); 
+				Selection.SetActiveObjectWithContext(target, library);
+			}
+			else
+			{
+				Debug.LogError("Error, changes not saved!");
+			}
+				}
 
 		private void ShowProgress(float p)
 		{
