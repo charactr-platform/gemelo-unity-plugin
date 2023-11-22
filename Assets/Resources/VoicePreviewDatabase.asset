@@ -35,24 +35,20 @@ MonoBehaviour:
       Duration: 0
       DataOffset: 44
     previewDataSize: 451226
-    dataFileName: 137_1700582056410
+    dataFileName: 1700663662341137
   - itemData:
-      Name: Jake
-      Id: 172
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/172/1/preview.wav
+      Name: Chloe
+      Id: 148
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/148/1/preview.wav
       Description: 
       Labels:
-      - Male
-      - Explanatory
-      - Low
-      - Bland
-      - Calm
+      - Female
+      - Medium
+      - Breathy
+      - Hissing
       - Monotonous
       - Slow
-      - Throaty
-      - Calm
-      - Caring
-      - Friendly
+      - Insecure
       - Neutral
       Rating: 7.5
     audioDetails:
@@ -60,80 +56,8 @@ MonoBehaviour:
       BitDepth: 16
       Duration: 0
       DataOffset: 44
-    previewDataSize: 460013
-    dataFileName: 172_1700582056557
-  - itemData:
-      Name: Carlos
-      Id: 149
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/149/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Explanatory
-      - Public speaker
-      - Low
-      - Boxy
-      - Clear
-      - Low
-      - Melodious
-      - Throaty
-      - Bossy
-      - Caring
-      - Confident
-      - Serious
-      Rating: 7.5
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 477225
-    dataFileName: 149_1700582056647
-  - itemData:
-      Name: Caroline
-      Id: 174
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/174/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Medium
-      - Bland
-      - Calm
-      - Monotonous
-      - Calm
-      - Caring
-      Rating: 7
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 469389
-    dataFileName: 174_1700582056687
-  - itemData:
-      Name: Amy
-      Id: 168
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/168/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Teen girl
-      - Medium
-      - Bland
-      - Hissing
-      - Lisping
-      - Monotonous
-      - Bossy
-      - Confident
-      - Serious
-      Rating: 7
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 478635
-    dataFileName: 168_1700582056735
+    previewDataSize: 493453
+    dataFileName: 1700663662387148
   - itemData:
       Name: Ethan (beta)
       Id: 262
@@ -152,167 +76,33 @@ MonoBehaviour:
       Duration: 0
       DataOffset: 44
     previewDataSize: 412388
-    dataFileName: 262_1700582056772
+    dataFileName: 1700663662427262
   - itemData:
-      Name: Lola
-      Id: 215
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/215/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Teen girl
-      - High
-      - Calm
-      - Melodious
-      - Purring
-      - Confident
-      Rating: 8
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 471969
-    dataFileName: 215_1700582056817
-  - itemData:
-      Name: Chuck
-      Id: 136
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/136/1/preview.wav
+      Name: Michael
+      Id: 141
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/141/1/preview.wav
       Description: 
       Labels:
       - Male
       - Narrator
       - Radio presenter
       - Low
-      - Hoarse
       - Low
+      - Melodious
       - Powerful
+      - Remarkable
       - Throaty
-      - Bossy
+      - Caring
       - Confident
-      Rating: 7.5
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 494706
-    dataFileName: 136_1700582056868
-  - itemData:
-      Name: Delilah (beta)
-      Id: 274
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/274/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Book reader
-      - Story reader
-      - High
-      - Calm
-      - Purring
-      - Friendly
-      - Sexy
-      Rating: 9
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 528380
-    dataFileName: 274_1700582056919
-  - itemData:
-      Name: Sophia
-      Id: 154
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/154/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Book reader
-      - Medium
-      - Calm
-      - Monotonous
-      - Nasal
-      - Calm
-      - Neutral
+      - Serious
       Rating: 7
     audioDetails:
       SampleRate: 32000
       BitDepth: 16
       Duration: 0
       DataOffset: 44
-    previewDataSize: 438174
-    dataFileName: 154_1700582056958
-  - itemData:
-      Name: Will
-      Id: 150
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/150/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Nice grandpa
-      - Radio presenter
-      - Low
-      - Hoarse
-      - Low
-      - Melodious
-      - Powerful
-      - Purring
-      - Throaty
-      - Calm
-      - Caring
-      - Confident
-      - Friendly
-      Rating: 6.5
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 438703
-    dataFileName: 150_1700582057004
-  - itemData:
-      Name: Katie (beta)
-      Id: 236
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/236/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Story reader
-      - Medium
-      - Melodious
-      - Throaty
-      - Friendly
-      - Sexy
-      Rating: 9.5
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 490236
-    dataFileName: 236_1700582057093
-  - itemData:
-      Name: Matthew
-      Id: 216
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/216/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Story reader
-      - Low
-      - Hoarse
-      - Powerful
-      - Throaty
-      - Bossy
-      - Serious
-      Rating: 6.5
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 478917
-    dataFileName: 216_1700582057141
+    previewDataSize: 463667
+    dataFileName: 1700663662473141
   - itemData:
       Name: Kaia
       Id: 71
@@ -336,277 +126,7 @@ MonoBehaviour:
       Duration: 0
       DataOffset: 44
     previewDataSize: 500074
-    dataFileName: 71_1700582057181
-  - itemData:
-      Name: Sara
-      Id: 118
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/118/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Medium
-      - Calm
-      - Hissing
-      - Monotonous
-      - Powerless
-      - Insecure
-      - Neutral
-      Rating: 7.5
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 469480
-    dataFileName: 118_1700582057234
-  - itemData:
-      Name: Daisy
-      Id: 177
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/177/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Explanatory
-      - Teen girl
-      - High
-      - Calm
-      - High
-      - Melodious
-      - Slow
-      - Calm
-      - Caring
-      Rating: 7.5
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 463692
-    dataFileName: 177_1700582057281
-  - itemData:
-      Name: Monice
-      Id: 212
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/212/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Teen girl
-      - Medium
-      - Breathy
-      - Calm
-      - Clear
-      - Melodious
-      - Calm
-      - Caring
-      - Friendly
-      Rating: 6
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 484575
-    dataFileName: 212_1700582057326
-  - itemData:
-      Name: Mason (beta)
-      Id: 317
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/317/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Book reader
-      - Story reader
-      - Low
-      - Monotonous
-      - Purring
-      - Friendly
-      Rating: 8
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 369919
-    dataFileName: 317_1700582057355
-  - itemData:
-      Name: Sydney
-      Id: 52
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/52/1/preview.wav
-      Description: 
-      Labels: []
-      Rating: 6.5
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 462996
-    dataFileName: 52_1700582057407
-  - itemData:
-      Name: Robert
-      Id: 213
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/213/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Public speaker
-      - Low
-      - Boxy
-      - Monotonous
-      - Throaty
-      - Pretentious
-      - Serious
-      Rating: 7
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 495662
-    dataFileName: 213_1700582057444
-  - itemData:
-      Name: Jackson (beta)
-      Id: 293
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/293/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Narrator
-      - Low
-      - Boxy
-      - Low
-      - Monotonous
-      - Insecure
-      Rating: 9
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 490386
-    dataFileName: 293_1700582057486
-  - itemData:
-      Name: Mary
-      Id: 176
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/176/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Medium
-      - Bland
-      - Calm
-      - Monotonous
-      - Powerful
-      - Calm
-      - Insecure
-      - Neutral
-      Rating: 7
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 459065
-    dataFileName: 176_1700582057534
-  - itemData:
-      Name: Brooke (beta)
-      Id: 249
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/249/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Explanatory
-      - Medium
-      - Bland
-      - Neutral
-      Rating: 8
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 487179
-    dataFileName: 249_1700582057584
-  - itemData:
-      Name: Amelia
-      Id: 147
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/147/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Medium
-      - Melodious
-      - Powerful
-      - Confident
-      - Friendly
-      - Pretentious
-      Rating: 7
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 492352
-    dataFileName: 147_1700582057618
-  - itemData:
-      Name: Logan
-      Id: 22
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/22/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Radio presenter
-      - Low
-      - Boxy
-      - Hissing
-      - Low
-      - Throaty
-      - Neutral
-      Rating: 4
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 495645
-    dataFileName: 22_1700582057666
-  - itemData:
-      Name: Gabrielle (beta)
-      Id: 292
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/292/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Medium
-      - Monotonous
-      - Neutral
-      Rating: 8.5
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 443304
-    dataFileName: 292_1700582057704
-  - itemData:
-      Name: Fiona (beta)
-      Id: 275
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/275/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Explanatory
-      - Medium
-      - Monotonous
-      - Serious
-      Rating: 8.5
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 420802
-    dataFileName: 275_1700582057739
+    dataFileName: 170066366258771
   - itemData:
       Name: Liam
       Id: 151
@@ -635,55 +155,333 @@ MonoBehaviour:
       Duration: 0
       DataOffset: 44
     previewDataSize: 490441
-    dataFileName: 151_1700582057785
+    dataFileName: 1700663662624151
   - itemData:
-      Name: Patrick (beta)
-      Id: 306
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/306/1/preview.wav
+      Name: Carlos
+      Id: 149
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/149/1/preview.wav
       Description: 
       Labels:
       - Male
-      - Story reader
+      - Explanatory
+      - Public speaker
       - Low
-      - Breathy
+      - Boxy
+      - Clear
       - Low
-      - Purring
+      - Melodious
       - Throaty
+      - Bossy
       - Caring
+      - Confident
+      - Serious
+      Rating: 7.5
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 477225
+    dataFileName: 1700663662681149
+  - itemData:
+      Name: Charlotte
+      Id: 40
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/40/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Cartoon character
+      - Child
+      - High
+      - High
+      - Hissing
+      - Lisping
+      - Calm
+      - Caring
+      - Friendly
+      Rating: 7
+    audioDetails:
+      SampleRate: 44100
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 693091
+    dataFileName: 170066366278140
+  - itemData:
+      Name: Jameson
+      Id: 20
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/20/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Nice grandpa
+      - Low
+      - Hissing
+      - Hoarse
+      - Low
+      - Powerful
+      - Throaty
+      - Bossy
+      - Confident
+      - Exalted
+      - Serious
+      Rating: 7
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 511345
+    dataFileName: 170066366284120
+  - itemData:
+      Name: Lola
+      Id: 215
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/215/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Teen girl
+      - High
+      - Calm
+      - Melodious
+      - Purring
+      - Confident
       Rating: 8
     audioDetails:
       SampleRate: 32000
       BitDepth: 16
       Duration: 0
       DataOffset: 44
-    previewDataSize: 520532
-    dataFileName: 306_1700582057832
+    previewDataSize: 471969
+    dataFileName: 1700663662877215
   - itemData:
-      Name: Steven
-      Id: 105
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/105/1/preview.wav
+      Name: Henry
+      Id: 34
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/34/1/preview.wav
       Description: 
       Labels:
       - Male
-      - News reader
-      - Low
-      - Bland
-      - Boxy
+      - Narrator
+      - Public speaker
+      - Medium
+      - Clear
       - Hoarse
-      - Low
+      - Melodious
+      - Purring
+      - Throaty
+      - Calm
+      - Confident
+      - Neutral
+      Rating: 7
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 464065
+    dataFileName: 170066366293534
+  - itemData:
+      Name: Daisy
+      Id: 177
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/177/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Explanatory
+      - Teen girl
+      - High
+      - Calm
+      - High
+      - Melodious
+      - Slow
+      - Calm
+      - Caring
+      Rating: 7.5
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 463692
+    dataFileName: 1700663662985177
+  - itemData:
+      Name: Amy
+      Id: 168
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/168/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Teen girl
+      - Medium
+      - Bland
+      - Hissing
+      - Lisping
+      - Monotonous
+      - Bossy
+      - Confident
+      - Serious
+      Rating: 7
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 478635
+    dataFileName: 1700663663092168
+  - itemData:
+      Name: Sophia
+      Id: 154
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/154/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Book reader
+      - Medium
+      - Calm
       - Monotonous
       - Nasal
+      - Calm
+      - Neutral
+      Rating: 7
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 438174
+    dataFileName: 1700663663131154
+  - itemData:
+      Name: Brooke (beta)
+      Id: 249
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/249/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Explanatory
+      - Medium
+      - Bland
+      - Neutral
+      Rating: 8
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 487179
+    dataFileName: 1700663663176249
+  - itemData:
+      Name: Felix
+      Id: 101
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/101/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Low
+      - Boxy
+      - Hissing
+      - Low
+      - Powerful
       - Throaty
-      - Exalted
+      - Bossy
       - Pretentious
+      - Serious
       Rating: 6
     audioDetails:
       SampleRate: 32000
       BitDepth: 16
       Duration: 0
       DataOffset: 44
-    previewDataSize: 509840
-    dataFileName: 105_1700582057875
+    previewDataSize: 506822
+    dataFileName: 1700663663214101
+  - itemData:
+      Name: Amelia
+      Id: 147
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/147/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Medium
+      - Melodious
+      - Powerful
+      - Confident
+      - Friendly
+      - Pretentious
+      Rating: 7
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 492352
+    dataFileName: 1700663663254147
+  - itemData:
+      Name: John
+      Id: 217
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/217/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Narrator
+      - Low
+      - Calm
+      - Melodious
+      - Throaty
+      - Calm
+      - Caring
+      - Confident
+      - Serious
+      Rating: 6.5
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 485447
+    dataFileName: 1700663663301217
+  - itemData:
+      Name: Caroline
+      Id: 174
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/174/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Medium
+      - Bland
+      - Calm
+      - Monotonous
+      - Calm
+      - Caring
+      Rating: 7
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 469389
+    dataFileName: 1700663663342174
+  - itemData:
+      Name: Mary
+      Id: 176
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/176/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Medium
+      - Bland
+      - Calm
+      - Monotonous
+      - Powerful
+      - Calm
+      - Insecure
+      - Neutral
+      Rating: 7
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 459065
+    dataFileName: 1700663663380176
   - itemData:
       Name: Finn
       Id: 161
@@ -710,108 +508,65 @@ MonoBehaviour:
       Duration: 0
       DataOffset: 44
     previewDataSize: 494727
-    dataFileName: 161_1700582057922
+    dataFileName: 1700663663424161
   - itemData:
-      Name: Madison (beta)
-      Id: 291
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/291/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Story reader
-      - Low
-      - Purring
-      - Calm
-      - Serious
-      Rating: 8.5
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 499428
-    dataFileName: 291_1700582057969
-  - itemData:
-      Name: Jameson
-      Id: 20
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/20/1/preview.wav
+      Name: Ivan
+      Id: 155
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/155/1/preview.wav
       Description: 
       Labels:
       - Male
-      - Nice grandpa
+      - Monster
+      - Villain
       - Low
-      - Hissing
+      - Breathy
       - Hoarse
       - Low
-      - Powerful
       - Throaty
-      - Bossy
-      - Confident
-      - Exalted
-      - Serious
-      Rating: 7
+      - Gloomy
+      - Vicious
+      Rating: 4.5
     audioDetails:
       SampleRate: 32000
       BitDepth: 16
       Duration: 0
       DataOffset: 44
-    previewDataSize: 511345
-    dataFileName: 20_1700582058013
+    previewDataSize: 475623
+    dataFileName: 1700663663468155
   - itemData:
-      Name: Hailey (beta)
-      Id: 310
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/310/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Explanatory
-      - Low
-      - Purring
-      - Serious
-      Rating: 8
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 468948
-    dataFileName: 310_1700582058056
-  - itemData:
-      Name: Felix
-      Id: 101
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/101/1/preview.wav
+      Name: Gavin (beta)
+      Id: 264
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/264/1/preview.wav
       Description: 
       Labels:
       - Male
-      - Low
-      - Boxy
-      - Hissing
-      - Low
-      - Powerful
-      - Throaty
-      - Bossy
-      - Pretentious
-      - Serious
-      Rating: 6
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 506822
-    dataFileName: 101_1700582058101
-  - itemData:
-      Name: Sam (beta)
-      Id: 313
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/313/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Explanatory
       - Narrator
       - Low
+      - Clear
+      - Throaty
+      - Calm
+      - Serious
+      Rating: 9.5
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 479130
+    dataFileName: 1700663663527264
+  - itemData:
+      Name: Oscar (beta)
+      Id: 323
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/323/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Narrator
+      - Low
+      - Low
       - Purring
       - Throaty
+      - Confident
       - Serious
       Rating: 8.5
     audioDetails:
@@ -819,8 +574,30 @@ MonoBehaviour:
       BitDepth: 16
       Duration: 0
       DataOffset: 44
-    previewDataSize: 513464
-    dataFileName: 313_1700582058138
+    previewDataSize: 531377
+    dataFileName: 1700663663566323
+  - itemData:
+      Name: Lauren (beta)
+      Id: 336
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/336/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Narrator
+      - Story reader
+      - Medium
+      - Clear
+      - Melodious
+      - Confident
+      - Friendly
+      Rating: 9
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 464476
+    dataFileName: 1700663663608336
   - itemData:
       Name: Kyle (beta)
       Id: 301
@@ -841,17 +618,457 @@ MonoBehaviour:
       Duration: 0
       DataOffset: 44
     previewDataSize: 481038
-    dataFileName: 301_1700582058180
+    dataFileName: 1700663663652301
   - itemData:
-      Name: Emily (beta)
-      Id: 282
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/282/1/preview.wav
+      Name: Mason (beta)
+      Id: 317
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/317/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Book reader
+      - Story reader
+      - Low
+      - Monotonous
+      - Purring
+      - Friendly
+      Rating: 8
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 369919
+    dataFileName: 1700663663683317
+  - itemData:
+      Name: (beta) Suzan
+      Id: 220
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/220/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Explanatory
+      - Medium
+      - Hissing
+      - Purring
+      - Confident
+      - Serious
+      Rating: 6.5
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 32
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 721494
+    dataFileName: 1700663663741220
+  - itemData:
+      Name: Robert
+      Id: 213
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/213/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Public speaker
+      - Low
+      - Boxy
+      - Monotonous
+      - Throaty
+      - Pretentious
+      - Serious
+      Rating: 7
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 495662
+    dataFileName: 1700663663787213
+  - itemData:
+      Name: David (beta)
+      Id: 260
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/260/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Story reader
+      - Low
+      - Throaty
+      - Serious
+      Rating: 8
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 494633
+    dataFileName: 1700663663823260
+  - itemData:
+      Name: Jake
+      Id: 172
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/172/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Explanatory
+      - Low
+      - Bland
+      - Calm
+      - Monotonous
+      - Slow
+      - Throaty
+      - Calm
+      - Caring
+      - Friendly
+      - Neutral
+      Rating: 7.5
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 460013
+    dataFileName: 1700663663867172
+  - itemData:
+      Name: Harrison (beta)
+      Id: 265
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/265/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Narrator
+      - Low
+      - Low
+      - Purring
+      - Throaty
+      - Confident
+      - Serious
+      Rating: 9
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 520594
+    dataFileName: 1700663663910265
+  - itemData:
+      Name: Monice
+      Id: 212
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/212/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Teen girl
+      - Medium
+      - Breathy
+      - Calm
+      - Clear
+      - Melodious
+      - Calm
+      - Caring
+      - Friendly
+      Rating: 6
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 484575
+    dataFileName: 1700663663944212
+  - itemData:
+      Name: Katie (beta)
+      Id: 236
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/236/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Story reader
+      - Medium
+      - Melodious
+      - Throaty
+      - Friendly
+      - Sexy
+      Rating: 9.5
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 490236
+    dataFileName: 1700663663988236
+  - itemData:
+      Name: Logan
+      Id: 22
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/22/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Radio presenter
+      - Low
+      - Boxy
+      - Hissing
+      - Low
+      - Throaty
+      - Neutral
+      Rating: 4
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 495645
+    dataFileName: 170066366403622
+  - itemData:
+      Name: Alan
+      Id: 92
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/92/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Medium
+      - Boxy
+      - Purring
+      - Throaty
+      - Bossy
+      - Confident
+      - Exalted
+      - Pretentious
+      - Serious
+      Rating: 7
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 519094
+    dataFileName: 170066366408092
+  - itemData:
+      Name: Owen
+      Id: 143
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/143/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Explanatory
+      - Low
+      - Boxy
+      - Hissing
+      - Low
+      - Throaty
+      - Serious
+      Rating: 7
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 479335
+    dataFileName: 1700663664119143
+  - itemData:
+      Name: Sara
+      Id: 118
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/118/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Medium
+      - Calm
+      - Hissing
+      - Monotonous
+      - Powerless
+      - Insecure
+      - Neutral
+      Rating: 7.5
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 469480
+    dataFileName: 1700663664165118
+  - itemData:
+      Name: Jenna (beta)
+      Id: 319
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/319/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Story reader
+      - Medium
+      - Clear
+      - Caring
+      - Friendly
+      Rating: 9
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 429694
+    dataFileName: 1700663664201319
+  - itemData:
+      Name: Benjamin (beta)
+      Id: 250
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/250/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Narrator
+      - Low
+      - Low
+      - Slow
+      - Serious
+      Rating: 9.5
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 443099
+    dataFileName: 1700663664246250
+  - itemData:
+      Name: Eric
+      Id: 64
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/64/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Low
+      - Bland
+      - Boxy
+      - Low
+      - Monotonous
+      - Throaty
+      - Calm
+      - Gloomy
+      - Neutral
+      Rating: 6.5
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 476618
+    dataFileName: 170066366429164
+  - itemData:
+      Name: Chuck
+      Id: 136
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/136/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Narrator
+      - Radio presenter
+      - Low
+      - Hoarse
+      - Low
+      - Powerful
+      - Throaty
+      - Bossy
+      - Confident
+      Rating: 7.5
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 494706
+    dataFileName: 1700663664327136
+  - itemData:
+      Name: Kimberly (beta)
+      Id: 329
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/329/1/preview.wav
       Description: 
       Labels:
       - Female
       - Book reader
       - Story reader
-      - High
+      - Medium
+      - Purring
+      - Caring
+      - Friendly
+      Rating: 9
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 483884
+    dataFileName: 1700663664371329
+  - itemData:
+      Name: Will
+      Id: 150
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/150/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Nice grandpa
+      - Radio presenter
+      - Low
+      - Hoarse
+      - Low
+      - Melodious
+      - Powerful
+      - Purring
+      - Throaty
+      - Calm
+      - Caring
+      - Confident
+      - Friendly
+      Rating: 6.5
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 438703
+    dataFileName: 1700663664408150
+  - itemData:
+      Name: Natalie (beta)
+      Id: 243
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/243/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Story reader
+      - Medium
+      - Breathy
+      - Sexy
+      Rating: 8
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 667252
+    dataFileName: 1700663664478243
+  - itemData:
+      Name: Nathan (beta)
+      Id: 318
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/318/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Explanatory
+      - Low
+      - Throaty
+      - Serious
+      Rating: 8
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 474661
+    dataFileName: 1700663664579318
+  - itemData:
+      Name: Hailey (beta)
+      Id: 310
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/310/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Explanatory
+      - Low
       - Purring
       - Serious
       Rating: 8
@@ -860,56 +1077,8 @@ MonoBehaviour:
       BitDepth: 16
       Duration: 0
       DataOffset: 44
-    previewDataSize: 394273
-    dataFileName: 282_1700582058211
-  - itemData:
-      Name: John
-      Id: 217
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/217/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Narrator
-      - Low
-      - Calm
-      - Melodious
-      - Throaty
-      - Calm
-      - Caring
-      - Confident
-      - Serious
-      Rating: 6.5
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 485447
-    dataFileName: 217_1700582058262
-  - itemData:
-      Name: Charlotte
-      Id: 40
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/40/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Cartoon character
-      - Child
-      - High
-      - High
-      - Hissing
-      - Lisping
-      - Calm
-      - Caring
-      - Friendly
-      Rating: 7
-    audioDetails:
-      SampleRate: 44100
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 693091
-    dataFileName: 40_1700582058331
+    previewDataSize: 468948
+    dataFileName: 1700663664614310
   - itemData:
       Name: Olivia
       Id: 146
@@ -934,49 +1103,299 @@ MonoBehaviour:
       Duration: 0
       DataOffset: 44
     previewDataSize: 483384
-    dataFileName: 146_1700582058375
+    dataFileName: 1700663664655146
   - itemData:
-      Name: Lauren (beta)
-      Id: 336
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/336/1/preview.wav
+      Name: Sydney
+      Id: 52
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/52/1/preview.wav
       Description: 
-      Labels:
-      - Female
-      - Narrator
-      - Story reader
-      - Medium
-      - Clear
-      - Melodious
-      - Confident
-      - Friendly
-      Rating: 9
+      Labels: []
+      Rating: 6.5
     audioDetails:
       SampleRate: 32000
       BitDepth: 16
       Duration: 0
       DataOffset: 44
-    previewDataSize: 464476
-    dataFileName: 336_1700582058407
+    previewDataSize: 462996
+    dataFileName: 170066366470552
   - itemData:
-      Name: Jenna (beta)
-      Id: 319
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/319/1/preview.wav
+      Name: (beta) Angelo
+      Id: 221
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/221/1/preview.wav
       Description: 
       Labels:
-      - Female
-      - Story reader
+      - Male
+      - Scientist
       - Medium
-      - Clear
+      - Melodious
+      - Purring
       - Caring
       - Friendly
+      Rating: 6
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 32
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 718570
+    dataFileName: 1700663664762221
+  - itemData:
+      Name: (beta) Brandon
+      Id: 219
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/219/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Explanatory
+      - Narrator
+      - Low
+      - Boxy
+      - Purring
+      - Throaty
+      - Bossy
+      - Confident
+      Rating: 6
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 32
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 682862
+    dataFileName: 1700663664815219
+  - itemData:
+      Name: Emily (beta)
+      Id: 282
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/282/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Book reader
+      - Story reader
+      - High
+      - Purring
+      - Serious
+      Rating: 8
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 394273
+    dataFileName: 1700663664853282
+  - itemData:
+      Name: (beta) Daniel
+      Id: 222
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/222/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Explanatory
+      - Low
+      - Calm
+      - Purring
+      - Throaty
+      - Bossy
+      - Calm
+      - Pretentious
+      Rating: 7
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 32
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 642626
+    dataFileName: 1700663664905222
+  - itemData:
+      Name: Cassandra (beta)
+      Id: 270
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/270/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Explanatory
+      - Medium
+      - Slow
+      - Confident
       Rating: 9
     audioDetails:
       SampleRate: 32000
       BitDepth: 16
       Duration: 0
       DataOffset: 44
-    previewDataSize: 429694
-    dataFileName: 319_1700582058459
+    previewDataSize: 474302
+    dataFileName: 1700663664949270
+  - itemData:
+      Name: Matthew
+      Id: 216
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/216/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Story reader
+      - Low
+      - Hoarse
+      - Powerful
+      - Throaty
+      - Bossy
+      - Serious
+      Rating: 6.5
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 478917
+    dataFileName: 1700663664986216
+  - itemData:
+      Name: Abigail (beta)
+      Id: 246
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/246/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Story reader
+      - Medium
+      - Melodious
+      - Friendly
+      Rating: 9.5
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 460249
+    dataFileName: 1700663665029246
+  - itemData:
+      Name: Caleb (beta)
+      Id: 259
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/259/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Narrator
+      - Radio presenter
+      - Low
+      - Boxy
+      - Hoarse
+      - Throaty
+      - Confident
+      Rating: 8
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 519192
+    dataFileName: 1700663665076259
+  - itemData:
+      Name: Isaac (beta)
+      Id: 267
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/267/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Radio presenter
+      - Low
+      - Low
+      - Purring
+      - Throaty
+      - Confident
+      - Friendly
+      Rating: 9.5
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 429202
+    dataFileName: 1700663665109267
+  - itemData:
+      Name: Jackson (beta)
+      Id: 293
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/293/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Narrator
+      - Low
+      - Boxy
+      - Low
+      - Monotonous
+      - Insecure
+      Rating: 9
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 490386
+    dataFileName: 1700663665150293
+  - itemData:
+      Name: Gabrielle (beta)
+      Id: 292
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/292/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Medium
+      - Monotonous
+      - Neutral
+      Rating: 8.5
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 443304
+    dataFileName: 1700663665185292
+  - itemData:
+      Name: Steven
+      Id: 105
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/105/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - News reader
+      - Low
+      - Bland
+      - Boxy
+      - Hoarse
+      - Low
+      - Monotonous
+      - Nasal
+      - Throaty
+      - Exalted
+      - Pretentious
+      Rating: 6
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 509840
+    dataFileName: 1700663665234105
+  - itemData:
+      Name: Patrick (beta)
+      Id: 306
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/306/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Story reader
+      - Low
+      - Breathy
+      - Low
+      - Purring
+      - Throaty
+      - Caring
+      Rating: 8
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 520532
+    dataFileName: 1700663665279306
   - itemData:
       Name: Audrey (beta)
       Id: 316
@@ -997,7 +1416,7 @@ MonoBehaviour:
       Duration: 0
       DataOffset: 44
     previewDataSize: 457517
-    dataFileName: 316_1700582058504
+    dataFileName: 1700663665315316
   - itemData:
       Name: Jaasper
       Id: 59
@@ -1023,507 +1442,7 @@ MonoBehaviour:
       Duration: 0
       DataOffset: 44
     previewDataSize: 683701
-    dataFileName: 59_1700582058569
-  - itemData:
-      Name: Michael
-      Id: 141
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/141/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Narrator
-      - Radio presenter
-      - Low
-      - Low
-      - Melodious
-      - Powerful
-      - Remarkable
-      - Throaty
-      - Caring
-      - Confident
-      - Serious
-      Rating: 7
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 463667
-    dataFileName: 141_1700582058607
-  - itemData:
-      Name: Isaac (beta)
-      Id: 267
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/267/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Radio presenter
-      - Low
-      - Low
-      - Purring
-      - Throaty
-      - Confident
-      - Friendly
-      Rating: 9.5
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 429202
-    dataFileName: 267_1700582058647
-  - itemData:
-      Name: David (beta)
-      Id: 260
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/260/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Story reader
-      - Low
-      - Throaty
-      - Serious
-      Rating: 8
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 494633
-    dataFileName: 260_1700582058691
-  - itemData:
-      Name: Cassandra (beta)
-      Id: 270
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/270/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Explanatory
-      - Medium
-      - Slow
-      - Confident
-      Rating: 9
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 474302
-    dataFileName: 270_1700582058735
-  - itemData:
-      Name: Owen
-      Id: 143
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/143/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Explanatory
-      - Low
-      - Boxy
-      - Hissing
-      - Low
-      - Throaty
-      - Serious
-      Rating: 7
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 479335
-    dataFileName: 143_1700582058776
-  - itemData:
-      Name: Henry
-      Id: 34
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/34/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Narrator
-      - Public speaker
-      - Medium
-      - Clear
-      - Hoarse
-      - Melodious
-      - Purring
-      - Throaty
-      - Calm
-      - Confident
-      - Neutral
-      Rating: 7
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 464065
-    dataFileName: 34_1700582058822
-  - itemData:
-      Name: Benjamin (beta)
-      Id: 250
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/250/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Narrator
-      - Low
-      - Low
-      - Slow
-      - Serious
-      Rating: 9.5
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 443099
-    dataFileName: 250_1700582058866
-  - itemData:
-      Name: Chloe
-      Id: 148
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/148/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Medium
-      - Breathy
-      - Hissing
-      - Monotonous
-      - Slow
-      - Insecure
-      - Neutral
-      Rating: 7.5
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 493453
-    dataFileName: 148_1700582058903
-  - itemData:
-      Name: Gavin (beta)
-      Id: 264
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/264/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Narrator
-      - Low
-      - Clear
-      - Throaty
-      - Calm
-      - Serious
-      Rating: 9.5
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 479130
-    dataFileName: 264_1700582058945
-  - itemData:
-      Name: Nathan (beta)
-      Id: 318
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/318/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Explanatory
-      - Low
-      - Throaty
-      - Serious
-      Rating: 8
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 474661
-    dataFileName: 318_1700582058981
-  - itemData:
-      Name: Jessica
-      Id: 214
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/214/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Medium
-      - Breathy
-      - Calm
-      - Purring
-      - Neutral
-      Rating: 7.5
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 463459
-    dataFileName: 214_1700582059023
-  - itemData:
-      Name: Caleb (beta)
-      Id: 259
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/259/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Narrator
-      - Radio presenter
-      - Low
-      - Boxy
-      - Hoarse
-      - Throaty
-      - Confident
-      Rating: 8
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 519192
-    dataFileName: 259_1700582059069
-  - itemData:
-      Name: Abigail (beta)
-      Id: 246
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/246/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Story reader
-      - Medium
-      - Melodious
-      - Friendly
-      Rating: 9.5
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 460249
-    dataFileName: 246_1700582059106
-  - itemData:
-      Name: Harrison (beta)
-      Id: 265
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/265/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Narrator
-      - Low
-      - Low
-      - Purring
-      - Throaty
-      - Confident
-      - Serious
-      Rating: 9
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 520594
-    dataFileName: 265_1700582059150
-  - itemData:
-      Name: Ivan
-      Id: 155
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/155/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Monster
-      - Villain
-      - Low
-      - Breathy
-      - Hoarse
-      - Low
-      - Throaty
-      - Gloomy
-      - Vicious
-      Rating: 4.5
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 475623
-    dataFileName: 155_1700582059195
-  - itemData:
-      Name: Alan
-      Id: 92
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/92/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Medium
-      - Boxy
-      - Purring
-      - Throaty
-      - Bossy
-      - Confident
-      - Exalted
-      - Pretentious
-      - Serious
-      Rating: 7
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 519094
-    dataFileName: 92_1700582059235
-  - itemData:
-      Name: Kimberly (beta)
-      Id: 329
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/329/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Book reader
-      - Story reader
-      - Medium
-      - Purring
-      - Caring
-      - Friendly
-      Rating: 9
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 483884
-    dataFileName: 329_1700582059282
-  - itemData:
-      Name: Oscar (beta)
-      Id: 323
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/323/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Narrator
-      - Low
-      - Low
-      - Purring
-      - Throaty
-      - Confident
-      - Serious
-      Rating: 8.5
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 531377
-    dataFileName: 323_1700582059327
-  - itemData:
-      Name: Eric
-      Id: 64
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/64/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Low
-      - Bland
-      - Boxy
-      - Low
-      - Monotonous
-      - Throaty
-      - Calm
-      - Gloomy
-      - Neutral
-      Rating: 6.5
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 476618
-    dataFileName: 64_1700582059376
-  - itemData:
-      Name: Natalie (beta)
-      Id: 243
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/243/1/preview.wav
-      Description: 
-      Labels:
-      - Female
-      - Story reader
-      - Medium
-      - Breathy
-      - Sexy
-      Rating: 8
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 16
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 667252
-    dataFileName: 243_1700582059444
-  - itemData:
-      Name: (beta) Angelo
-      Id: 221
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/221/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Scientist
-      - Medium
-      - Melodious
-      - Purring
-      - Caring
-      - Friendly
-      Rating: 6
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 32
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 718570
-    dataFileName: 221_1700582059509
-  - itemData:
-      Name: (beta) Brandon
-      Id: 219
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/219/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Explanatory
-      - Narrator
-      - Low
-      - Boxy
-      - Purring
-      - Throaty
-      - Bossy
-      - Confident
-      Rating: 6
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 32
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 682862
-    dataFileName: 219_1700582059564
-  - itemData:
-      Name: (beta) Daniel
-      Id: 222
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/222/1/preview.wav
-      Description: 
-      Labels:
-      - Male
-      - Explanatory
-      - Low
-      - Calm
-      - Purring
-      - Throaty
-      - Bossy
-      - Calm
-      - Pretentious
-      Rating: 7
-    audioDetails:
-      SampleRate: 32000
-      BitDepth: 32
-      Duration: 0
-      DataOffset: 44
-    previewDataSize: 642626
-    dataFileName: 222_1700582059620
+    dataFileName: 170066366538259
   - itemData:
       Name: (beta) Jonathan
       Id: 223
@@ -1544,25 +1463,106 @@ MonoBehaviour:
       Duration: 0
       DataOffset: 44
     previewDataSize: 704140
-    dataFileName: 223_1700582059687
+    dataFileName: 1700663665440223
   - itemData:
-      Name: (beta) Suzan
-      Id: 220
-      PreviewUrl: https://ciso-public.charactr.com/v1/voice/220/1/preview.wav
+      Name: Fiona (beta)
+      Id: 275
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/275/1/preview.wav
       Description: 
       Labels:
       - Female
       - Explanatory
       - Medium
-      - Hissing
-      - Purring
-      - Confident
+      - Monotonous
       - Serious
-      Rating: 6.5
+      Rating: 8.5
     audioDetails:
       SampleRate: 32000
-      BitDepth: 32
+      BitDepth: 16
       Duration: 0
       DataOffset: 44
-    previewDataSize: 721494
-    dataFileName: 220_1700582059779
+    previewDataSize: 420802
+    dataFileName: 1700663665475275
+  - itemData:
+      Name: Jessica
+      Id: 214
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/214/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Medium
+      - Breathy
+      - Calm
+      - Purring
+      - Neutral
+      Rating: 7.5
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 463459
+    dataFileName: 1700663665514214
+  - itemData:
+      Name: Madison (beta)
+      Id: 291
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/291/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Story reader
+      - Low
+      - Purring
+      - Calm
+      - Serious
+      Rating: 8.5
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 499428
+    dataFileName: 1700663665559291
+  - itemData:
+      Name: Delilah (beta)
+      Id: 274
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/274/1/preview.wav
+      Description: 
+      Labels:
+      - Female
+      - Book reader
+      - Story reader
+      - High
+      - Calm
+      - Purring
+      - Friendly
+      - Sexy
+      Rating: 9
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 528380
+    dataFileName: 1700663665605274
+  - itemData:
+      Name: Sam (beta)
+      Id: 313
+      PreviewUrl: https://ciso-public.charactr.com/v1/voice/313/1/preview.wav
+      Description: 
+      Labels:
+      - Male
+      - Explanatory
+      - Narrator
+      - Low
+      - Purring
+      - Throaty
+      - Serious
+      Rating: 8.5
+    audioDetails:
+      SampleRate: 32000
+      BitDepth: 16
+      Duration: 0
+      DataOffset: 44
+    previewDataSize: 513464
+    dataFileName: 1700663665642313

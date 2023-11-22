@@ -1,14 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
-using Gemelo.Voice.Editor.Preview;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Button = UnityEngine.UIElements.Button;
 
-namespace Charactr.VoiceSDK.Editor.Preview
+namespace Gemelo.Voice.Editor.Preview
 {
-	
 	[CustomEditor(typeof(VoicesDatabase))]
 	public class DatabaseInspector : UnityEditor.Editor
 	{
@@ -106,7 +104,7 @@ namespace Charactr.VoiceSDK.Editor.Preview
 			{
 				Debug.LogError("Error, changes not saved!");
 			}
-				}
+		}
 
 		private void ShowProgress(float p)
 		{

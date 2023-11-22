@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Charactr.VoiceSDK.Editor.Library
+namespace Gemelo.Voice.Editor.Library
 {
 	[CustomEditor(typeof(VoiceLibrary))]
 	public class LibraryInspector : UnityEditor.Editor

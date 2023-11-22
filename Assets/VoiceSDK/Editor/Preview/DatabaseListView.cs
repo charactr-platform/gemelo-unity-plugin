@@ -13,8 +13,7 @@ namespace Gemelo.Voice.Editor.Library
 	public class DatabaseListView : EditorWindow
 	{
 		public VisualTreeAsset visualTreeAsset;
-		public static event Action<VoicePreview> OnPreviewSelected;
-		
+
 		private Button _button;
 		private ListView _listView;
 		private SerializedProperty _voicePreviewProperty;
@@ -110,16 +109,15 @@ namespace Gemelo.Voice.Editor.Library
 		private void OnSelectedItem(int id)
 		{
 			VoicePreview preview = null;
-			SerializedProperty element = null;
+			
 			try
 			{
 				var item = _itemsDictionary.First(f => f.Key.Id == id);
 				preview = item.Key;
-				element = item.Value;
 			}
 			catch (Exception e)
 			{
-				Debug.LogError("Can't find preview in database!");
+				Debug.LogError($"Can't find preview in database! Error: {e.Message}");
 				return;
 			}
 		
@@ -131,11 +129,11 @@ namespace Gemelo.Voice.Editor.Library
 			}
 			else
 			{
-			
 				var itemData = _voicePreviewProperty.FindPropertyRelative("itemData");
 				var originalVoiceId = itemData.FindPropertyRelative("Id");
 				_targetLibrary.SetVoicePreviewForItemVoiceId(originalVoiceId.intValue, preview);
 			}
+			
 			Close();
 		}
 		

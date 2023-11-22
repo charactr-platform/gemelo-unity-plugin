@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Charactr.VoiceSDK.Editor.Preview
+namespace Gemelo.Voice.Editor.Preview
 {
 	public class ProgressUpdater : IProgress<float>
 	{
