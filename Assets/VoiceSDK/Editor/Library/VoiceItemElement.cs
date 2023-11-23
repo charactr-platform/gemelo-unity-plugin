@@ -257,7 +257,6 @@ namespace Gemelo.Voice.Editor.Library
 			
 			var buttonId = "selectVoiceButton";
 			
-			
 			if (!_database.GetVoicePreviewById(id, out var preview))
 			{
 				Debug.LogError($"Cant add preview item [{id}]");

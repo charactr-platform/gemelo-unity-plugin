@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -15,7 +17,7 @@ namespace Gemelo.Voice.Editor.Preview
 		private VisualElement _inspector;
 		private Label _statusLabel;
 		private static SerializedProperty _voices;
-		
+		private static DatabaseInspector _instance;
 		public override VisualElement CreateInspectorGUI()
 		{
 			_voices = serializedObject.FindProperty("voices");
@@ -32,7 +34,7 @@ namespace Gemelo.Voice.Editor.Preview
 			_purgeButton.RegisterCallback<ClickEvent>(e=> OnPurgeButton());
 			
 			UpdateStatusLabel();
-			
+			_instance = this;
 			return _inspector;
 		}
 
@@ -80,25 +82,36 @@ namespace Gemelo.Voice.Editor.Preview
 		
 		private async void OnUpdateButton()
 		{
-			var library = target as VoicesDatabase;
-
 			var message = "Start update operation on all items ?";
 			
 			if (!EditorUtility.DisplayDialog("Start update", message , "YES", "CANCEL")) return;
 			
+			await UpdateLibrary(target as VoicesDatabase);
+		}
+
+		public static async Task UpdateLibraryInstance(VoicesDatabase database)
+		{
+			if (_instance == null)
+				throw new Exception("Can't load database inspector instance");
+			
+			await _instance.UpdateLibrary(database);
+		}
+
+		private async Task UpdateLibrary(VoicesDatabase database)
+		{
 			_updateProgress = new ProgressUpdater(ShowProgress);
 			EditorApplication.update += OnUpdate;
-			await library.UpdatePreviewsDatabase(_updateProgress);
+			await database.UpdatePreviewsDatabase(_updateProgress);
 			EditorApplication.update -= OnUpdate;
 			_updateProgress = null;
 			EditorUtility.ClearProgressBar();
 
 			if (serializedObject.UpdateIfRequiredOrScript())
 			{
-				EditorUtility.SetDirty(library);
-				AssetDatabase.SaveAssetIfDirty(library);
+				EditorUtility.SetDirty(database);
+				AssetDatabase.SaveAssetIfDirty(database);
 				Debug.Log("Saved database changes"); 
-				Selection.SetActiveObjectWithContext(target, library);
+				Selection.SetActiveObjectWithContext(target, database);
 			}
 			else
 			{

@@ -12,7 +12,7 @@ namespace Gemelo.Voice.Editor.Preview
 {
 	public class VoicesDatabase: ScriptableObject
 	{
-		public const string FILE_ASSET = "VoicePreviewDatabase";
+		public const string FILE_ASSET = "VoicesDatabase";
 		public List<VoicePreview> Voices => voices;
 
 		private static VoicesDatabase _instance;
@@ -184,6 +184,12 @@ namespace Gemelo.Voice.Editor.Preview
 			}
 
 			return _instance;
+		}
+
+		public static bool Validate()
+		{
+			return _instance.Voices.Count > 0 &&
+			       _instance.Voices.All(a => a.CacheExists);
 		}
 		
 		public static bool Exists => Resources.Load<VoicesDatabase>(FILE_ASSET) != null;
