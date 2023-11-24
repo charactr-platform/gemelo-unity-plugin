@@ -14,22 +14,20 @@ namespace Gemelo.Voice.Audio
 	{
 		public new void Play(AudioClip clip) => base.Play(clip);
 
-		public IEnumerator PlayClipRoutine(AudioClip clip,  float playbackTime = 0f)
+		public IEnumerator PlayClipRoutine(AudioClip clip, float playbackLength = 0f)
 		{
-			var length = playbackTime > Mathf.Epsilon ? playbackTime : clip.length; 
+			var length = playbackLength  > Mathf.Epsilon ? playbackLength  : clip.length; 
 			
 			Play(clip);
+			
 			yield return new WaitForSecondsRealtime(length);
 		}
 		
 		public static async Task PlayClipStatic(AudioClip clip, float playbackTime = 0f)
 		{
-			var length = playbackTime > Mathf.Epsilon ? playbackTime : clip.length; 
-			
 			using (var player = CreateInstance<AudioPlayer>(clip.name))
 			{
-				player.Play(clip);
-				await Task.Delay(TimeSpan.FromSeconds(length));
+				await player.PlayClip(clip, playbackTime);
 			}
 		}
 		
@@ -39,6 +37,14 @@ namespace Gemelo.Voice.Audio
 			{
 				yield return player.PlayClipRoutine(clip, playbackTime);
 			}
+		}
+
+		public async Task PlayClip(AudioClip clip, float playbackTime = 0f)
+		{
+			var length = playbackTime > Mathf.Epsilon ? playbackTime : clip.length; 
+			
+			Play(clip);
+			await Task.Delay(TimeSpan.FromSeconds(length));
 		}
 	}
 }

@@ -21,12 +21,13 @@ namespace Gemelo.Voice.Editor.Preview
 		private int _id;
 		private readonly bool _selectionList;
 		private Action<int> _onSelect;
+		
 		public VoicePreviewElement(bool selectionList):this()
 		{
 			_selectionList = selectionList;
 		}
-		
-		public VoicePreviewElement()
+
+		private VoicePreviewElement()
 		{
 			_viewRoot = LoadTreeAsset().Instantiate();
 			hierarchy.Add(_viewRoot);
@@ -213,7 +214,7 @@ namespace Gemelo.Voice.Editor.Preview
 		
 		private async void OnPlayEvent(int id)
 		{
-			if(!GetDatabase().GetVoicePreviewById(id, out var instance))
+			if (!GetDatabase().GetVoicePreviewById(id, out var instance))
 			{
 				Debug.LogError($"Can't Get Voice Preview with Id = [{id}]");
 				return;
@@ -222,7 +223,7 @@ namespace Gemelo.Voice.Editor.Preview
 			Debug.Log($"Playing voice [{id}]: {instance}");
 			
 			_playButton.SetEnabled(false);
-			await AudioPlayer.PlayClipStatic(instance.GenerateAudioClip());
+			await AudioPlayerInstance.PlayClipStatic(instance.GenerateAudioClip());
 			_playButton.SetEnabled(true);
 		}
 		

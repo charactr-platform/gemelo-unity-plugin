@@ -84,7 +84,6 @@ namespace Gemelo.Voice.Editor.Library
 				
 				_itemsDictionary.Add(element, property);
 				fields.Add(property);
-				Debug.Log($"Added element {i} - id: {element.Id}");
 			}
 			return fields;
 		}
