@@ -91,12 +91,18 @@ namespace Gemelo.Voice.Editor.Preview
 
 		public static async Task UpdateLibraryInstance(VoicesDatabase database)
 		{
+			Selection.objects = null;
+			Selection.SetActiveObjectWithContext(database,null);
+
+			await Task.Delay(1000);
+			
 			if (_instance == null)
 				throw new Exception("Can't load database inspector instance");
 			
 			await _instance.UpdateLibrary(database);
 		}
 
+		
 		private async Task UpdateLibrary(VoicesDatabase database)
 		{
 			_updateProgress = new ProgressUpdater(ShowProgress);

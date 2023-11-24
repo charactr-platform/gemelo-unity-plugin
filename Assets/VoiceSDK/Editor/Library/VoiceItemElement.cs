@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using Gemelo.Voice.Audio;
+using Gemelo.Voice.Editor.Configuration;
 using Gemelo.Voice.Editor.Preview;
 using Gemelo.Voice.Library;
 using UnityEditor;

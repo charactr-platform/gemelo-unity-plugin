@@ -167,7 +167,7 @@ namespace Gemelo.Voice.Editor.Preview
 			if (_instance != null)
 				return _instance;
 			
-			if (Exists)
+			if (Exists())
 			{
 				_instance = Resources.Load<VoicesDatabase>(FILE_ASSET);
 				Debug.Log($"Loaded database previews instance, previews count: {_instance.Voices.Count}");
@@ -176,22 +176,14 @@ namespace Gemelo.Voice.Editor.Preview
 			{
 				_instance = CreateInstance(true);
 			}
-
-			if (_instance.Voices?.Count == 0)
-			{
-				//TODO: Create external update window
-				Selection.activeObject = _instance;
-			}
-
+			
 			return _instance;
 		}
 
-		public static bool Validate()
-		{
-			return _instance.Voices.Count > 0 &&
-			       _instance.Voices.All(a => a.CacheExists);
-		}
-		
-		public static bool Exists => Resources.Load<VoicesDatabase>(FILE_ASSET) != null;
+		public bool Validate() => Voices?.Count > 0 && 
+		                          Voices.All(a => a.CacheExists);
+
+		public static bool Exists() => 
+			Resources.Load<VoicesDatabase>(FILE_ASSET) != null;
 	}
 }

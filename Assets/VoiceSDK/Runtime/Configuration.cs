@@ -77,9 +77,7 @@ namespace Gemelo.Voice
 			return configuration;
 		}
 
-		public static bool Exists()
-		{
-			return Resources.Load<Configuration>(FILENAME) != null;
-		}
+		public static bool Exists() =>
+			Resources.Load<Configuration>(FILENAME) != null;
 	}
 }
