@@ -34,16 +34,16 @@ namespace Gemelo.Voice.Editor.Library
 			wnd.ShowAuxWindow();
 		}
 		
-		public static void ShowChangeWindow(SerializedProperty element)
+		public static void ShowSelectionWindow(SerializedProperty element)
 		{
 			var wnd = CreateInstance<DatabaseListView>();
 			wnd.RegisterVoiceItem(element);
 			wnd.titleContent = new GUIContent(TITLE);
-			wnd.SetListType(ListType.Change);
+			wnd.SetListType(ListType.Selection);
 			wnd.ShowAuxWindow();
 		}
 		
-		public static void ShowChangeWindow(int itemId, VoiceLibrary targetLibrary)
+		public static void ShowSelectionWindow(int itemId, VoiceLibrary targetLibrary)
 		{
 			var wnd = CreateInstance<DatabaseListView>();
 			wnd.RegisterItemId(itemId, targetLibrary);

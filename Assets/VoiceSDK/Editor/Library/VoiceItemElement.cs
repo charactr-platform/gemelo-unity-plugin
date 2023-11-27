@@ -298,7 +298,7 @@ namespace Gemelo.Voice.Editor.Library
 			button.AddToClassList(".round");
 			button.RegisterCallback<ClickEvent>((e) =>
 			{
-				DatabaseListView.ShowChangeWindow(_lastHash, TargetLibrary);
+				DatabaseListView.ShowSelectionWindow(_lastHash, TargetLibrary);
 			});
 			integerField.Add(button);
 		}
