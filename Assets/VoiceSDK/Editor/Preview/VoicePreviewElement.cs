@@ -10,21 +10,30 @@ using PopupWindow = UnityEngine.UIElements.PopupWindow;
 
 namespace Gemelo.Voice.Editor.Preview
 {
+	public enum ListType
+	{
+		None,
+		Change,
+		Selection,
+	}
+	
 	public class VoicePreviewElement: VisualElement
 	{
 		public override VisualElement contentContainer => _viewRoot;
+		private const string TreeGuid = "a37506bebdde24a87a150e49634741c5";
+		
 		private readonly VisualElement _viewRoot;
 		private Button _playButton, _changeButton, _detailsButton, _selectButton;
 		private SerializedProperty _property;
 		private Label _nameLabel;
 		private PopupWindow _detailsPopup;
 		private int _id;
-		private readonly bool _selectionList;
+		private readonly ListType _listType;
 		private Action<int> _onSelect;
 		
-		public VoicePreviewElement(bool selectionList):this()
+		public VoicePreviewElement(ListType listType): this()
 		{
-			_selectionList = selectionList;
+			_listType = listType;
 		}
 
 		private VoicePreviewElement()
@@ -35,7 +44,7 @@ namespace Gemelo.Voice.Editor.Preview
 		
 		public static VoicePreviewElement Create(SerializedProperty property)
 		{
-			var element = new VoicePreviewElement();
+			var element = new VoicePreviewElement(ListType.Change);
 			element.RegisterProperty(property);
 			return element;
 		}
@@ -74,6 +83,8 @@ namespace Gemelo.Voice.Editor.Preview
 		private Label CreateLabel(SerializedProperty previewItem)
 		{
 			var label = this.Q<Label>("nameLabel");
+			var rate = this.Q<Label>("rateLabel");
+			
 			var labelsValue = string.Empty;
 			var name = previewItem.FindPropertyRelative("Name");
 			var labels = previewItem.FindPropertyRelative("Labels");
@@ -81,9 +92,10 @@ namespace Gemelo.Voice.Editor.Preview
 			if (labels.isArray && labels.arraySize > 0)
 				labelsValue = $"({labels.GetArrayElementAtIndex(0).stringValue})";
 			
+			rate.text = $"{previewItem.FindPropertyRelative("Rating").floatValue:F1}";
 			label.text = $"{name.stringValue} "+labelsValue;
 
-			if (_selectionList)
+			if (_listType == ListType.Selection)
 			{
 				var labelColor = label.style.color; 
 				label.RegisterCallback<MouseOverEvent>(evt=> label.style.color = new StyleColor(Color.white));
@@ -105,13 +117,12 @@ namespace Gemelo.Voice.Editor.Preview
 				}
 			};
 			
-			var rating = previewItem.FindPropertyRelative("Rating");
 			var bits = audioDetails.FindPropertyRelative("BitDepth");
 			var hz = audioDetails.FindPropertyRelative("SampleRate");
 			
-			label.text = $"Rating: {rating.floatValue}\n" +
+			label.text = $"ID: {_id}\n" +
 			             $"Audio: {bits.intValue} bit, {(hz.intValue/1000f):F1} kHz\n"+
-			             FillDetailsLabel(previewItem);
+			             $"Labels: {FillDetailsLabel(previewItem)}";
 			
 			_detailsPopup = CreatePopup();
 			_detailsPopup.Add(label);
@@ -143,7 +154,7 @@ namespace Gemelo.Voice.Editor.Preview
 		{
 			var popup = new PopupWindow
 			{
-				text = "Details",
+				text = $"Details:",
 				style =
 				{
 					position = new StyleEnum<Position>(Position.Relative),
@@ -169,10 +180,11 @@ namespace Gemelo.Voice.Editor.Preview
 			var button = this.Q<Button>("selectButton");
 			button.RegisterCallback<ClickEvent>(OnSelectEvent);
 			
-			if (!_selectionList)
+			if (_listType != ListType.Selection)
 			{
 				button.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
 			}
+			
 			return button;
 		}
 
@@ -188,7 +200,7 @@ namespace Gemelo.Voice.Editor.Preview
 			var button = this.Q<Button>("changeButton");
 			button.RegisterCallback<ClickEvent>(OnChangeEvent);
 			
-			if (_selectionList)
+			if (_listType != ListType.Change)
 			{
 				button.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
 			}
@@ -229,8 +241,7 @@ namespace Gemelo.Voice.Editor.Preview
 		
 		private static VisualTreeAsset LoadTreeAsset()
 		{
-			var guid = "a37506bebdde24a87a150e49634741c5";
-			var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+			var assetPath = AssetDatabase.GUIDToAssetPath(TreeGuid);
 			return AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(assetPath);
 		}
 

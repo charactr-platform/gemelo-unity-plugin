@@ -39,9 +39,7 @@ namespace Gemelo.Voice.Audio
 			{
 				_instance.gameObject.name = GetName(id);
 			}
-			
 			return _instance;
-		} 
-		
+		}
 	}
 }

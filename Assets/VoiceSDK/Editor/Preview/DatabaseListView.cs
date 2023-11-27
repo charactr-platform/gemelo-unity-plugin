@@ -14,19 +14,24 @@ namespace Gemelo.Voice.Editor.Library
 	{
 		public VisualTreeAsset visualTreeAsset;
 
+		private const string TITLE = "Preview and select voice:";
 		private Button _button;
 		private ListView _listView;
 		private SerializedProperty _voicePreviewProperty;
 
 		private int _voiceItemId = -1;
 		private VoiceLibrary _targetLibrary;
+		private ListType _listType;
 		
-		private const string TITLE = "Preview and select voice:";
 		private static Dictionary<VoicePreview, SerializedProperty> _itemsDictionary;
+		
+		[MenuItem("Tools/Gemelo.ai Voice/Voices database")]
 		public static void ShowWindow()
 		{
 			var wnd = CreateInstance<DatabaseListView>();
-			wnd.Show();
+			wnd.titleContent = new GUIContent(TITLE);
+			wnd.SetListType(ListType.None);
+			wnd.ShowAuxWindow();
 		}
 		
 		public static void ShowChangeWindow(SerializedProperty element)
@@ -34,6 +39,7 @@ namespace Gemelo.Voice.Editor.Library
 			var wnd = CreateInstance<DatabaseListView>();
 			wnd.RegisterVoiceItem(element);
 			wnd.titleContent = new GUIContent(TITLE);
+			wnd.SetListType(ListType.Change);
 			wnd.ShowAuxWindow();
 		}
 		
@@ -41,10 +47,16 @@ namespace Gemelo.Voice.Editor.Library
 		{
 			var wnd = CreateInstance<DatabaseListView>();
 			wnd.RegisterItemId(itemId, targetLibrary);
+			wnd.SetListType(ListType.Selection);
 			wnd.titleContent = new GUIContent(TITLE);
 			wnd.ShowAuxWindow();
 		}
 
+		public void SetListType(ListType type)
+		{
+			_listType = type;
+		}
+		
 		private void RegisterVoiceItem(SerializedProperty voiceItem)
 		{
 			_voicePreviewProperty = voiceItem;
@@ -93,14 +105,17 @@ namespace Gemelo.Voice.Editor.Library
 			if (listView == null)
 				throw new Exception("Can't find list view object");
 			
-			listView.itemsSource = items;
+			//TODO: To much string names here :'(
+			var orderedList = items.OrderByDescending(o => o.FindPropertyRelative("itemData").FindPropertyRelative("Rating").floatValue).ToList();
+			
+			listView.itemsSource = orderedList;
 			listView.makeItem = CreatePreviewElement;
-			listView.bindItem = (element, i) => (element as VoicePreviewElement).RegisterProperty(items[i]);
+			listView.bindItem = (element, i) => (element as VoicePreviewElement).RegisterProperty(orderedList[i]);
 		}
 
 		private VoicePreviewElement CreatePreviewElement()
 		{
-			var element = new VoicePreviewElement(true);
+			var element = new VoicePreviewElement(_listType);
 			element.RegisterOnSelect(OnSelectedItem);
 			return element;
 		}
@@ -138,9 +153,17 @@ namespace Gemelo.Voice.Editor.Library
 		
 		private PopupWindow CreatePopup()
 		{
+			var text = _listType switch
+			{
+				ListType.None => "Available voices: ",
+				ListType.Change => "Click 'Change' to change current voice:",
+				ListType.Selection => "Click 'Select' to select new voice:",
+				_ => string.Empty
+			};
+
 			var popup = new PopupWindow
 			{
-				text = "Click 'Select' to change current voice",
+				text = text,
 				style =
 				{
 					position = new StyleEnum<Position>(Position.Relative),

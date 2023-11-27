@@ -96,7 +96,7 @@ namespace Gemelo.Voice.Editor.Preview
 			return false;
 		}
 
-		public static async Task<VoicesResponse> GetVoicesResponse(bool all = true)
+		public static async Task<VoicesResponse> GetVoicesResponse(bool all = false)
 		{
 			var configuration = Voice.Configuration.Load();
 			var http = new EditorRestClient(configuration, message => Debug.LogError(message.Message));
