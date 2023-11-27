@@ -1,16 +1,19 @@
 using System;
 using System.Globalization;
 using Gemelo.Voice.Audio;
+using Gemelo.Voice.Editor.Configuration;
+using Gemelo.Voice.Editor.Preview;
 using Gemelo.Voice.Library;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Button = UnityEngine.UIElements.Button;
 using PopupWindow = UnityEngine.UIElements.PopupWindow;
 
 namespace Gemelo.Voice.Editor.Library
 {
-	internal class VoiceItemPropertyInstance
+	internal class VoiceItemElement: VisualElement
 	{
 		public enum ItemState
 		{
@@ -19,30 +22,43 @@ namespace Gemelo.Voice.Editor.Library
 			UpToDate,
 			NeedsUpdate,
 			Download,
+			NotSet
 		}
 		
 		public VisualElement Container { get; private set; }
 		public PopupWindow PopupWindow { get; private set; }
 		public Button UpdateButton { get; set; }
 		public Button CopyIdButton { get; set; }
-		public SerializedProperty Property { get; }
-		public SerializedProperty TextField { get; }
-		public SerializedProperty VoiceField { get; }
-		public SerializedProperty AudioClipField { get; }
+		public SerializedProperty Property { get; set; }
+		public SerializedProperty TextField { get; set; }
+		public SerializedProperty VoiceField { get; set; }
+		public SerializedProperty AudioClipField { get; set; }
+		public SerializedProperty VoicePreview { get; set; }
 		public IntegerField IdField { get; private set; }
 		public Label Label { get; private set; }
+		
 		public ItemState State { get; set; }
 		public int Hash { get; private set; }
 		
 		private int _lastHash;
-
-		public VoiceItemPropertyInstance(SerializedProperty property)
+		private readonly VoicesDatabase _database;
+		public VoiceItemElement()
+		{
+			_database = VoicesDatabase.Load();
+		}
+		
+		public void RegisterElement(SerializedProperty property)
 		{
 			Property = property;
 			TextField = property.FindPropertyRelative("text");
 			VoiceField = property.FindPropertyRelative("voiceId");
 			AudioClipField = property.FindPropertyRelative("audioClip");
+			VoicePreview = property.FindPropertyRelative("voicePreview");
 			Hash = property.GetHashCode();
+			// Create a new VisualElement to be the root the property UI
+			CreateWindow();
+			RegisterVisualElements();
+			UpdateState();
 		}
 		public override string ToString() => _lastHash.ToString();
 
@@ -67,6 +83,9 @@ namespace Gemelo.Voice.Editor.Library
 			if (currentHash.ToString() != audioClip.name)
 				return ItemState.NeedsUpdate;
 
+			if (!_database.PreviewExists(VoiceField.intValue, out _))
+				return ItemState.NotSet;
+			
 			return ItemState.UpToDate;
 		}
 
@@ -97,9 +116,9 @@ namespace Gemelo.Voice.Editor.Library
 			State = ItemState.Download;
 			SetButtonFunctionFromState();
 
-			if (Property.serializedObject.targetObject is VoiceLibrary library)
+			if (TargetLibrary != null)
 			{
-				await library.AddAudioClip(CalculateCurrentHash());
+				await TargetLibrary.AddAudioClip(CalculateCurrentHash());
 				AudioClipField.serializedObject.Update();
 				UpdateState();
 				field.visible = true;
@@ -107,7 +126,8 @@ namespace Gemelo.Voice.Editor.Library
 			else
 				throw new Exception("Target object not set, or is not VoiceLibrary!");
 		}
-		
+
+		private VoiceLibrary TargetLibrary => (Property.serializedObject.targetObject as VoiceLibrary);
 		private void SetButtonFunctionFromState()
 		{
 			var buttonLabel = UpdateButton.Q<Label>();
@@ -117,9 +137,15 @@ namespace Gemelo.Voice.Editor.Library
 			
 			switch (State)
 			{
+				case ItemState.NotSet:
+						UpdateButton.SetEnabled(false);
+					break;
+				
 				case ItemState.UpToDate:
+					
 					if (GetAudioClipInstance(out var clip))
 					{
+						UpdateButton.SetEnabled(true);
 						buttonLabel.text = $"Play (duration {clip.length.ToString(CultureInfo.InvariantCulture)}s)";
 						buttonLabel.AddToClassList("playIcon");
 						AssignButtonOnClick(PlayAudioClip);
@@ -130,12 +156,14 @@ namespace Gemelo.Voice.Editor.Library
 					break;
 				
 				case ItemState.NeedsUpdate:
+					UpdateButton.SetEnabled(true);
 					buttonLabel.text = "Update audio clip";
 					buttonLabel.AddToClassList("warningIcon");
 					AssignButtonOnClick(DownloadAudioClip);
 					break;
 				
 				case ItemState.Download:
+					UpdateButton.SetEnabled(false);
 					buttonLabel.text = "Downloading...";
 					buttonLabel.AddToClassList("cloudIcon");
 					AssignButtonOnClick(() => { Debug.Log("Download in progress"); });
@@ -162,9 +190,8 @@ namespace Gemelo.Voice.Editor.Library
 			AudioPlayer.PlayClipStatic(clip);
 			EditorApplication.RepaintProjectWindow();
 		}
-		
 
-		public void UpdateState()
+		private void UpdateState()
 		{
 			//Ignore initial updates from Create...
 			if (State == ItemState.None)
@@ -179,9 +206,13 @@ namespace Gemelo.Voice.Editor.Library
 			_lastHash = newFieldsHash;
 
 			PopupWindow.text = $"Voice item state: {State}";
+			
+			if (State != ItemState.UpToDate)
+				RefreshVoicePreview();
 		}
 
-		public void RegisterVisualElements()
+		//TODO: Move this to XML layout
+		private void RegisterVisualElements()
 		{
 			Label = new Label();
 			IdField = new IntegerField("ID");
@@ -199,7 +230,8 @@ namespace Gemelo.Voice.Editor.Library
 
 			PopupWindow.Add(textField);
 
-			var voiceField = new IntegerField("Selected Voice Id");
+			var voiceField = new IntegerField("Voice selection");
+			voiceField.name = "voiceId";
 			voiceField.BindProperty(VoiceField);
 			PopupWindow.Add(voiceField);
 			
@@ -214,8 +246,103 @@ namespace Gemelo.Voice.Editor.Library
 			_lastHash = CalculateCurrentHash();
 			textField.RegisterValueChangedCallback((s) => UpdateState());
 			voiceField.RegisterValueChangedCallback((s) => UpdateState());
-
+			
+			RefreshVoicePreview();
 			State = ItemState.Initialized;
+		}
+
+		private void RefreshVoicePreview()
+		{
+			var id = VoiceField.intValue;
+			var voiceField = PopupWindow.Q<IntegerField>("voiceId");
+			
+			var buttonId = "selectVoiceButton";
+			
+			if (!_database.GetVoicePreviewById(id, out var preview))
+			{
+				//No item found, default to "Select"
+				SetVoiceFieldSelectButton(voiceField, buttonId);
+			}
+			else
+			{
+				var buttonElement = voiceField.Q<Button>(buttonId);
+				if (buttonElement != null)
+					voiceField.Remove(buttonElement);
+				
+				SetVoiceFieldPreviewElement(voiceField, preview);
+			}
+		}
+
+		private void DisableVoiceFieldInt(IntegerField integerField)
+		{
+			integerField[0].style.unityTextAlign = new StyleEnum<TextAnchor>(TextAnchor.MiddleLeft);
+			var intField = integerField[1];
+			intField.style.flexGrow = 0;
+			intField.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
+			intField.SetEnabled(false);
+		}
+
+		private void SetVoiceFieldSelectButton(IntegerField integerField, string id)
+		{
+			DisableVoiceFieldInt(integerField);
+			
+			var buttonElement = integerField.Q<Button>(id);
+			if (buttonElement != null)
+				return;
+			
+			var button = new Button
+			{
+				text = "[Select voice]",
+				name = id,
+			};
+			button.AddToClassList(".round");
+			button.RegisterCallback<ClickEvent>((e) =>
+			{
+				DatabaseListView.ShowSelectionWindow(_lastHash, TargetLibrary);
+			});
+			integerField.Add(button);
+		}
+		
+		private void SetVoiceFieldPreviewElement(IntegerField integerField, VoicePreview preview)
+		{
+			DisableVoiceFieldInt(integerField);
+
+			var id = "voicePreviewElement";
+			
+			var library = Property.serializedObject.targetObject as VoiceLibrary;
+			
+			if (library.GetItemById(_lastHash, out var voiceItem))
+			{
+				voiceItem.SetVoicePreview(preview);
+			}
+			else
+			{
+				Debug.LogError("Can't find item with hash: "+_lastHash);
+			}
+
+			var element = integerField.Q<PropertyField>(id);
+
+			if (element != null)
+			{
+				element.BindProperty(VoicePreview);
+				return;
+			}
+		
+			var voicePreviewField = new PropertyField(VoicePreview)
+			{
+				name = id,
+				style =
+				{
+					alignSelf = new StyleEnum<Align>(Align.Stretch),
+					flexBasis = new StyleLength(StyleKeyword.Auto),
+					flexGrow = 1,
+					maxHeight =  integerField.style.maxHeight
+				}
+			};
+			
+			voicePreviewField.BindProperty(VoicePreview);
+			
+			integerField.Add(voicePreviewField);
 		}
 
 		public void CreateWindow()

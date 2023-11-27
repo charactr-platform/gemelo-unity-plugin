@@ -14,8 +14,58 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   items:
   - text: You can use this example setup as easy to use dialogue system for game.
-    voiceId: 161
-    audioClip: {fileID: 8300000, guid: e73308f675e4744b1ade1cc8625ab25c, type: 3}
+    voiceId: 64
+    audioClip: {fileID: 8300000, guid: f110cf875f85d47adae0dfedf99ab10e, type: 3}
+    voicePreview:
+      itemData:
+        Name: Eric
+        Id: 64
+        PreviewUrl: https://ciso-public.charactr.com/v1/voice/64/1/preview.wav
+        Description: 
+        Labels:
+        - Male
+        - Low
+        - Bland
+        - Boxy
+        - Low
+        - Monotonous
+        - Throaty
+        - Calm
+        - Gloomy
+        - Neutral
+        Rating: 6.5
+      audioDetails:
+        SampleRate: 32000
+        BitDepth: 16
+        Duration: 0
+        DataOffset: 44
+      previewDataSize: 476618
+      dataFileName: 170110375773564
   - text: This simple demonstration may help to start with our SDK, have fun!
-    voiceId: 161
-    audioClip: {fileID: 8300000, guid: 29a6ef2d2a093489599780ae48878060, type: 3}
+    voiceId: 64
+    audioClip: {fileID: 8300000, guid: 9ee3f3cf6dadf4db8b04666af4d937d3, type: 3}
+    voicePreview:
+      itemData:
+        Name: Eric
+        Id: 64
+        PreviewUrl: https://ciso-public.charactr.com/v1/voice/64/1/preview.wav
+        Description: 
+        Labels:
+        - Male
+        - Low
+        - Bland
+        - Boxy
+        - Low
+        - Monotonous
+        - Throaty
+        - Calm
+        - Gloomy
+        - Neutral
+        Rating: 6.5
+      audioDetails:
+        SampleRate: 32000
+        BitDepth: 16
+        Duration: 0
+        DataOffset: 44
+      previewDataSize: 476618
+      dataFileName: 170110375773564

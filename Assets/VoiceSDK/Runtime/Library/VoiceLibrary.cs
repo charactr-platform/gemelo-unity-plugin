@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Gemelo.Voice.Editor.Preview;
 using UnityEditor;
 using UnityEngine;
 
@@ -65,9 +66,8 @@ namespace Gemelo.Voice.Library
 			if (items == null)
 				throw new Exception("Items not initialized yet");
 
-			var item = new VoiceItem()
+			var item = new VoiceItem(voiceId)
 			{
-				VoiceId = voiceId,
 				Text = text,
 			};
 			
@@ -99,6 +99,25 @@ namespace Gemelo.Voice.Library
 		}
 		
 #if UNITY_EDITOR
+
+		public void SetVoicePreviewForItemId(int itemId, VoicePreview preview)
+		{
+			var itemIndex = Items.FindIndex(f => f.Id == itemId);
+			SetPreviewForItem(itemIndex, preview);
+		}
+		public void SetVoicePreviewForItemVoiceId(int itemVoiceId, VoicePreview preview)
+		{
+			var itemIndex = Items.FindIndex(f => f.VoiceId == itemVoiceId);
+			SetPreviewForItem(itemIndex, preview);
+		}
+
+		private void SetPreviewForItem(int index, VoicePreview preview)
+		{
+			Items[index].SetVoicePreview(preview);
+			var obj = new SerializedObject(this);
+			obj.ApplyModifiedProperties();
+			obj.Dispose();
+		}
 		public async Task<int> ConvertTextsToAudioClips(Action<int> onItemDownloaded)
 		{
 			var processedItems = 0;

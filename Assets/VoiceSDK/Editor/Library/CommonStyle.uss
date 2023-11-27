@@ -19,15 +19,29 @@
     margin-right: 110px;
     margin-left: initial;
     -unity-background-scale-mode: scale-to-fit;
-    background-image: resource("d_console.warnicon@2x");
+    background-image: resource('d_console.warnicon@2x');
+}
+
+.starIcon {
+    -unity-background-scale-mode: scale-to-fit;
+    background-image: resource('d_Favorite@2x');
+    align-items: flex-start;
+    flex-direction: row;
+    justify-content: space-around;
 }
 
 .playIcon {
     padding-left: 140px;
     margin-right: 110px;
-    
     -unity-background-scale-mode: scale-to-fit;
-    background-image: resource("d_PlayButton@2x");
+    background-image: resource('d_PlayButton@2x');
+}
+
+.rateIcon {
+    padding-left: 0;
+    margin-right: 0;
+    -unity-background-scale-mode: scale-to-fit;
+    background-image: resource('d_PlayButton@2x');
 }
 
 .cloudIcon {
@@ -35,5 +49,85 @@
     margin-right: 110px;
     justify-content: flex-start;
     -unity-background-scale-mode: scale-to-fit;
-    background-image: resource("d_CloudConnect@2x");
+    background-image: resource('d_CloudConnect@2x');
+}
+
+.inline {
+    align-items: center;
+    flex-direction: row;
+    background-color: rgb(173, 50, 50);
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-top: 0;
+    padding-bottom: 0;
+    max-height: 20px;
+    min-height: 30px;
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    justify-content: flex-start;
+    top: auto;
+    bottom: auto;
+}
+
+.round {
+    align-items: center;
+    flex-direction: row;
+    background-color: rgb(39, 39, 39);
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    max-height: 30px;
+    min-height: initial;
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    justify-content: flex-start;
+    top: auto;
+    bottom: auto;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-top-left-radius: 7px;
+    border-bottom-left-radius: 7px;
+    border-top-right-radius: 7px;
+    border-bottom-right-radius: 7px;
+    border-left-color: rgb(111, 111, 111);
+    border-right-color: rgb(111, 111, 111);
+    border-top-color: rgb(111, 111, 111);
+    border-bottom-color: rgb(111, 111, 111);
+}
+
+.rounded {
+    align-items: center;
+    flex-direction: row;
+    background-color: rgb(39, 39, 39);
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    max-height: none;
+    min-height: initial;
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-bottom: 3px;
+    justify-content: flex-start;
+    top: auto;
+    bottom: auto;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-top-left-radius: 7px;
+    border-bottom-left-radius: 7px;
+    border-top-right-radius: 7px;
+    border-bottom-right-radius: 7px;
+    border-left-color: rgb(111, 111, 111);
+    border-right-color: rgb(111, 111, 111);
+    border-top-color: rgb(111, 111, 111);
+    border-bottom-color: rgb(111, 111, 111);
 }
