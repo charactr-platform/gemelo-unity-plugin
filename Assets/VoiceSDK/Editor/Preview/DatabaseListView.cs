@@ -31,7 +31,7 @@ namespace Gemelo.Voice.Editor.Library
 			var wnd = CreateInstance<DatabaseListView>();
 			wnd.titleContent = new GUIContent(TITLE);
 			wnd.SetListType(ListType.None);
-			wnd.ShowAuxWindow();
+			wnd.Show(true);
 		}
 		
 		public static void ShowSelectionWindow(SerializedProperty element)
@@ -40,7 +40,7 @@ namespace Gemelo.Voice.Editor.Library
 			wnd.RegisterVoiceItem(element);
 			wnd.titleContent = new GUIContent(TITLE);
 			wnd.SetListType(ListType.Selection);
-			wnd.ShowAuxWindow();
+			wnd.ShowModal();
 		}
 		
 		public static void ShowSelectionWindow(int itemId, VoiceLibrary targetLibrary)
@@ -49,7 +49,7 @@ namespace Gemelo.Voice.Editor.Library
 			wnd.RegisterItemId(itemId, targetLibrary);
 			wnd.SetListType(ListType.Selection);
 			wnd.titleContent = new GUIContent(TITLE);
-			wnd.ShowAuxWindow();
+			wnd.ShowModal();
 		}
 
 		public void SetListType(ListType type)

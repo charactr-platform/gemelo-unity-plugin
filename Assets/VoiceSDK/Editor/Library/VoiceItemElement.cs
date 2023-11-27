@@ -260,7 +260,7 @@ namespace Gemelo.Voice.Editor.Library
 			
 			if (!_database.GetVoicePreviewById(id, out var preview))
 			{
-				Debug.LogError($"Cant add preview item [{id}]");
+				//No item found, default to "Select"
 				SetVoiceFieldSelectButton(voiceField, buttonId);
 			}
 			else
