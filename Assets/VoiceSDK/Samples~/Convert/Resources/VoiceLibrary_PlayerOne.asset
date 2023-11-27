@@ -14,9 +14,55 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   items:
   - text: Hello from Character Voice SDK for Unity!
-    voiceId: 151
-    audioClip: {fileID: 8300000, guid: 637d33fae18b347d7afbe07b12fe37f8, type: 3}
+    voiceId: 143
+    audioClip: {fileID: 8300000, guid: 683f8dd98dc544245b425b1319ef982e, type: 3}
+    voicePreview:
+      itemData:
+        Name: Owen
+        Id: 143
+        PreviewUrl: https://ciso-public.charactr.com/v1/voice/143/1/preview.wav
+        Description: 
+        Labels:
+        - Male
+        - Explanatory
+        - Low
+        - Boxy
+        - Hissing
+        - Low
+        - Throaty
+        - Serious
+        Rating: 7
+      audioDetails:
+        SampleRate: 32000
+        BitDepth: 16
+        Duration: 0
+        DataOffset: 44
+      previewDataSize: 479335
+      dataFileName: 1701103757639143
   - text: Or even create much more advanced setups with different voices in single
       library!
-    voiceId: 151
-    audioClip: {fileID: 8300000, guid: 149d13d5e073f4b8cb0adb339ec7f6e5, type: 3}
+    voiceId: 143
+    audioClip: {fileID: 8300000, guid: d0d231848e4464531a4997f9b7a6a731, type: 3}
+    voicePreview:
+      itemData:
+        Name: Owen
+        Id: 143
+        PreviewUrl: https://ciso-public.charactr.com/v1/voice/143/1/preview.wav
+        Description: 
+        Labels:
+        - Male
+        - Explanatory
+        - Low
+        - Boxy
+        - Hissing
+        - Low
+        - Throaty
+        - Serious
+        Rating: 7
+      audioDetails:
+        SampleRate: 32000
+        BitDepth: 16
+        Duration: 0
+        DataOffset: 44
+      previewDataSize: 479335
+      dataFileName: 1701103757639143
