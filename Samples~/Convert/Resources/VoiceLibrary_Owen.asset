@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43c2b42b752e40fd8d3cb96f15951aa2, type: 3}
+  m_Name: VoiceLibrary_Owen
+  m_EditorClassIdentifier: 
+  items:
+  - text: Hello from Character Voice SDK for Unity!
+    voiceId: 143
+    audioClip: {fileID: 8300000, guid: be7f1df0f5800e845bbae43e2f7bd5d0, type: 3}
+    voicePreview:
+      itemData:
+        Name: Owen
+        Id: 143
+        PreviewUrl: https://ciso-public.charactr.com/v1/voice/143/1/preview.wav
+        Description: 
+        Labels:
+        - Male
+        - Explanatory
+        - Low
+        - Boxy
+        - Hissing
+        - Low
+        - Throaty
+        - Serious
+        Rating: 7
+      audioDetails:
+        SampleRate: 32000
+        BitDepth: 16
+        Duration: 0
+        DataOffset: 44
+      previewDataSize: 479335
+      dataFileName: 1701179560742143
+  - text: Or even create much more advanced setups with different voices in single
+      library!
+    voiceId: 143
+    audioClip: {fileID: 8300000, guid: e1f9d128c5fb5234d95dac76735ca163, type: 3}
+    voicePreview:
+      itemData:
+        Name: Owen
+        Id: 143
+        PreviewUrl: https://ciso-public.charactr.com/v1/voice/143/1/preview.wav
+        Description: 
+        Labels:
+        - Male
+        - Explanatory
+        - Low
+        - Boxy
+        - Hissing
+        - Low
+        - Throaty
+        - Serious
+        Rating: 7
+      audioDetails:
+        SampleRate: 32000
+        BitDepth: 16
+        Duration: 0
+        DataOffset: 44
+      previewDataSize: 479335
+      dataFileName: 1701179560742143

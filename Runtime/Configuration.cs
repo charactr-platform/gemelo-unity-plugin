@@ -14,7 +14,9 @@ namespace Gemelo.Voice
 		public const string USER_AGENT = "sdk-unity";
 		public const string API_CLIENT = "X-Client-Key";
 		public const string API_KEY = "X-Api-Key";
-		public const string SAVE_PATH = "Assets/Resources/"+FILENAME+".asset";
+		public const string SAVE_PATH = GLOBAL_SAVE_PATH+FILENAME+".asset";
+		public const string GLOBAL_SAVE_PATH = "Assets/Resources/";
+		public static string CachePath => Application.persistentDataPath + "/PreviewCache";
 
 		private const string FILENAME = "Configuration";
 
@@ -75,9 +77,7 @@ namespace Gemelo.Voice
 			return configuration;
 		}
 
-		public static bool Exists()
-		{
-			return Resources.Load<Configuration>(FILENAME) != null;
-		}
+		public static bool Exists() =>
+			Resources.Load<Configuration>(FILENAME) != null;
 	}
 }

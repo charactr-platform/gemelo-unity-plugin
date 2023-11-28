@@ -1,11 +1,12 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Gemelo.Voice.Samples.Convert
 {
 	public class DialogController : MonoBehaviour
 	{
 		[SerializeField] private PlayerDialog playerOne;
-
+		[SerializeField] private Button startButton;
 		[SerializeField] private PlayerDialog playerTwo;
 
 		// Start is called before the first frame update
@@ -13,9 +14,9 @@ namespace Gemelo.Voice.Samples.Convert
 		{
 			playerOne.OnVoiceItemPlayed += OnVoiceItemPlayed;
 			playerTwo.OnVoiceItemPlayed += OnVoiceItemPlayed;
-			playerOne.PlayNextSequence();
+			startButton.onClick.AddListener(()=>playerOne.PlayNextSequence());
 		}
-
+		
 		private void OnVoiceItemPlayed(int id)
 		{
 			//Play next dialog item as response to previous player

@@ -21,7 +21,7 @@ namespace Gemelo.Voice.Audio
 		private readonly float _eofMargin;
 		private MpegFile _mpegFile;
 		private int _samplesCount, _writeCount;
-		public Mp3Builder(int sampleRate, byte[] headerData) : base(sampleRate)
+		public Mp3Builder(int sampleRate, byte[] headerData) : base(sampleRate, 16)
 		{
 			if (sampleRate < 44100)
 				throw new Exception("Supported sample rate for Mp3 decoding is 44100");

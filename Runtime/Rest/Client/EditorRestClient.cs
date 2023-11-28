@@ -36,6 +36,19 @@ namespace Gemelo.Voice.Rest.Client
 			return json;
 		}
 
+		public async Task<byte[]> GetDataAsync(string url)
+		{
+			var req = await _client.GetAsync(url);
+
+			if (req.StatusCode != HttpStatusCode.OK)
+			{
+				ReturnErrorMessage(ToString(), (int)req.StatusCode);
+				return default;
+			}
+
+			return await req.Content.ReadAsByteArrayAsync();
+		}
+		
 		public async Task<byte[]> PostAsync(string url, string jsonPayload)
 		{
 			var request = new HttpRequestMessage(HttpMethod.Post, url);

@@ -51,6 +51,9 @@ namespace Gemelo.Voice.Audio
 		
 		private bool IsWavFile(ref byte[] data)
 		{
+			if (data.Length < WavBuilder.HeaderSize)
+				return false;
+			
 			var riff = Encoding.ASCII.GetString (data, 0, 4);
 			var wave = Encoding.ASCII.GetString (data, 8, 4);
 			return riff.Equals("RIFF") && wave.Equals("WAVE");

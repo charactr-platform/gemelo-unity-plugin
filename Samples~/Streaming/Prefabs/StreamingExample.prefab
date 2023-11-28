@@ -1264,9 +1264,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   voiceId: 181
-  audioDataType: 2
-  samplingRate: 44100
-  audioBufferLengthInSeconds: 30
+  audioParameters:
+    audioDataType: 2
+    sampleRate: 44100
+    maxClipLength: 30
 --- !u!114 &301267087320235722
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1337,13 +1338,13 @@ MonoBehaviour:
   streamingManager: {fileID: 4959724508167933505}
   texts:
   - Text: Hello from Charactr Software Development Kit for Unity!
-    VoiceId: 155
-  - Text: This is sample example of Text To Speech streaming technology.
     VoiceId: 154
+  - Text: This is sample example of Text To Speech streaming technology.
+    VoiceId: 105
   - Text: You can use different voice for each text copy.
-    VoiceId: 168
+    VoiceId: 64
   - Text: You can also use our streaming technology in runtime on each platform!
-    VoiceId: 59
+    VoiceId: 176
   - Text: Have fun!
     VoiceId: 143
 --- !u!1 &5516502249365902456

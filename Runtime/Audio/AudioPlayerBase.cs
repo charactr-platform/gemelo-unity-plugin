@@ -43,12 +43,13 @@ namespace Gemelo.Voice.Audio
 		
 		protected static T CreateInstance<T>(string clipId) where T : Component, IAudioPlayer
 		{
-			var player = new GameObject($"~TempPlayer_{clipId}").AddComponent<T>();
+			var player = new GameObject(GetName(clipId)).AddComponent<T>();
 			player.gameObject.hideFlags = HideFlags.HideAndDontSave;
 			player.Initialize(false);
 			return player;
 		}
-		
+
+		protected static string GetName(string clipId) => $"~TempPlayer_{clipId}";
 		protected void Play(AudioClip clip)
 		{
 			if (!IsInitialized)
@@ -94,7 +95,6 @@ namespace Gemelo.Voice.Audio
 			//Called from static method, destroy GameObject on Dispose
 			if (gameObject.hideFlags == HideFlags.HideAndDontSave)
 			{
-				Debug.Log($"Destroying AudioPlayer game object:{name}");
 				DestroyImmediate(gameObject, false);
 			}
 		}
