@@ -4,9 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [v1.1.0] - 2023-11-28
+## [v1.2.0] - 2023-11-28
 - Added Voices preview database
 - Fixed Samples voices to free tier
+
+## [v1.1.0] - 2023-09-27
+- Added support for Mp3 streaming
+- Major code refactorings in AudioClipBuilder
 
 ## [v1.0.0] - 2023-08-03
 - Release of Gemelo.ai Voice SDK (formerly Charactr Voice SDK)

@@ -5,7 +5,7 @@ This is the UPM package for the Gemelo.ai Voice Plugin.
 
 Install it via menu `Window/Package Manager->Add package from Git url` in Unity:
 ```
-https://github.com/charactr-platform/gemelo-unity-plugin.git#v1.1.0
+https://github.com/charactr-platform/gemelo-unity-plugin.git#v1.2.0
 ```
 Please restart Unity Editor after package installation.
 
@@ -14,7 +14,7 @@ Please visit [Gemelo.ai](https://app.gemelo.ai) for account creation and API key
 
 ## Unity version support
 
-- Developed and tested on Unity 2021 LTS (2021.3.10)
+- Developed and tested on Unity 2021 LTS (2021.3.30)
 - Tested on Unity 2022 LTS (2022.3.1)
 - Tested on Unity 2023 (2023.1.5)
 
