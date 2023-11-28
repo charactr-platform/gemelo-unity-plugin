@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 43c2b42b752e40fd8d3cb96f15951aa2, type: 3}
-  m_Name: VoiceLibrary_PlayerOne
+  m_Name: VoiceLibrary_Owen
   m_EditorClassIdentifier: 
   items:
   - text: Hello from Character Voice SDK for Unity!
     voiceId: 143
-    audioClip: {fileID: 8300000, guid: 683f8dd98dc544245b425b1319ef982e, type: 3}
+    audioClip: {fileID: 8300000, guid: be7f1df0f5800e845bbae43e2f7bd5d0, type: 3}
     voicePreview:
       itemData:
         Name: Owen
@@ -38,11 +38,11 @@ MonoBehaviour:
         Duration: 0
         DataOffset: 44
       previewDataSize: 479335
-      dataFileName: 1701103757639143
+      dataFileName: 1701179560742143
   - text: Or even create much more advanced setups with different voices in single
       library!
     voiceId: 143
-    audioClip: {fileID: 8300000, guid: d0d231848e4464531a4997f9b7a6a731, type: 3}
+    audioClip: {fileID: 8300000, guid: e1f9d128c5fb5234d95dac76735ca163, type: 3}
     voicePreview:
       itemData:
         Name: Owen
@@ -65,4 +65,4 @@ MonoBehaviour:
         Duration: 0
         DataOffset: 44
       previewDataSize: 479335
-      dataFileName: 1701103757639143
+      dataFileName: 1701179560742143

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 43c2b42b752e40fd8d3cb96f15951aa2, type: 3}
-  m_Name: VoiceLibrary_PlayerTwo
+  m_Name: VoiceLibrary_Eric
   m_EditorClassIdentifier: 
   items:
   - text: You can use this example setup as easy to use dialogue system for game.
