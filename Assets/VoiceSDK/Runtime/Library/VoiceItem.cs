@@ -27,16 +27,15 @@ namespace Gemelo.Voice.Library
             get => audioClip;
             set => audioClip = value;
         }
-        
-        public int Id
-        {
-            get { return Mathf.Abs(text.GetHashCode() + voiceId); }
-        }
+
+        public int Id => id;
 
         [SerializeField] private string text;
         [SerializeField] private int voiceId;
         [SerializeField] private AudioClip audioClip;
+        //Used in Editor Inspector
         [SerializeField] private VoicePreview voicePreview;
+        [SerializeField] private int id;
         public bool IsValid() => !string.IsNullOrEmpty(Text) && VoiceId > 0 && voiceId < 999;
         public ConvertRequest GetRequest()
         {

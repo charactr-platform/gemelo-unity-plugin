@@ -37,8 +37,8 @@ namespace Gemelo.Voice.Editor.Library
 		public static void ShowSelectionWindow(SerializedProperty element)
 		{
 			var wnd = CreateInstance<DatabaseListView>();
-			wnd.RegisterVoiceItem(element);
 			wnd.titleContent = new GUIContent(TITLE);
+			var ctx = element.serializedObject.context;
 			wnd.SetListType(ListType.Selection);
 			wnd.ShowModal();
 		}
@@ -57,12 +57,6 @@ namespace Gemelo.Voice.Editor.Library
 			_listType = type;
 		}
 		
-		private void RegisterVoiceItem(SerializedProperty voiceItem)
-		{
-			_voicePreviewProperty = voiceItem;
-			_targetLibrary = voiceItem.serializedObject.targetObject as VoiceLibrary;
-		}
-
 		private void RegisterItemId(int id, VoiceLibrary targetLibrary)
 		{
 			_voiceItemId = id;
@@ -143,11 +137,9 @@ namespace Gemelo.Voice.Editor.Library
 			}
 			else
 			{
-				var itemData = _voicePreviewProperty.FindPropertyRelative("itemData");
-				var originalVoiceId = itemData.FindPropertyRelative("Id");
-				_targetLibrary.SetVoicePreviewForItemVoiceId(originalVoiceId.intValue, preview);
+				Debug.LogError($"Can't find itemId: {_voiceItemId}");
 			}
-			
+
 			Close();
 		}
 		

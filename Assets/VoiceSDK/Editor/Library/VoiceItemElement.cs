@@ -64,10 +64,15 @@ namespace Gemelo.Voice.Editor.Library
 
 		private int CalculateCurrentHash()
 		{
-			var hash = Mathf.Abs(TextField.stringValue.GetHashCode() + VoiceField.intValue);
+			var listHash = Property.propertyPath.GetHashCode() + 
+									TextField.stringValue.GetHashCode() +
+									VoiceField.intValue.GetHashCode();
+
+			int hash = CrcHelper.CRC16(listHash);
 			IdField.value = hash;
 			return hash;
 		}
+
 
 		private ItemState CheckForState()
 		{
@@ -215,7 +220,9 @@ namespace Gemelo.Voice.Editor.Library
 		private void RegisterVisualElements()
 		{
 			Label = new Label();
-			IdField = new IntegerField("ID");
+			IdField = new IntegerField("Item ID:");
+			IdField.BindProperty(Property.FindPropertyRelative("id"));
+			
 			IdField.isReadOnly = true;
 			
 			CopyIdButton.Add(new Label("Copy ID"));

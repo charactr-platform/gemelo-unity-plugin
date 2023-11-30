@@ -216,6 +216,7 @@ namespace Gemelo.Voice.Editor.Preview
 
 		private void OnChangeEvent(ClickEvent evt) =>
 			DatabaseListView.ShowSelectionWindow(_property);
+		
 		private void OnDetailsEvent(ClickEvent evt)
 		{
 			if (!_viewRoot.hierarchy.Children().Contains(_detailsPopup))

@@ -105,12 +105,7 @@ namespace Gemelo.Voice.Library
 			var itemIndex = Items.FindIndex(f => f.Id == itemId);
 			SetPreviewForItem(itemIndex, preview);
 		}
-		public void SetVoicePreviewForItemVoiceId(int itemVoiceId, VoicePreview preview)
-		{
-			var itemIndex = Items.FindIndex(f => f.VoiceId == itemVoiceId);
-			SetPreviewForItem(itemIndex, preview);
-		}
-
+		
 		private void SetPreviewForItem(int index, VoicePreview preview)
 		{
 			Items[index].SetVoicePreview(preview);
