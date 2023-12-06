@@ -25,8 +25,6 @@ namespace Gemelo.Voice.Editor.Library
 			NotSet
 		}
 		
-		public VisualElement Container { get; private set; }
-		private PopupWindow PopupWindow { get; set; }
 		private Button UpdateButton { get; set; }
 		private Button CopyIdButton { get; set; }
 		private SerializedProperty Property { get; set; }
@@ -38,28 +36,34 @@ namespace Gemelo.Voice.Editor.Library
 		private SerializedProperty Timestamp { get; set; }
 		private IntegerField IdField { get; set; }
 		private Label Label { get; set; }
-
 		private ItemState State { get; set; }
-		public int Hash { get; private set; }
-		
+
 		private int _lastHash;
 		private readonly VoicesDatabase _database;
+		
 		public VoiceItemElement()
 		{
 			_database = VoicesDatabase.Load();
 		}
+
+		private void CreateInspector()
+		{
+			var assetPath = AssetDatabase.GUIDToAssetPath("591c5c1ab96e74cfd9c11b6f1d26aec0");
+			var treeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(assetPath);
+			treeAsset.CloneTree(this);
+		}
 		
 		public void RegisterElement(SerializedProperty property)
 		{
+			
 			Property = property;
 			TextField = property.FindPropertyRelative("text");
 			VoiceField = property.FindPropertyRelative("voiceId");
 			AudioClipField = property.FindPropertyRelative("audioClip");
 			VoicePreview = property.FindPropertyRelative("voicePreview");
 			Timestamp = property.FindPropertyRelative("timestamp");
-			Hash = property.GetHashCode();
 			// Create a new VisualElement to be the root the property UI
-			CreateWindow();
+			CreateInspector();
 			RegisterVisualElements();
 			IdField.value = CalculateCurrentHash();
 			UpdateState();
@@ -118,7 +122,7 @@ namespace Gemelo.Voice.Editor.Library
 				UpdateState();
 			};
 
-			var field = PopupWindow.Q<PropertyField>();
+			var field = this.Q<PropertyField>();
 		
 			field.visible = false;
 			
@@ -214,46 +218,30 @@ namespace Gemelo.Voice.Editor.Library
 
 			_lastHash = newFieldsHash;
 
-			PopupWindow.text = $"Voice item state: {State}";
+			this.Q<Label>().text = $"Voice item state: {State}";
 			
 			if (State != ItemState.UpToDate)
 				RefreshVoicePreview();
 		}
-
-		//TODO: Move this to XML layout
+		
 		private void RegisterVisualElements()
 		{
-			Label = new Label();
-			IdField = new IntegerField("Item ID:");
+			IdField = this.Q<IntegerField>("idField");
+			var voiceField = this.Q<IntegerField>();
+			var textField = this.Q<TextField>();
+			
 			var idProperty = Property.FindPropertyRelative("id");
 			IdField.BindProperty(idProperty);
 			
 			IdField.isReadOnly = true;
-			
+			CopyIdButton = this.Q<Button>("copyButton");
 			CopyIdButton.Add(new Label("Copy ID"));
 			CopyIdButton.clicked += ()=> EditorGUIUtility.systemCopyBuffer = ToString();
-			IdField.Add(CopyIdButton);
-			Label.Add(IdField);
 			
-			PopupWindow.Add(Label);
-			
-			var textField = new TextField("Text to voice", 500, true, false, ' ');
 			textField.BindProperty(TextField);
-
-			PopupWindow.Add(textField);
-
-			var voiceField = new IntegerField("Voice selection");
-			voiceField.name = "voiceId";
 			voiceField.BindProperty(VoiceField);
-			PopupWindow.Add(voiceField);
-			
-			var audioField = new PropertyField(AudioClipField, "AudioClip");
-			PopupWindow.Add(audioField);
-			
+			UpdateButton = this.Q<Button>("updateButton");
 			UpdateButton.Add(new Label("Control button"));
-			PopupWindow.Add(UpdateButton);
-			
-			Container.Add(PopupWindow);
 
 			_lastHash = CalculateCurrentHash();
 			textField.RegisterValueChangedCallback((s) => UpdateState());
@@ -266,7 +254,7 @@ namespace Gemelo.Voice.Editor.Library
 		private void RefreshVoicePreview()
 		{
 			var id = VoiceField.intValue;
-			var voiceField = PopupWindow.Q<IntegerField>("voiceId");
+			var voiceField = this.Q<IntegerField>("voiceField");
 			
 			var buttonId = "selectVoiceButton";
 			
@@ -351,29 +339,6 @@ namespace Gemelo.Voice.Editor.Library
 			voicePreviewField.BindProperty(VoicePreview);
 			
 			integerField.Add(voicePreviewField);
-		}
-
-		public void CreateWindow()
-		{
-			Container = new VisualElement();
-			
-			var noneStyle = new StyleColor(StyleKeyword.None);
-
-			PopupWindow = new PopupWindow
-			{
-				text = $"Voice item details [hash][state]",
-				style =
-				{
-					backgroundColor = noneStyle,
-					borderBottomColor = noneStyle,
-					borderTopColor = noneStyle,
-					borderLeftColor = noneStyle,
-					borderRightColor = noneStyle,
-				}
-			};
-
-			UpdateButton = new Button();
-			CopyIdButton = new Button();
 		}
 	}
 }

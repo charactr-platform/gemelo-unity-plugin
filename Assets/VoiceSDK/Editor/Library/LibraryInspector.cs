@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using Gemelo.Voice.Library;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace Gemelo.Voice.Editor.Library
@@ -13,6 +15,7 @@ namespace Gemelo.Voice.Editor.Library
 		private Button _updateButton, _addButton, _removeButton;
 		private VisualElement _inspector;
 		private VisualElement _selected;
+		private ListView _listView;
 		
 		public override VisualElement CreateInspectorGUI()
 		{
@@ -29,6 +32,23 @@ namespace Gemelo.Voice.Editor.Library
 			
 			_removeButton = _inspector.Q<Button>("removeButton");
 			_removeButton.RegisterCallback<ClickEvent>((e) => OnRemoveButton());
+			
+			_listView = _inspector.Q<ListView>();
+			
+			var items = serializedObject.FindProperty("items");
+
+			var itemsList = new List<SerializedProperty>();
+			
+			for (int i = 0; i < items.arraySize; i++)
+			{
+				var property = items.GetArrayElementAtIndex(i);
+				
+				itemsList.Add(property);
+			}
+
+			//_listView.itemsSource = itemsList;
+			_listView.BindProperty(items);
+
 			// Return the finished inspector UI
 			return _inspector;
 		}
