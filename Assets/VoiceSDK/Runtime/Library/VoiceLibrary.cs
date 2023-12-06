@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Gemelo.Voice.Editor.Preview;
 using UnityEditor;
@@ -28,6 +29,22 @@ namespace Gemelo.Voice.Library
 		{
 			items = new List<VoiceItem>();
 		}
+
+		public bool GetItemByTimestamp(long timestamp, out VoiceItem voiceItem)
+		{
+			var index = items.FindIndex(f => f.Timestamp == timestamp);
+			
+			voiceItem = null;
+			if (index < 0)
+			{
+				var itemsFound = string.Join(", ", items.Select(s=>s.Timestamp));
+				Debug.LogError($"Can't find VoiceItem with timestamp = {timestamp}, Founded: {itemsFound}");
+				return false;
+			}
+			
+			voiceItem = items[index];
+			return true;
+		}
 		
 		public bool GetItemById(int id, out VoiceItem voiceItem)
 		{
@@ -37,16 +54,17 @@ namespace Gemelo.Voice.Library
 			
 			if (index < 0)
 			{
-				Debug.LogError($"Can't find VoiceItem with id = {id}");
+				var itemsFound = string.Join(", ", items.Select(s=>s.Id));
+				Debug.LogError($"Can't find VoiceItem with id = {id}, Founded: {itemsFound}");
 				return false;
 			}
 
 			//Warning, copy here
 			voiceItem = items[index];
-			
 			return true;
 		}
 
+		
 		public bool GetAudioClipById(int id, out AudioClip audioClip)
 		{
 			audioClip = null;
@@ -78,7 +96,7 @@ namespace Gemelo.Voice.Library
 			}
 			
 			items.Add(item);
-			Debug.Log($"Created new VoiceItem with id = {item.Id}");
+			Debug.Log($"Created new VoiceItem with id = {item.Id}, timestamp = {item.Timestamp}");
 			
 			return item.Id;
 		}

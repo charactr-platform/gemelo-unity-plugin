@@ -52,9 +52,16 @@ namespace Gemelo.Voice.Editor.Preview
 		{
 			get => itemData.Rating;
 		}
+		
 		public AudioDetails AudioDetails
 		{
 			get => audioDetails;
+		}
+
+		public int VoiceItemId
+		{
+			get => voiceItemId;
+			set => voiceItemId = value;
 		}
 		
 		public string CacheFilePath => Path.Combine(Configuration.CachePath, dataFileName);
@@ -65,7 +72,7 @@ namespace Gemelo.Voice.Editor.Preview
 		[SerializeField] private AudioDetails audioDetails;
 		[SerializeField] private long previewDataSize;
 		[SerializeField] private string dataFileName;
-		
+		[SerializeField] private int voiceItemId;
 		public VoicePreview(VoicePreviewItem item)
 		{
 			itemData = new PreviewItemData()

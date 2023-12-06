@@ -10,7 +10,7 @@ namespace Gemelo.Voice.Editor.Library
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
 			var instance = new VoiceItemElement();
-			
+		
 			instance.RegisterElement(property);
 			// Return the finished UI
 			return instance.Container;

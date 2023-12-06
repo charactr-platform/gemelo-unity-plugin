@@ -1,19 +1,19 @@
-
 using Gemelo.Voice.Library;
 using UnityEditor;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Gemelo.Voice.Editor.Library
 {
+	
 	[CustomEditor(typeof(VoiceLibrary))]
 	public class LibraryInspector : UnityEditor.Editor
 	{
 		public VisualTreeAsset inspectorXmlAsset;
-		
-		private Button _updateButton;
+
+		private Button _updateButton, _addButton, _removeButton;
 		private VisualElement _inspector;
-	
+		private VisualElement _selected;
+		
 		public override VisualElement CreateInspectorGUI()
 		{
 			// Create a new VisualElement to be the root of our inspector UI
@@ -21,12 +21,29 @@ namespace Gemelo.Voice.Editor.Library
 		
 			// Load from default reference
 			inspectorXmlAsset.CloneTree(_inspector);
-			var updateButton = _inspector.Q<Button>("updateButton");
-			updateButton.RegisterCallback<ClickEvent>((e) => OnUpdateButton());
+			_updateButton = _inspector.Q<Button>("updateButton");
+			_updateButton.RegisterCallback<ClickEvent>((e) => OnUpdateButton());
+
+			_addButton = _inspector.Q<Button>("addButton");
+			_addButton.RegisterCallback<ClickEvent>((e) => OnAddButton());
+			
+			_removeButton = _inspector.Q<Button>("removeButton");
+			_removeButton.RegisterCallback<ClickEvent>((e) => OnRemoveButton());
 			// Return the finished inspector UI
 			return _inspector;
 		}
-		
+
+		private void OnRemoveButton()
+		{
+			throw new System.NotImplementedException();
+		}
+
+		private void OnAddButton()
+		{
+			var library = target as VoiceLibrary;
+			library.AddNewItem("Hello world from Gemelo.AI SDK", Gemelo.Voice.Configuration.DEFAULT_VOICE_ID);
+		}
+
 		private async void OnUpdateButton()
 		{
 			var library = target as VoiceLibrary;

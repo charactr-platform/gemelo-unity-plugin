@@ -16,10 +16,14 @@ namespace Gemelo.Voice
 		public const string API_KEY = "X-Api-Key";
 		public const string SAVE_PATH = GLOBAL_SAVE_PATH+FILENAME+".asset";
 		public const string GLOBAL_SAVE_PATH = "Assets/Resources/";
+		
+		public const int DEFAULT_VOICE_ID = 105;
+		public const string DEFAULT_TEXT = "Hello from Gemelo.AI Unity Plugin!";
 		public static string CachePath => Application.persistentDataPath + "/PreviewCache";
 
 		private const string FILENAME = "Configuration";
 
+	
 		public string ApiClient
 		{
 			get => apiClient;

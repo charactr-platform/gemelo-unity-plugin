@@ -34,19 +34,19 @@ namespace Gemelo.Voice.Editor.Library
 			wnd.Show(true);
 		}
 		
-		public static void ShowSelectionWindow(SerializedProperty element)
+		public static void ShowSelectionWindow(SerializedProperty property)
 		{
 			var wnd = CreateInstance<DatabaseListView>();
 			wnd.titleContent = new GUIContent(TITLE);
-			var ctx = element.serializedObject.context;
+			wnd.RegisterItemProperty(property);
 			wnd.SetListType(ListType.Selection);
 			wnd.ShowModal();
 		}
 		
-		public static void ShowSelectionWindow(int itemId, VoiceLibrary targetLibrary)
+		public static void ShowSelectionWindow(int timestamp, VoiceLibrary targetLibrary)
 		{
 			var wnd = CreateInstance<DatabaseListView>();
-			wnd.RegisterItemId(itemId, targetLibrary);
+			wnd.RegisterItemId(timestamp, targetLibrary);
 			wnd.SetListType(ListType.Selection);
 			wnd.titleContent = new GUIContent(TITLE);
 			wnd.ShowModal();
@@ -61,6 +61,13 @@ namespace Gemelo.Voice.Editor.Library
 		{
 			_voiceItemId = id;
 			_targetLibrary = targetLibrary;
+		}
+
+		private void RegisterItemProperty(SerializedProperty property)
+		{
+			_voicePreviewProperty = property;
+			_voiceItemId = property.FindPropertyRelative("voiceItemId").intValue;
+			_targetLibrary = property.serializedObject.targetObject as VoiceLibrary;
 		}
 		
 		private void CreateGUI()

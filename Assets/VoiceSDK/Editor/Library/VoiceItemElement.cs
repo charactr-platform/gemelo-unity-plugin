@@ -26,18 +26,20 @@ namespace Gemelo.Voice.Editor.Library
 		}
 		
 		public VisualElement Container { get; private set; }
-		public PopupWindow PopupWindow { get; private set; }
-		public Button UpdateButton { get; set; }
-		public Button CopyIdButton { get; set; }
-		public SerializedProperty Property { get; set; }
-		public SerializedProperty TextField { get; set; }
-		public SerializedProperty VoiceField { get; set; }
-		public SerializedProperty AudioClipField { get; set; }
-		public SerializedProperty VoicePreview { get; set; }
-		public IntegerField IdField { get; private set; }
-		public Label Label { get; private set; }
+		private PopupWindow PopupWindow { get; set; }
+		private Button UpdateButton { get; set; }
+		private Button CopyIdButton { get; set; }
+		private SerializedProperty Property { get; set; }
+		private SerializedProperty TextField { get; set; }
+		private SerializedProperty VoiceField { get; set; }
+		private SerializedProperty AudioClipField { get; set; }
+		private SerializedProperty VoicePreview { get; set; }
 		
-		public ItemState State { get; set; }
+		private SerializedProperty Timestamp { get; set; }
+		private IntegerField IdField { get; set; }
+		private Label Label { get; set; }
+
+		private ItemState State { get; set; }
 		public int Hash { get; private set; }
 		
 		private int _lastHash;
@@ -54,17 +56,20 @@ namespace Gemelo.Voice.Editor.Library
 			VoiceField = property.FindPropertyRelative("voiceId");
 			AudioClipField = property.FindPropertyRelative("audioClip");
 			VoicePreview = property.FindPropertyRelative("voicePreview");
+			Timestamp = property.FindPropertyRelative("timestamp");
 			Hash = property.GetHashCode();
 			// Create a new VisualElement to be the root the property UI
 			CreateWindow();
 			RegisterVisualElements();
+			IdField.value = CalculateCurrentHash();
 			UpdateState();
 		}
+		
 		public override string ToString() => _lastHash.ToString();
 
 		private int CalculateCurrentHash()
 		{
-			var listHash = Property.propertyPath.GetHashCode() + 
+			var listHash = Timestamp.longValue.GetHashCode() + 
 									TextField.stringValue.GetHashCode() +
 									VoiceField.intValue.GetHashCode();
 
@@ -72,8 +77,7 @@ namespace Gemelo.Voice.Editor.Library
 			IdField.value = hash;
 			return hash;
 		}
-
-
+		
 		private ItemState CheckForState()
 		{
 			AudioClip audioClip = null;
@@ -221,7 +225,8 @@ namespace Gemelo.Voice.Editor.Library
 		{
 			Label = new Label();
 			IdField = new IntegerField("Item ID:");
-			IdField.BindProperty(Property.FindPropertyRelative("id"));
+			var idProperty = Property.FindPropertyRelative("id");
+			IdField.BindProperty(idProperty);
 			
 			IdField.isReadOnly = true;
 			
@@ -257,7 +262,7 @@ namespace Gemelo.Voice.Editor.Library
 			RefreshVoicePreview();
 			State = ItemState.Initialized;
 		}
-
+		
 		private void RefreshVoicePreview()
 		{
 			var id = VoiceField.intValue;
@@ -318,14 +323,10 @@ namespace Gemelo.Voice.Editor.Library
 			
 			var library = Property.serializedObject.targetObject as VoiceLibrary;
 			
-			if (library.GetItemById(_lastHash, out var voiceItem))
-			{
+			if (library.GetItemByTimestamp(Timestamp.longValue, out var voiceItem))
 				voiceItem.SetVoicePreview(preview);
-			}
 			else
-			{
-				Debug.LogError("Can't find item with hash: "+_lastHash);
-			}
+				Debug.LogError($"Can't find item with hash: {_lastHash}");
 
 			var element = integerField.Q<PropertyField>(id);
 
