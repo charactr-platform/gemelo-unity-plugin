@@ -3,8 +3,8 @@
     <ui:Label text="Voice clips library" class="topLabel" style="justify-content: center; align-items: center; -unity-text-align: upper-center; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;" />
     <ui:VisualElement style="height: 45px; width: 100%; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; max-height: initial; flex-direction: row; align-items: stretch; justify-content: space-around; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; flex-shrink: 0;">
         <ui:Button text="Add" display-tooltip-when-elided="true" name="addButton" style="margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px; flex-shrink: 0; width: 25%; flex-grow: 1;" />
-        <ui:Button text="Remove" display-tooltip-when-elided="true" name="removeButton" style="margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px; flex-shrink: 0; width: 25%; flex-grow: 1;" />
-        <ui:Button text="Update all" display-tooltip-when-elided="true" name="updateButton" style="margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px; flex-shrink: 0; flex-grow: 1; width: 25%;" />
+        <ui:Button text="Remove" display-tooltip-when-elided="true" name="removeButton" enable-rich-text="false" style="margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px; flex-shrink: 0; width: 25%; flex-grow: 1; display: flex; visibility: visible;" />
+        <ui:Button text="Save" display-tooltip-when-elided="true" name="saveButton" style="margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px; flex-shrink: 0; flex-grow: 1; width: 25%;" />
     </ui:VisualElement>
-    <ui:ListView focusable="true" name="itemsListView" show-border="true" show-foldout-header="false" show-bound-collection-size="false" style="height: 100%; margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px; min-height: 200px;" />
+    <ui:ListView focusable="true" name="itemsListView" show-border="false" show-foldout-header="false" show-bound-collection-size="false" virtualization-method="DynamicHeight" style="margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px; min-height: auto; flex-grow: 0; flex-shrink: 0; justify-content: space-around; align-items: stretch; flex-basis: auto;" />
 </ui:UXML>

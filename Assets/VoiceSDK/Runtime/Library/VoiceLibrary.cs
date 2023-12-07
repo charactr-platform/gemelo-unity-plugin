@@ -63,7 +63,6 @@ namespace Gemelo.Voice.Library
 			voiceItem = items[index];
 			return true;
 		}
-
 		
 		public bool GetAudioClipById(int id, out AudioClip audioClip)
 		{
