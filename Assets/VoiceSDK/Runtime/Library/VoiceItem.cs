@@ -38,7 +38,7 @@ namespace Gemelo.Voice.Library
         [SerializeField] private VoicePreview voicePreview;
         [SerializeField] private int id;
         [SerializeField] private long timestamp;
-        public bool IsValid() => !string.IsNullOrEmpty(Text) && VoiceId > 0 && VoiceId < 999 && Timestamp > 0;
+        public bool IsValid() => !string.IsNullOrEmpty(Text) && VoiceId > -1 && Timestamp > 0;
         public ConvertRequest GetRequest()
         {
             return new ConvertRequest()
@@ -51,7 +51,7 @@ namespace Gemelo.Voice.Library
         public void InitializeEmpty()
         {
             timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            voiceId = Configuration.DEFAULT_VOICE_ID;
+            voiceId = 0;
             text = Configuration.DEFAULT_TEXT;
         }
 
@@ -60,8 +60,7 @@ namespace Gemelo.Voice.Library
             InitializeEmpty();
             this.voiceId = voiceId;
         }
-        
-        
+
         public void SetVoicePreview(VoicePreview voicePreview)
         {
             this.voiceId = voicePreview.Id;

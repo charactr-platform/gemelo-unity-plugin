@@ -65,6 +65,9 @@ namespace Gemelo.Voice.Editor.Library
 
 		private void RegisterItemProperty(SerializedProperty property)
 		{
+			property.serializedObject.SetIsDifferentCacheDirty();
+			property.serializedObject.Update();
+			
 			_voicePreviewProperty = property;
 			_voiceItemId = property.FindPropertyRelative("voiceItemId").intValue;
 			_targetLibrary = property.serializedObject.targetObject as VoiceLibrary;

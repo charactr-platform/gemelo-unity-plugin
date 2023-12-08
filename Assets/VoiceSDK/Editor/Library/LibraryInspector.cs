@@ -39,7 +39,16 @@ namespace Gemelo.Voice.Editor.Library
 			_saveButton.RegisterCallback<ClickEvent>((e) => OnSaveButton());
 			_saveButton.SetEnabled(false);
 			
+			LoadSerializedData();
+			
+			return _inspector;
+		}
+
+		private void LoadSerializedData()
+		{
 			_listView = _inspector.Q<ListView>();
+
+			serializedObject.UpdateIfRequiredOrScript();
 			
 			_items = serializedObject.FindProperty("items");
 			
@@ -55,9 +64,7 @@ namespace Gemelo.Voice.Editor.Library
 			
 			_initialHash = CalculateListHashFromItems(_items);
 			Debug.Log($"Initial hash: {_initialHash}");
-			return _inspector;
 		}
-
 		private int CalculateListHashFromItems(SerializedProperty items)
 		{
 			var j = 0;
@@ -73,24 +80,30 @@ namespace Gemelo.Voice.Editor.Library
 		
 		private void OnRemoveButton()
 		{
-			//_listView.RemoveFromSelection(_selectedIndex);
 			_items.GetArrayElementAtIndex(_selectedIndex).DeleteCommand();
 			_items.serializedObject.ApplyModifiedProperties();
 			_listView.Rebuild();
+			Repaint();
 		}
 
 		private void OnSaveButton()
 		{
-			
 			_saveButton.SetEnabled(false);
+			EditorUtility.SetDirty(this);
+			AssetDatabase.SaveAssetIfDirty(this);
 		}
+		
 		private void OnAddButton()
 		{
 			var library = target as VoiceLibrary;
-			library.AddNewItem("Hello world from Gemelo.AI SDK", Gemelo.Voice.Configuration.DEFAULT_VOICE_ID);
-			_items.serializedObject.Update();
-			_saveButton.SetEnabled(true);
-			_listView.Rebuild();
+			library.AddNewItem("Hello world from Gemelo.AI SDK", 0);
+			
+			Repaint();
+			
+			if (CalculateListHashFromItems(_items) != _initialHash)
+			{
+				_saveButton.SetEnabled(true);
+			}
 		}
 	}
 }

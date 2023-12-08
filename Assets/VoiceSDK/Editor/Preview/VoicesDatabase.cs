@@ -77,6 +77,11 @@ namespace Gemelo.Voice.Editor.Preview
 
 		public bool PreviewExists(int itemId, out int index)
 		{
+			index = -1;
+			
+			if (itemId == 0)
+				return false;
+			
 			index = voices.FindIndex(f => f.Id == itemId);
 			return index >= 0;
 		}

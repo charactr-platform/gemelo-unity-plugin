@@ -244,7 +244,9 @@ namespace Gemelo.Voice.Editor.Library
 			UpdateButton = this.Q<Button>("updateButton");
 			UpdateButton.Add(new Label("Control button"));
 
-			_lastHash = CalculateCurrentHash();
+			_lastHash = IdProperty.intValue = CalculateCurrentHash();
+			Property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
+			
 			textField.RegisterValueChangedCallback((s) => UpdateState());
 			voiceField.RegisterValueChangedCallback((s) => UpdateState());
 			
@@ -295,13 +297,21 @@ namespace Gemelo.Voice.Editor.Library
 			{
 				text = "[Select voice]",
 				name = id,
+				style =
+				{
+					alignSelf = new StyleEnum<Align>(Align.Stretch),
+					flexBasis = new StyleLength(StyleKeyword.Auto),
+					flexGrow = 1,
+					maxHeight = integerField.style.maxHeight
+				}
 			};
 			
-			button.AddToClassList(".rounded");
+			button.AddToClassList("rounded-nobg");
 			button.RegisterCallback<ClickEvent>((e) =>
 			{
 				DatabaseListView.ShowSelectionWindow(_lastHash, TargetLibrary);
 			});
+			
 			integerField.Add(button);
 		}
 		
@@ -311,13 +321,9 @@ namespace Gemelo.Voice.Editor.Library
 
 			var id = "voicePreviewElement";
 			
-			var library = Property.serializedObject.targetObject as VoiceLibrary;
+			VoiceIdProperty.intValue = preview.Id;
+			Property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
 			
-			if (library.GetItemByTimestamp(TimestampProperty.longValue, out var voiceItem))
-				voiceItem.SetVoicePreview(preview);
-			else
-				Debug.LogError($"Can't find item with hash: {_lastHash}");
-
 			var element = integerField.Q<PropertyField>(id);
 
 			if (element != null)
@@ -341,6 +347,9 @@ namespace Gemelo.Voice.Editor.Library
 			voicePreviewField.BindProperty(VoicePreviewProperty);
 			
 			integerField.Add(voicePreviewField);
+			
+			UpdateState();
 		}
+		
 	}
 }

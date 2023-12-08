@@ -20,12 +20,10 @@ namespace Gemelo.Voice.Editor.Preview
 	public class VoicePreviewElement: VisualElement
 	{
 		public override VisualElement contentContainer => _viewRoot;
-		private const string TreeGuid = "a37506bebdde24a87a150e49634741c5";
-		
+	
 		private readonly VisualElement _viewRoot;
 		private Button _playButton, _changeButton, _detailsButton, _selectButton;
 		private SerializedProperty _property;
-		private Label _nameLabel;
 		private PopupWindow _detailsPopup;
 		private int _id;
 		private readonly ListType _listType;
@@ -72,7 +70,7 @@ namespace Gemelo.Voice.Editor.Preview
 			_id = id;
 			_property = property;
 
-			_nameLabel = CreateLabel(item);
+			CreateLabel(item);
 			_selectButton = RegisterSelectButton();
 			_detailsButton = RegisterDetailsButton();
 			_changeButton = RegisterChangeButton();
@@ -80,29 +78,20 @@ namespace Gemelo.Voice.Editor.Preview
 			_detailsPopup = CreateDetailsPopup(item, audio);
 		}
 
-		private Label CreateLabel(SerializedProperty previewItem)
+		private void CreateLabel(SerializedProperty previewItem)
 		{
 			var label = this.Q<Label>("nameLabel");
 			var rate = this.Q<Label>("rateLabel");
 			
 			var labelsValue = string.Empty;
-			var name = previewItem.FindPropertyRelative("Name");
+			var itemNam = previewItem.FindPropertyRelative("Name");
 			var labels = previewItem.FindPropertyRelative("Labels");
 			
 			if (labels.isArray && labels.arraySize > 0)
 				labelsValue = $"({labels.GetArrayElementAtIndex(0).stringValue})";
 			
 			rate.text = $"{previewItem.FindPropertyRelative("Rating").floatValue:F1}";
-			label.text = $"{name.stringValue} "+labelsValue;
-
-			if (_listType == ListType.Selection)
-			{
-				var labelColor = label.style.color; 
-				label.RegisterCallback<MouseOverEvent>(evt=> label.style.color = new StyleColor(Color.white));
-				label.RegisterCallback<MouseOutEvent>(evt=> label.style.color = labelColor);
-			}
-			
-			return label;
+			label.text = $"{itemNam.stringValue} {labelsValue}";
 		}
 
 		private PopupWindow CreateDetailsPopup(SerializedProperty previewItem, SerializedProperty audioDetails)
@@ -164,7 +153,7 @@ namespace Gemelo.Voice.Editor.Preview
 					borderTopRightRadius = 0
 				}
 			};
-			popup.AddToClassList("rounded");
+			popup.AddToClassList("rounded-nobg");
 			return popup;
 		}
 
@@ -208,14 +197,11 @@ namespace Gemelo.Voice.Editor.Preview
 			return button;
 		}
 
-		private void OnSelectEvent(ClickEvent evt) =>
-			_onSelect?.Invoke(_id);
+		private void OnSelectEvent(ClickEvent evt) => _onSelect?.Invoke(_id);
 		
-		private void OnPlayEvent(ClickEvent evt) =>
-			OnPlayEvent(_id);
+		private void OnPlayEvent(ClickEvent evt) => OnPlayEvent(_id);
 
-		private void OnChangeEvent(ClickEvent evt) =>
-			DatabaseListView.ShowSelectionWindow(_property);
+		private void OnChangeEvent(ClickEvent evt) => DatabaseListView.ShowSelectionWindow(_property);
 		
 		private void OnDetailsEvent(ClickEvent evt)
 		{
@@ -242,7 +228,7 @@ namespace Gemelo.Voice.Editor.Preview
 		
 		private static VisualTreeAsset LoadTreeAsset()
 		{
-			var assetPath = AssetDatabase.GUIDToAssetPath(TreeGuid);
+			var assetPath = AssetDatabase.GUIDToAssetPath("a37506bebdde24a87a150e49634741c5");
 			return AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(assetPath);
 		}
 

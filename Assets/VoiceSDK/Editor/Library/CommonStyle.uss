@@ -56,16 +56,10 @@
     align-items: center;
     flex-direction: row;
     background-color: rgb(173, 50, 50);
-    padding-left: 2px;
-    padding-right: 2px;
-    padding-top: 0;
-    padding-bottom: 0;
+    padding: 0 2px;
     max-height: 20px;
     min-height: 30px;
-    margin-left: 3px;
-    margin-right: 3px;
-    margin-top: 3px;
-    margin-bottom: 3px;
+    margin: 3px;
     justify-content: flex-start;
     top: auto;
     bottom: auto;
@@ -75,16 +69,10 @@
     align-items: center;
     flex-direction: row;
     background-color: rgb(39, 39, 39);
-    padding-left: 2px;
-    padding-right: 2px;
-    padding-top: 2px;
-    padding-bottom: 2px;
+    padding: 2px;
     max-height: 30px;
     min-height: initial;
-    margin-left: 3px;
-    margin-right: 3px;
-    margin-top: 3px;
-    margin-bottom: 3px;
+    margin: 3px;
     justify-content: flex-start;
     top: auto;
     bottom: auto;
@@ -92,10 +80,7 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-top-left-radius: 7px;
-    border-bottom-left-radius: 7px;
-    border-top-right-radius: 7px;
-    border-bottom-right-radius: 7px;
+    border-radius: 5px;
     border-left-color: rgb(111, 111, 111);
     border-right-color: rgb(111, 111, 111);
     border-top-color: rgb(111, 111, 111);
@@ -106,10 +91,7 @@
     align-items: center;
     flex-direction: row;
     background-color: rgb(39, 39, 39);
-    padding-left: 2px;
-    padding-right: 2px;
-    padding-top: 2px;
-    padding-bottom: 2px;
+    padding: 2px;
     max-height: none;
     min-height: initial;
     margin-left: 3px;
@@ -122,22 +104,17 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-top-left-radius: 7px;
-    border-bottom-left-radius: 7px;
-    border-top-right-radius: 7px;
-    border-bottom-right-radius: 7px;
+    border-radius: 5px;
     border-left-color: rgb(111, 111, 111);
     border-right-color: rgb(111, 111, 111);
     border-top-color: rgb(111, 111, 111);
     border-bottom-color: rgb(111, 111, 111);
 }
+
 .rounded-nobg {
     align-items: center;
     flex-direction: row;
-    padding-left: 2px;
-    padding-right: 2px;
-    padding-top: 2px;
-    padding-bottom: 2px;
+    padding: 2px;
     max-height: none;
     min-height: initial;
     margin-left: 3px;
@@ -150,12 +127,12 @@
     border-right-width: 1px;
     border-top-width: 1px;
     border-bottom-width: 1px;
-    border-top-left-radius: 7px;
-    border-bottom-left-radius: 7px;
-    border-top-right-radius: 7px;
-    border-bottom-right-radius: 7px;
+    border-radius: 5px 5px 5px 5px;
     border-left-color: rgb(111, 111, 111);
     border-right-color: rgb(111, 111, 111);
     border-top-color: rgb(111, 111, 111);
     border-bottom-color: rgb(111, 111, 111);
+}
+
+.unity-text-field {
 }
