@@ -58,7 +58,7 @@ namespace Gemelo.Voice.Editor.Preview
 			get => audioDetails;
 		}
 
-		public int VoiceItemId
+		public long VoiceItemId
 		{
 			get => voiceItemId;
 			set => voiceItemId = value;
@@ -72,7 +72,7 @@ namespace Gemelo.Voice.Editor.Preview
 		[SerializeField] private AudioDetails audioDetails;
 		[SerializeField] private long previewDataSize;
 		[SerializeField] private string dataFileName;
-		[SerializeField] private int voiceItemId;
+		[SerializeField] private long voiceItemId;
 		public VoicePreview(VoicePreviewItem item)
 		{
 			itemData = new PreviewItemData()

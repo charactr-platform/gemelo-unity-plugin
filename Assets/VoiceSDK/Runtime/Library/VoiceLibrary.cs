@@ -117,10 +117,20 @@ namespace Gemelo.Voice.Library
 		
 #if UNITY_EDITOR
 
-		public void SetVoicePreviewForItemId(int itemId, VoicePreview preview)
+		public void SetVoicePreviewForItemTimestamp(long id, VoicePreview preview)
 		{
-			var itemIndex = Items.FindIndex(f => f.Id == itemId);
-			SetPreviewForItem(itemIndex, preview);
+			var index = Items.FindIndex(f => f.Timestamp == id);
+			
+			if (index < 0)
+				index = Items.FindIndex(f => f.Id == id);
+				
+			if (index < 0)
+			{
+				Debug.LogError($"Can't find item with timestamp or index = {id}");
+				return;
+			}
+			
+			SetPreviewForItem(index, preview);
 		}
 		
 		private void SetPreviewForItem(int index, VoicePreview preview)
@@ -130,6 +140,7 @@ namespace Gemelo.Voice.Library
 			obj.ApplyModifiedProperties();
 			obj.Dispose();
 		}
+		
 		public async Task<int> ConvertTextsToAudioClips(Action<int> onItemDownloaded)
 		{
 			var processedItems = 0;

@@ -17,9 +17,8 @@ namespace Gemelo.Voice.Editor.Library
 		private const string TITLE = "Preview and select voice:";
 		private Button _button;
 		private ListView _listView;
-		private SerializedProperty _voicePreviewProperty;
-
-		private int _voiceItemId = -1;
+	
+		private long _voiceItemTimestamp = -1;
 		private VoiceLibrary _targetLibrary;
 		private ListType _listType;
 		
@@ -43,7 +42,7 @@ namespace Gemelo.Voice.Editor.Library
 			wnd.ShowModal();
 		}
 		
-		public static void ShowSelectionWindow(int timestamp, VoiceLibrary targetLibrary)
+		public static void ShowSelectionWindow(long timestamp, VoiceLibrary targetLibrary)
 		{
 			var wnd = CreateInstance<DatabaseListView>();
 			wnd.RegisterItemId(timestamp, targetLibrary);
@@ -57,19 +56,15 @@ namespace Gemelo.Voice.Editor.Library
 			_listType = type;
 		}
 		
-		private void RegisterItemId(int id, VoiceLibrary targetLibrary)
+		private void RegisterItemId(long id, VoiceLibrary targetLibrary)
 		{
-			_voiceItemId = id;
+			_voiceItemTimestamp = id;
 			_targetLibrary = targetLibrary;
 		}
 
 		private void RegisterItemProperty(SerializedProperty property)
 		{
-			property.serializedObject.SetIsDifferentCacheDirty();
-			property.serializedObject.Update();
-			
-			_voicePreviewProperty = property;
-			_voiceItemId = property.FindPropertyRelative("voiceItemId").intValue;
+			_voiceItemTimestamp = property.FindPropertyRelative("voiceItemId").longValue;
 			_targetLibrary = property.serializedObject.targetObject as VoiceLibrary;
 		}
 		
@@ -141,13 +136,13 @@ namespace Gemelo.Voice.Editor.Library
 		
 			Debug.Log(preview.Name);
 
-			if (_voiceItemId > -1)
+			if (_voiceItemTimestamp > -1)
 			{
-				_targetLibrary.SetVoicePreviewForItemId(_voiceItemId, preview);
+				_targetLibrary.SetVoicePreviewForItemTimestamp(_voiceItemTimestamp, preview);
 			}
 			else
 			{
-				Debug.LogError($"Can't find itemId: {_voiceItemId}");
+				Debug.LogError($"Can't find itemId: {_voiceItemTimestamp}");
 			}
 
 			Close();

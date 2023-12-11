@@ -309,7 +309,7 @@ namespace Gemelo.Voice.Editor.Library
 			button.AddToClassList("rounded-nobg");
 			button.RegisterCallback<ClickEvent>((e) =>
 			{
-				DatabaseListView.ShowSelectionWindow(_lastHash, TargetLibrary);
+				DatabaseListView.ShowSelectionWindow(TimestampProperty.longValue, TargetLibrary);
 			});
 			
 			integerField.Add(button);
@@ -323,6 +323,8 @@ namespace Gemelo.Voice.Editor.Library
 			
 			VoiceIdProperty.intValue = preview.Id;
 			Property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
+
+			TargetLibrary.SetVoicePreviewForItemTimestamp(TimestampProperty.longValue, preview);
 			
 			var element = integerField.Q<PropertyField>(id);
 
