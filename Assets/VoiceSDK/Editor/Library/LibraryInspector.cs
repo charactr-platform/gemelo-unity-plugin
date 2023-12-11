@@ -41,6 +41,19 @@ namespace Gemelo.Voice.Editor.Library
 			
 			LoadSerializedData();
 			
+			_listView.onSelectedIndicesChange += ints =>
+			{
+
+				var selectionFound = ints.Any();
+				_removeButton.SetEnabled(selectionFound);
+				if (selectionFound)
+				{
+					var index = ints.FirstOrDefault();
+					Debug.Log($"Selected = [{index}]");
+					_selectedIndex = index;
+				}
+			};
+			
 			return _inspector;
 		}
 
@@ -54,20 +67,14 @@ namespace Gemelo.Voice.Editor.Library
 			
 			_listView.BindProperty(_items);
 
-			_listView.onSelectedIndicesChange += ints =>
-			{
-				_removeButton.SetEnabled(ints.Any());
-				var index = ints.FirstOrDefault();
-				Debug.Log($"Selected = [{index}]");
-				_selectedIndex = index;
-			};
-			
 			_initialHash = CalculateListHashFromItems(_items);
 			Debug.Log($"Initial hash: {_initialHash}");
 		}
+		
 		private int CalculateListHashFromItems(SerializedProperty items)
 		{
 			var j = 0;
+			
 			items.serializedObject.Update();
 			
 			for (int i = 0; i < items.arraySize; i++)
@@ -80,10 +87,16 @@ namespace Gemelo.Voice.Editor.Library
 		
 		private void OnRemoveButton()
 		{
+			if (_selectedIndex < 0)
+				return;
+			
+			Debug.Log($"Deleting item = [{_selectedIndex}]");
 			_items.GetArrayElementAtIndex(_selectedIndex).DeleteCommand();
 			_items.serializedObject.ApplyModifiedProperties();
-			_listView.Rebuild();
-			Repaint();
+			_listView.ClearSelection();
+			_selectedIndex = -1;
+			LoadSerializedData();
+			_listView.RefreshItems();
 		}
 
 		private void OnSaveButton()
@@ -91,6 +104,7 @@ namespace Gemelo.Voice.Editor.Library
 			_saveButton.SetEnabled(false);
 			EditorUtility.SetDirty(this);
 			AssetDatabase.SaveAssetIfDirty(this);
+			AssetDatabase.SaveAssets();
 		}
 		
 		private void OnAddButton()
