@@ -15,7 +15,7 @@ MonoBehaviour:
   items:
   - text: You can use this example setup as easy to use dialogue system for game.
     voiceId: 64
-    audioClip: {fileID: 8300000, guid: f110cf875f85d47adae0dfedf99ab10e, type: 3}
+    audioClip: {fileID: 8300000, guid: 0243db919e97da94ba51ed9b0fc3d10a, type: 3}
     voicePreview:
       itemData:
         Name: Eric
@@ -40,10 +40,13 @@ MonoBehaviour:
         Duration: 0
         DataOffset: 44
       previewDataSize: 476618
-      dataFileName: 170110375773564
+      dataFileName: 170205055880164
+      voiceItemId: 34851
+    id: 47766
+    timestamp: 1702394281977
   - text: This simple demonstration may help to start with our SDK, have fun!
     voiceId: 64
-    audioClip: {fileID: 8300000, guid: 9ee3f3cf6dadf4db8b04666af4d937d3, type: 3}
+    audioClip: {fileID: 8300000, guid: ef9a24f5c3efb8b40b48005e6b14ee6e, type: 3}
     voicePreview:
       itemData:
         Name: Eric
@@ -68,4 +71,7 @@ MonoBehaviour:
         Duration: 0
         DataOffset: 44
       previewDataSize: 476618
-      dataFileName: 170110375773564
+      dataFileName: 170205055880164
+      voiceItemId: 34851
+    id: 34851
+    timestamp: 1702394316951

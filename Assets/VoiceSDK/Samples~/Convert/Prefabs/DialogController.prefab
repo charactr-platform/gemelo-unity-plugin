@@ -521,7 +521,7 @@ PrefabInstance:
     - target: {fileID: 1388093314599285146, guid: 97fba572693b34440b0f2ea857bb76d9, type: 3}
       propertyPath: voiceLibrary
       value: 
-      objectReference: {fileID: 11400000, guid: cf080ce96aa2c91478edad994de98c50, type: 2}
+      objectReference: {fileID: 11400000, guid: 7435ea957a9068d4d8c910b385864b8f, type: 2}
     - target: {fileID: 4994909797867740931, guid: 97fba572693b34440b0f2ea857bb76d9, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -671,6 +671,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player_Eric
       objectReference: {fileID: 0}
+    - target: {fileID: 6076538647964928041, guid: 13b3a71f3c1a645ecbd9e199ab55e61a, type: 3}
+      propertyPath: voiceLibrary
+      value: 
+      objectReference: {fileID: 11400000, guid: e8e78b5c52d4ae644ae66a8f3c6e2e5d, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 13b3a71f3c1a645ecbd9e199ab55e61a, type: 3}
 --- !u!4 &6027408121757336462 stripped
