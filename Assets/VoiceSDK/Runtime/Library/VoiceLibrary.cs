@@ -116,30 +116,6 @@ namespace Gemelo.Voice.Library
 		}
 		
 #if UNITY_EDITOR
-
-		public void SetVoicePreviewForItemTimestamp(long id, VoicePreview preview)
-		{
-			var index = Items.FindIndex(f => f.Timestamp == id);
-			
-			if (index < 0)
-				index = Items.FindIndex(f => f.Id == id);
-				
-			if (index < 0)
-			{
-				Debug.LogError($"Can't find item with timestamp or index = {id}");
-				return;
-			}
-			
-			SetPreviewForItem(index, preview);
-		}
-		
-		private void SetPreviewForItem(int index, VoicePreview preview)
-		{
-			Items[index].SetVoicePreview(preview);
-			var obj = new SerializedObject(this);
-			obj.ApplyModifiedProperties();
-			obj.Dispose();
-		}
 		
 		public async Task<int> ConvertTextsToAudioClips(Action<int> onItemDownloaded)
 		{

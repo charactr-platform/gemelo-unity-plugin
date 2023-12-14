@@ -18,6 +18,7 @@ namespace Gemelo.Voice.Editor.Library
 		private Button _button;
 		private ListView _listView;
 	
+		private int _voiceItemId = -1;
 		private long _voiceItemTimestamp = -1;
 		private VoiceLibrary _targetLibrary;
 		private ListType _listType;
@@ -37,16 +38,16 @@ namespace Gemelo.Voice.Editor.Library
 		{
 			var wnd = CreateInstance<DatabaseListView>();
 			wnd.titleContent = new GUIContent(TITLE);
-			wnd.RegisterItemProperty(property);
 			wnd.SetListType(ListType.Selection);
+			wnd.RegisterItemProperty(property);
 			wnd.ShowModal();
 		}
 		
 		public static void ShowSelectionWindow(long timestamp, VoiceLibrary targetLibrary)
 		{
 			var wnd = CreateInstance<DatabaseListView>();
-			wnd.RegisterItemId(timestamp, targetLibrary);
-			wnd.SetListType(ListType.Selection);
+			wnd.SetListType(ListType.Creation);
+			wnd.RegisterItemTimestamp(timestamp, targetLibrary);
 			wnd.titleContent = new GUIContent(TITLE);
 			wnd.ShowModal();
 		}
@@ -56,15 +57,15 @@ namespace Gemelo.Voice.Editor.Library
 			_listType = type;
 		}
 		
-		private void RegisterItemId(long id, VoiceLibrary targetLibrary)
+		private void RegisterItemTimestamp(long timestamp, VoiceLibrary targetLibrary)
 		{
-			_voiceItemTimestamp = id;
+			_voiceItemTimestamp = timestamp;
 			_targetLibrary = targetLibrary;
 		}
 
 		private void RegisterItemProperty(SerializedProperty property)
 		{
-			_voiceItemTimestamp = property.FindPropertyRelative("voiceItemId").longValue;
+			_voiceItemId = property.FindPropertyRelative("voiceItemId").intValue;
 			_targetLibrary = property.serializedObject.targetObject as VoiceLibrary;
 		}
 		
@@ -136,15 +137,20 @@ namespace Gemelo.Voice.Editor.Library
 		
 			Debug.Log(preview.Name);
 
-			if (_voiceItemTimestamp > -1)
+			var libraryObject = new SerializedObject(_targetLibrary);
+			
+			switch (_listType)
 			{
-				_targetLibrary.SetVoicePreviewForItemTimestamp(_voiceItemTimestamp, preview);
-			}
-			else
-			{
-				Debug.LogError($"Can't find itemId: {_voiceItemTimestamp}");
-			}
+				case ListType.Creation:
+					VoiceItemElement.SetVoicePreviewForItemByTimestamp(libraryObject, _voiceItemTimestamp, preview);
+					break;
 
+				case ListType.Selection:
+					VoiceItemElement.SetVoicePreviewForItemById(libraryObject, _voiceItemId, preview);
+					break;
+			}
+			
+			libraryObject.Dispose();
 			Close();
 		}
 		
@@ -154,6 +160,7 @@ namespace Gemelo.Voice.Editor.Library
 			{
 				ListType.None => "Available voices: ",
 				ListType.Change => "Click 'Change' to change current voice:",
+				ListType.Creation => "Click 'Select' to set new voice:",
 				ListType.Selection => "Click 'Select' to select new voice:",
 				_ => string.Empty
 			};

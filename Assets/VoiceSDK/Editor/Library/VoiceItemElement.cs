@@ -322,9 +322,8 @@ namespace Gemelo.Voice.Editor.Library
 			var id = "voicePreviewElement";
 			
 			VoiceIdProperty.intValue = preview.Id;
-			Property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
-
-			TargetLibrary.SetVoicePreviewForItemTimestamp(TimestampProperty.longValue, preview);
+			
+			SetVoicePreviewForItemByTimestamp(Property.serializedObject, TimestampProperty.longValue, preview);
 			
 			var element = integerField.Q<PropertyField>(id);
 
@@ -353,5 +352,100 @@ namespace Gemelo.Voice.Editor.Library
 			UpdateState();
 		}
 		
+		public static void SetVoicePreviewForItemByTimestamp(SerializedObject serializedObject, long timestamp, VoicePreview voicePreview)
+		{
+			var items = serializedObject.FindProperty("items");
+
+			var index = -1L;
+
+			for (int i = 0; i < items.arraySize; i++)
+			{
+				var voiceItem = items.GetArrayElementAtIndex(i);
+
+				if (voiceItem.FindPropertyRelative("timestamp").longValue != timestamp)
+					continue;
+				
+				index = i;
+				SetPreviewForSerializedItem(voiceItem, voicePreview);
+				break;
+			}
+
+			if (index < 0)
+			{
+				Debug.LogError($"Can't find item with timestamp or index = {timestamp}");
+			}
+			else
+			{
+				serializedObject.ApplyModifiedProperties();
+				Debug.Log("Updated serialized object!");
+			}
+		}
+		
+		public static void SetVoicePreviewForItemById(SerializedObject serializedObject, int id, VoicePreview voicePreview)
+		{
+			var items = serializedObject.FindProperty("items");
+
+			var index = -1;
+
+			for (int i = 0; i < items.arraySize; i++)
+			{
+				var voiceItem = items.GetArrayElementAtIndex(i);
+
+				if (voiceItem.FindPropertyRelative("id").intValue != id)
+					continue;
+				
+				index = i;
+				SetPreviewForSerializedItem(voiceItem, voicePreview);
+				break;
+			}
+
+			if (index < 0)
+			{
+				Debug.LogError($"Can't find item with id = {id}");
+			}
+			else
+			{
+				serializedObject.ApplyModifiedProperties();
+				Debug.Log("Updated serialized object!");
+			}
+		}
+		
+		/*
+		 * Set public fields required by VoicePreviewElement in SerializedObject mode.
+		  public struct PreviewItemData
+			{
+				public string Name;
+				public int Id;
+				public string PreviewUrl;
+				public string Description;
+				public string[] Labels;
+				public float Rating;
+			}
+		*/
+		
+		private static void SetPreviewForSerializedItem(SerializedProperty property, VoicePreview preview)
+		{
+			property.FindPropertyRelative("voiceId").intValue = preview.Id;
+			
+			var p = property.FindPropertyRelative("voicePreview");
+			var item = p.FindPropertyRelative("itemData");
+			
+			item.FindPropertyRelative("Id").intValue = preview.Id;
+			item.FindPropertyRelative("Name").stringValue = preview.Name;
+			item.FindPropertyRelative("Rating").floatValue = preview.Rating;
+		
+			FillDetailsLabel(item.FindPropertyRelative("Labels"), preview.Labels);
+		}
+
+		private static void FillDetailsLabel(SerializedProperty labelsProperty, string[] labelsList)
+		{
+			labelsProperty.ClearArray();
+			
+			for (int i = 0; i < labelsList.Length; i++)
+			{
+				labelsProperty.InsertArrayElementAtIndex(i);
+				labelsProperty.GetArrayElementAtIndex(i).stringValue = labelsList[i];
+			}
+		}
 	}
 }

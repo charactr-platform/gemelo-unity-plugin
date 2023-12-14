@@ -14,6 +14,7 @@ namespace Gemelo.Voice.Editor.Preview
 	{
 		None,
 		Change,
+		Creation,
 		Selection,
 	}
 	
@@ -169,7 +170,7 @@ namespace Gemelo.Voice.Editor.Preview
 			var button = this.Q<Button>("selectButton");
 			button.RegisterCallback<ClickEvent>(OnSelectEvent);
 			
-			if (_listType != ListType.Selection)
+			if (_listType != ListType.Selection && _listType != ListType.Creation)
 			{
 				button.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
 			}

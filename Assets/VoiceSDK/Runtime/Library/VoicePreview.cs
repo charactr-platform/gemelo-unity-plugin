@@ -52,6 +52,11 @@ namespace Gemelo.Voice.Editor.Preview
 		{
 			get => itemData.Rating;
 		}
+
+		public string[] Labels
+		{
+			get => itemData.Labels;
+		}
 		
 		public AudioDetails AudioDetails
 		{
