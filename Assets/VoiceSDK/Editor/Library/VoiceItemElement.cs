@@ -197,7 +197,7 @@ namespace Gemelo.Voice.Editor.Library
 				return;
 			}
 
-			Debug.Log($"Playing:{clip.name}");
+			Debug.Log($"Playing: {clip.name}");
 			AudioPlayer.PlayClipStatic(clip);
 			EditorApplication.RepaintProjectWindow();
 		}
@@ -324,6 +324,7 @@ namespace Gemelo.Voice.Editor.Library
 			VoiceIdProperty.intValue = preview.Id;
 			
 			SetVoicePreviewForItemByTimestamp(Property.serializedObject, TimestampProperty.longValue, preview);
+			Property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
 			
 			var element = integerField.Q<PropertyField>(id);
 
@@ -366,19 +367,13 @@ namespace Gemelo.Voice.Editor.Library
 					continue;
 				
 				index = i;
-				SetPreviewForSerializedItem(voiceItem, voicePreview);
+				var id = voiceItem.FindPropertyRelative("id").intValue;
+				SetPreviewForSerializedItem(voiceItem, voicePreview, id);
 				break;
 			}
 
 			if (index < 0)
-			{
 				Debug.LogError($"Can't find item with timestamp or index = {timestamp}");
-			}
-			else
-			{
-				serializedObject.ApplyModifiedProperties();
-				Debug.Log("Updated serialized object!");
-			}
 		}
 		
 		public static void SetVoicePreviewForItemById(SerializedObject serializedObject, int id, VoicePreview voicePreview)
@@ -395,39 +390,22 @@ namespace Gemelo.Voice.Editor.Library
 					continue;
 				
 				index = i;
-				SetPreviewForSerializedItem(voiceItem, voicePreview);
+				SetPreviewForSerializedItem(voiceItem, voicePreview, id);
 				break;
 			}
 
 			if (index < 0)
-			{
 				Debug.LogError($"Can't find item with id = {id}");
-			}
-			else
-			{
-				serializedObject.ApplyModifiedProperties();
-				Debug.Log("Updated serialized object!");
-			}
 		}
 		
-		/*
-		 * Set public fields required by VoicePreviewElement in SerializedObject mode.
-		  public struct PreviewItemData
-			{
-				public string Name;
-				public int Id;
-				public string PreviewUrl;
-				public string Description;
-				public string[] Labels;
-				public float Rating;
-			}
-		*/
-		
-		private static void SetPreviewForSerializedItem(SerializedProperty property, VoicePreview preview)
+		//Set public fields required by VoicePreviewElement in SerializedObject mode, [PreviewItemData] struct.
+		private static void SetPreviewForSerializedItem(SerializedProperty property, VoicePreview preview, int itemId)
 		{
 			property.FindPropertyRelative("voiceId").intValue = preview.Id;
 			
 			var p = property.FindPropertyRelative("voicePreview");
+			p.FindPropertyRelative("voiceItemId").intValue = itemId;
+			
 			var item = p.FindPropertyRelative("itemData");
 			
 			item.FindPropertyRelative("Id").intValue = preview.Id;

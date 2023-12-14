@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Gemelo.Voice.Editor.Preview;
-using UnityEditor;
 using UnityEngine;
 
 namespace Gemelo.Voice.Library
@@ -114,30 +112,5 @@ namespace Gemelo.Voice.Library
 				Debug.LogError($"Can't find valid voice item with id = {id}");
 			}
 		}
-		
-#if UNITY_EDITOR
-		
-		public async Task<int> ConvertTextsToAudioClips(Action<int> onItemDownloaded)
-		{
-			var processedItems = 0;
-			
-			foreach (var voiceItem in items)
-			{
-				await voiceItem.GetAudioClip();
-				processedItems++;
-				onItemDownloaded?.Invoke(processedItems);
-			}
-			
-			if (processedItems > 0)
-			{
-				EditorUtility.SetDirty(this);
-				AssetDatabase.SaveAssetIfDirty(this);
-				
-				Debug.Log($"Saved library asset = {name}, updated items count = {processedItems}");
-			}
-
-			return processedItems;
-		}
-#endif
 	}
 }

@@ -149,7 +149,8 @@ namespace Gemelo.Voice.Editor.Library
 					VoiceItemElement.SetVoicePreviewForItemById(libraryObject, _voiceItemId, preview);
 					break;
 			}
-			
+
+			libraryObject.ApplyModifiedPropertiesWithoutUndo();
 			libraryObject.Dispose();
 			Close();
 		}

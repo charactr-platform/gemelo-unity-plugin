@@ -37,8 +37,7 @@ namespace Gemelo.Voice.Tests
 		{
 			var id = _library.AddNewItem("Hello world!", TestBase.VOICE_ID);
 			Assert.NotZero(id);
-			//await _library.AddAudioClip(id);
-			
+
 			Assert.IsTrue(_library.GetItemById(id, out var item));
 		
 			Assert.NotNull(item);
@@ -56,14 +55,6 @@ namespace Gemelo.Voice.Tests
 			var path = AssetDatabase.GetAssetPath(item.AudioClip);
 			Assert.IsNotEmpty(path);
 			Debug.Log($"Asset path: = {path}");
-		}
-
-		[Test]
-		public void TryLoadExistingLibrary_NotNull()
-		{
-			var library = Resources.Load<VoiceLibrary>("VoiceLibrary");
-			Assert.NotNull(library);
-			library.ConvertTextsToAudioClips(null);
 		}
 	}
 }
