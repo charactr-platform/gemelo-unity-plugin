@@ -25,7 +25,7 @@ namespace Gemelo.Voice.Tests
 			" only cookies necessary to provide you the services will be used." +
 			" You may change your selection by clicking “Manage Cookies” at the bottom of the page.";
 
-		protected const int VoiceId = 151;
+		protected const int VoiceId = 105; //Free - Steven
 	}
 	
 	public class StreamingBase: StreamingTestsData
@@ -152,7 +152,7 @@ namespace Gemelo.Voice.Tests
 			var header = new WavHeaderData(buffer);
 			Assert.AreEqual(44100, header.SampleRate);
 
-			var wav = new WavBuilder(header.SampleRate, buffer);
+			var wav = new WavBuilder(header.SampleRate, header.BitDepth, buffer);
 			var clip = wav.CreateAudioClip();
 			Debug.Log(clip.samples);
 

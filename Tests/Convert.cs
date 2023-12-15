@@ -31,7 +31,7 @@ namespace Gemelo.Voice.Tests
 			Assert.AreEqual(32000, header.SampleRate);
 			Assert.AreEqual(16,header.BitDepth);
 
-			var wav = new WavBuilder(header.SampleRate, wavBytes);
+			var wav = new WavBuilder(header.SampleRate, header.BitDepth, wavBytes);
 			Assert.NotNull(wav);
 			
 			var clip = wav.CreateAudioClip();

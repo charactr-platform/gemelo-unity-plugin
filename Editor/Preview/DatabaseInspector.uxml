@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="project://database/Assets/VoiceSDK/Editor/Library/CommonStyle.uss?fileID=7433441132597879392&amp;guid=00118f51d99b4ea45954e7e7e70cbe72&amp;type=3#CommonStyle" />
+    <ui:VisualElement name="container" style="margin-top: 10px; flex-grow: 1; align-items: stretch; justify-content: flex-start; flex-shrink: 0; flex-direction: column; height: 100%; width: 100%;">
+        <ui:Label text="VoicesPreviewDatabase" display-tooltip-when-elided="true" name="titleLabel" class="topLabel" style="-unity-text-align: lower-center; white-space: nowrap; position: relative; top: auto;" />
+        <ui:VisualElement style="flex-direction: row; justify-content: space-around; align-items: center; height: 50px; width: 100%; flex-grow: 0; flex-shrink: 0;">
+            <ui:Button text="Purge cache" display-tooltip-when-elided="true" name="purgeButton" style="-unity-text-align: middle-center; flex-direction: column; width: 30%; height: 30px; align-items: center; justify-content: space-around;" />
+            <ui:Button text="Update" display-tooltip-when-elided="true" name="updateButton" style="-unity-text-align: middle-center; flex-direction: row; width: 30%; height: 30px;" />
+        </ui:VisualElement>
+        <ui:Label text="&#10;&#10;" display-tooltip-when-elided="true" name="statusLabel" enable-rich-text="true" usage-hints="None" class="rounded-nobg" style="-unity-text-align: middle-center; height: 100%; flex-direction: column; white-space: normal; flex-wrap: wrap-reverse; flex-grow: 1; align-items: auto; max-height: 70%; justify-content: center; padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; margin-bottom: 0;" />
+    </ui:VisualElement>
+</ui:UXML>

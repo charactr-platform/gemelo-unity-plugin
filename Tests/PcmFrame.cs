@@ -75,7 +75,7 @@ namespace Gemelo.Voice.Tests
 		[Test]
 		public void AddPcmData_Bytes_Returns_Samples_Overflow()
 		{
-			var dataSize = (SamplesCount + 1) * Audio.PcmFrame.BlockSize; //Int16
+			var dataSize = (SamplesCount + 1) * Audio.PcmFrame.BlockSize16; //Int16 = 2 bytes
 			
 			var frameOne = new Audio.PcmFrame(SamplesCount);
 			
@@ -100,7 +100,7 @@ namespace Gemelo.Voice.Tests
 			_queue = new Queue<Audio.PcmFrame>();
 			
 			var count = 0;
-			var byteSize = SamplesCount * Audio.PcmFrame.BlockSize;//Int16
+			var byteSize = SamplesCount * Audio.PcmFrame.BlockSize16;//Int16
 			var dataSize = byteSize * 11 - 1; 
 			
 			_currentFrame = new Audio.PcmFrame(0.ToString(), SamplesCount);

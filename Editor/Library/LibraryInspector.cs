@@ -1,19 +1,25 @@
-
+using System.Linq;
 using Gemelo.Voice.Library;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Charactr.VoiceSDK.Editor.Library
+namespace Gemelo.Voice.Editor.Library
 {
+	
 	[CustomEditor(typeof(VoiceLibrary))]
 	public class LibraryInspector : UnityEditor.Editor
 	{
 		public VisualTreeAsset inspectorXmlAsset;
-		
-		private Button _updateButton;
+
+		private Button _addButton, _removeButton, _saveButton;
 		private VisualElement _inspector;
-	
+		private VisualElement _selected;
+		private ListView _listView;
+		private int _initialHash;
+		private int _selectedIndex = -1;
+		private SerializedProperty _items;
 		public override VisualElement CreateInspectorGUI()
 		{
 			// Create a new VisualElement to be the root of our inspector UI
@@ -21,36 +27,102 @@ namespace Charactr.VoiceSDK.Editor.Library
 		
 			// Load from default reference
 			inspectorXmlAsset.CloneTree(_inspector);
-			var updateButton = _inspector.Q<Button>("updateButton");
-			updateButton.RegisterCallback<ClickEvent>((e) => OnUpdateButton());
-			// Return the finished inspector UI
+			
+			_addButton = _inspector.Q<Button>("addButton");
+			_addButton.RegisterCallback<ClickEvent>((e) => OnAddButton());
+			
+			_removeButton = _inspector.Q<Button>("removeButton");
+			_removeButton.RegisterCallback<ClickEvent>((e) => OnRemoveButton());
+			_removeButton.SetEnabled(false);
+			
+			_saveButton = _inspector.Q<Button>("saveButton");
+			_saveButton.RegisterCallback<ClickEvent>((e) => OnSaveButton());
+			_saveButton.SetEnabled(false);
+			
+			LoadSerializedData();
+			
+			_listView.onSelectedIndicesChange += ints =>
+			{
+
+				var selectionFound = ints.Any();
+				_removeButton.SetEnabled(selectionFound);
+				if (selectionFound)
+				{
+					var index = ints.FirstOrDefault();
+					Debug.Log($"Selected = [{index}]");
+					_selectedIndex = index;
+				}
+			};
+			
 			return _inspector;
 		}
-		
-		private async void OnUpdateButton()
+
+		private void LoadSerializedData()
 		{
-			var library = target as VoiceLibrary;
+			_listView = _inspector.Q<ListView>();
+
+			serializedObject.UpdateIfRequiredOrScript();
 			
-			if (library.IsEmpty)
-			{
-				EditorUtility.DisplayDialog("Nothing to do...",
-					"Please add new items to library (Text, and VoiceId) to download audio clips", "OK");
-				return;
-			}
+			_items = serializedObject.FindProperty("items");
 			
-			if (EditorUtility.DisplayDialog("Start update", "Start update operation on all items ?", "YES", "CANCEL"))
-			{
-				Selection.objects = null;
-				var count = library.Items.Count;
-				EditorUtility.DisplayProgressBar($"Downloading...", $"Downloading items [{0}/{count}]", 0f);
-				await library.ConvertTextsToAudioClips((i) =>
-				{
-					EditorUtility.DisplayProgressBar($"Downloading...", $"Downloading items [{i}/{count}]", (float)count/i);
-				});
-				Selection.SetActiveObjectWithContext(target, library);
-				EditorUtility.ClearProgressBar();
-			}
+			_listView.BindProperty(_items);
+
+			_initialHash = CalculateListHashFromItems(_items);
+			Debug.Log($"Initial hash: {_initialHash}");
 		}
 		
+		private int CalculateListHashFromItems(SerializedProperty items)
+		{
+			var j = 0;
+			
+			items.serializedObject.Update();
+			
+			for (int i = 0; i < items.arraySize; i++)
+			{
+				j += items.GetArrayElementAtIndex(i).FindPropertyRelative("id").intValue;
+			}
+
+			return j;
+		}
+		
+		private void OnRemoveButton()
+		{
+			if (_selectedIndex < 0)
+				return;
+			
+			Debug.Log($"Deleting item = [{_selectedIndex}]");
+			_items.GetArrayElementAtIndex(_selectedIndex).DeleteCommand();
+			_items.serializedObject.ApplyModifiedProperties();
+			_listView.ClearSelection();
+			_selectedIndex = -1;
+			LoadSerializedData();
+			_listView.RefreshItems();
+		}
+
+		private void OnSaveButton()
+		{
+			_saveButton.SetEnabled(false);
+			serializedObject.ApplyModifiedPropertiesWithoutUndo();
+			SaveLibrary(target as VoiceLibrary);
+		}
+
+		public static void SaveLibrary(VoiceLibrary library)
+		{
+			EditorUtility.SetDirty(library);
+			AssetDatabase.SaveAssetIfDirty(library);
+		}
+		
+		private void OnAddButton()
+		{
+			var library = target as VoiceLibrary;
+			library.AddNewItem("Hello world from Gemelo.AI SDK", 0);
+			
+			Repaint();
+			
+			if (CalculateListHashFromItems(_items) != _initialHash)
+			{
+				_saveButton.SetEnabled(true);
+			}
+		}
 	}
 }

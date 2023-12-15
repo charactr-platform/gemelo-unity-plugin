@@ -10,13 +10,24 @@ namespace Gemelo.Voice.Editor.Configuration
         private const string STUDIO_URL = "https://gemelo.ai/studio";
         private const string LOGO_GUID = "2f9da5dd0ddd7470a9ef00889bd59c13";
         private TextField _keyField, _clientField;
+
         private IMGUIContainer _logoContainer;
-        
+
         [MenuItem("Tools/Gemelo.ai Voice/Configuration")]
         public static void ShowWindow()
         {
             var wnd = GetWindow<ApiWindow>();
             wnd.titleContent = new GUIContent("Gemelo.ai Voice Configuration");
+            wnd.Show();
+        }
+
+        [MenuItem("Tools/Gemelo.ai Voice/Update voice previews")]
+        private static void UpdatePreviewsLibrary()
+        {
+            if (Voice.Configuration.Exists())
+                Bootstrapper.InitializeLibrary();
+            else
+                EditorUtility.DisplayDialog("Error!", "Please set API Configuration first!", "OK");
         }
 
         public void CreateGUI()
@@ -53,15 +64,23 @@ namespace Gemelo.Voice.Editor.Configuration
             var key = _keyField.value;
 
             if (string.IsNullOrEmpty(client) || string.IsNullOrEmpty(key))
-                EditorUtility.DisplayDialog("Save error!", $"Please provide api details from {STUDIO_URL}", "OK");
-            
+                EditorUtility.DisplayDialog("Save error!", $"Please provide API details from {STUDIO_URL}", "OK");
+
             Voice.Configuration.Save(client, key);
 
-            if (Voice.Configuration.Exists())
-                EditorUtility.DisplayDialog("Congrats!", "Configuration saved!", "OK");
-            else
+            if (!Voice.Configuration.Exists())
+            {
                 EditorUtility.DisplayDialog("Save error!",
                     $"Can't save configuration, please check save path:\n{Voice.Configuration.SAVE_PATH}", "OK");
+                Close();
+                return;
+            }
+
+            if (EditorUtility.DisplayDialog("Congrats!", "Configuration saved!", "OK"))
+            {
+                UpdatePreviewsLibrary();
+                Close();
+            }
         }
     }
 }

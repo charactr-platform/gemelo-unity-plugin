@@ -57,7 +57,7 @@ namespace Gemelo.Voice
 			
 			Data = wavData;
 			var header = new WavHeaderData(wavData);
-			return new WavBuilder(header.SampleRate, wavData).CreateAudioClip();
+			return new WavBuilder(header.SampleRate, header.BitDepth, wavData).CreateAudioClip();
 		}
 
 		/// <summary>

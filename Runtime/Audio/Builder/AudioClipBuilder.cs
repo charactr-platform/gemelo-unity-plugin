@@ -16,24 +16,29 @@ namespace Gemelo.Voice.Audio
 		public int EmptySamples => _silenceSamplesCount;
 		public int ProcessedSamplesCount => _processedSamplesCount;
 		public int SampleRate => _sampleRate;
+		public int BitDepth => _bitDepth;
 		public float Duration => ProcessedSamplesCount / (float)SampleRate;
+		public bool AwaitsForData => _awaitsForData;
 		
 		private int _processedSamplesCount = 0;
 		private int _playbackPosition = 0;
 		private int _silenceSamplesCount = 20000;
 		
 		private readonly int _sampleRate;
+		private readonly int _bitDepth;
 		private List<float> _samplesBuffer;
 		private AudioClip _clip;
 		private PcmFrame _currentFrame;
 		private readonly Queue<PcmFrame> _frames;
+		private bool _awaitsForData;
 
-		protected AudioClipBuilder(int sampleRate)
+		protected AudioClipBuilder(int sampleRate, int bitDepth)
 		{
+			_bitDepth = bitDepth;
 			_sampleRate = sampleRate;
 			_samplesBuffer = new List<float>();
 			_frames = new Queue<PcmFrame>();
-			CreateNewPcmFrame();
+			CreateNewPcmFrame(_bitDepth);
 		}
 
 		public abstract List<PcmFrame> ToPcmFrames(byte[] bytes); 
@@ -45,7 +50,7 @@ namespace Gemelo.Voice.Audio
 			
 			//Enqueue full frame and create new one to write to 
 			_frames.Enqueue(_currentFrame);
-			CreateNewPcmFrame();
+			CreateNewPcmFrame(_bitDepth);
 			return WritePcmFrames(overflow);
 		}
 		
@@ -55,7 +60,7 @@ namespace Gemelo.Voice.Audio
 				return DequeueLastFrames();
 			
 			_frames.Enqueue(_currentFrame);
-			CreateNewPcmFrame();
+			CreateNewPcmFrame(_bitDepth);
 			return WritePcmFrames(overflow);
 		}
 
@@ -87,12 +92,12 @@ namespace Gemelo.Voice.Audio
 			return list;
 		}
 		
-		private void CreateNewPcmFrame()
+		private void CreateNewPcmFrame(int bitDepth)
 		{
 #if UNITY_WEBGL && !UNITY_EDITOR
-			_currentFrame = new PcmFrame(WebGlAudioBufferProcessor.BufferSize);
+			_currentFrame = new PcmFrame(WebGlAudioBufferProcessor.BufferSize, bitDepth);
 #else
-			_currentFrame = new PcmFrame();
+			_currentFrame = new PcmFrame(4096, bitDepth);
 #endif
 		}
 		
@@ -103,7 +108,7 @@ namespace Gemelo.Voice.Audio
 #else
 			_clip = AudioClip.Create(name, _sampleRate * seconds, 1, _sampleRate, true, PcmReaderCallback);
 #endif
-			Debug.Log($"Created AudioClip [Rate: {_sampleRate}, CH: {_clip.channels}, Length: {_clip.length}, Type: {_clip.loadType}]");
+			Debug.Log($"Created AudioClip [Buffer duration: {Duration}, Rate: {_sampleRate}, Bits: {_bitDepth}, CH: {_clip.channels}, BufferLength: {_clip.length}, Type: {_clip.loadType}]");
 		
 			return _clip;
 		}
@@ -113,7 +118,6 @@ namespace Gemelo.Voice.Audio
 			_processedSamplesCount += frame.Samples.Length;
 			_samplesBuffer.AddRange(frame.Samples);
 			var length = _processedSamplesCount / (_sampleRate * 1f);
-			Debug.Log($"BufferAdd: [{frame.Samples.Length}/{_processedSamplesCount}] samples [{length}s]");
 			return length;
 		}
 		
@@ -138,9 +142,7 @@ namespace Gemelo.Voice.Audio
 			var playbackTime = readSize - skipped;
 			_playbackPosition += playbackTime;
 			_silenceSamplesCount += skipped;
-			
-			if (playbackTime == 0)
-				Debug.Log("awaiting data...");
+			_awaitsForData = playbackTime == 0;
 		}
 
 		public void Dispose()

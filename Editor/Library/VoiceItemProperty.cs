@@ -1,4 +1,3 @@
-using Charactr.VoiceSDK.Editor.Library;
 using Gemelo.Voice.Library;
 using UnityEditor;
 using UnityEngine.UIElements;
@@ -10,14 +9,10 @@ namespace Gemelo.Voice.Editor.Library
 	{
 		public override VisualElement CreatePropertyGUI(SerializedProperty property)
 		{
-			var instance = new VoiceItemPropertyInstance(property);
-			
-			// Create a new VisualElement to be the root the property UI
-			instance.CreateWindow();
-			instance.RegisterVisualElements();
-			instance.UpdateState();
+			var instance = new VoiceItemElement();
+			instance.RegisterElement(property);
 			// Return the finished UI
-			return instance.Container;
+			return instance;
 		}
 	}
 }
