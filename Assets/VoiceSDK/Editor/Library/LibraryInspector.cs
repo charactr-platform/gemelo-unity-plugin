@@ -102,9 +102,14 @@ namespace Gemelo.Voice.Editor.Library
 		private void OnSaveButton()
 		{
 			_saveButton.SetEnabled(false);
-			EditorUtility.SetDirty(this);
-			AssetDatabase.SaveAssetIfDirty(this);
-			AssetDatabase.SaveAssets();
+			serializedObject.ApplyModifiedPropertiesWithoutUndo();
+			SaveLibrary(target as VoiceLibrary);
+		}
+
+		public static void SaveLibrary(VoiceLibrary library)
+		{
+			EditorUtility.SetDirty(library);
+			AssetDatabase.SaveAssetIfDirty(library);
 		}
 		
 		private void OnAddButton()

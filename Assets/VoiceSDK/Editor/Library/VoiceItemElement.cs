@@ -135,11 +135,12 @@ namespace Gemelo.Voice.Editor.Library
 				AudioClipProperty.serializedObject.Update();
 				UpdateState();
 				field.visible = true;
+				LibraryInspector.SaveLibrary(TargetLibrary);
 			}
 			else
 				throw new Exception("Target object not set, or is not VoiceLibrary!");
 		}
-
+		
 		private void SetButtonFunctionFromState()
 		{
 			var buttonLabel = UpdateButton.Q<Label>();
