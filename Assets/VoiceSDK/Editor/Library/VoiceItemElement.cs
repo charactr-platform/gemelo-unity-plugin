@@ -38,6 +38,8 @@ namespace Gemelo.Voice.Editor.Library
 		private int _lastHash;
 		private readonly VoicesDatabase _database;
 		
+		private VoiceLibrary TargetLibrary => (Property.serializedObject.targetObject as VoiceLibrary);
+		
 		public VoiceItemElement()
 		{
 			_database = VoicesDatabase.Load();
@@ -138,7 +140,6 @@ namespace Gemelo.Voice.Editor.Library
 				throw new Exception("Target object not set, or is not VoiceLibrary!");
 		}
 
-		private VoiceLibrary TargetLibrary => (Property.serializedObject.targetObject as VoiceLibrary);
 		private void SetButtonFunctionFromState()
 		{
 			var buttonLabel = UpdateButton.Q<Label>();
@@ -215,8 +216,7 @@ namespace Gemelo.Voice.Editor.Library
 			SetButtonFunctionFromState();
 
 			_lastHash = newFieldsHash;
-
-			//_idField.value = _lastHash;
+			
 			IdProperty.intValue = _lastHash;
 			this.Q<Label>().text = $"Voice item state: {State}";
 

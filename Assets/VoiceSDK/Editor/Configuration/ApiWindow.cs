@@ -18,6 +18,7 @@ namespace Gemelo.Voice.Editor.Configuration
         {
             var wnd = GetWindow<ApiWindow>();
             wnd.titleContent = new GUIContent("Gemelo.ai Voice Configuration");
+            wnd.Show();
         }
 
         [MenuItem("Tools/Gemelo.ai Voice/Update voice previews")]

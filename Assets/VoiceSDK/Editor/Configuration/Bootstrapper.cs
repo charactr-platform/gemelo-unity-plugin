@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Gemelo.Voice.Editor.Preview;
 using UnityEditor;
+using UnityEngine;
 
 namespace Gemelo.Voice.Editor.Configuration
 {
@@ -16,7 +17,7 @@ namespace Gemelo.Voice.Editor.Configuration
 			
 			if (!Gemelo.Voice.Configuration.Exists())
 			{
-				ApiWindow.ShowWindow();
+				Debug.LogError("Please use Tools->Gemelo.ai Voice->Configuration menu to setup API access");
 				return;
 			}
 
