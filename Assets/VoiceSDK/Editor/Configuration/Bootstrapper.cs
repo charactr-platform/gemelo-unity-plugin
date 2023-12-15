@@ -16,7 +16,7 @@ namespace Gemelo.Voice.Editor.Configuration
 			
 			if (!Gemelo.Voice.Configuration.Exists())
 			{
-				//ApiWindow.ShowWindow();
+				ApiWindow.ShowWindow();
 				return;
 			}
 

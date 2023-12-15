@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Gemelo.Voice.Audio;
 using Gemelo.Voice.Rest.Client;
 using Gemelo.Voice.Rest.Model;
-using NUnit.Framework;
 using UnityEngine;
 using CompressionLevel = System.IO.Compression.CompressionLevel;
 
@@ -197,7 +196,6 @@ namespace Gemelo.Voice.Editor.Preview
 		public static async Task<byte[]> GetAudioPreviewData(string previewUrl)
 		{
 			var configuration = Configuration.Load();
-			Assert.NotNull(configuration);
 			var http = new EditorRestClient(configuration, Debug.LogError);
 			return await http.GetDataAsync(previewUrl);
 		}
