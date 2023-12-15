@@ -1,7 +1,6 @@
 using System;
 using System.Globalization;
 using Gemelo.Voice.Audio;
-using Gemelo.Voice.Editor.Configuration;
 using Gemelo.Voice.Editor.Preview;
 using Gemelo.Voice.Library;
 using UnityEditor;
@@ -9,7 +8,6 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Button = UnityEngine.UIElements.Button;
-using PopupWindow = UnityEngine.UIElements.PopupWindow;
 
 namespace Gemelo.Voice.Editor.Library
 {
@@ -25,50 +23,65 @@ namespace Gemelo.Voice.Editor.Library
 			NotSet
 		}
 		
-		public VisualElement Container { get; private set; }
-		public PopupWindow PopupWindow { get; private set; }
-		public Button UpdateButton { get; set; }
-		public Button CopyIdButton { get; set; }
-		public SerializedProperty Property { get; set; }
-		public SerializedProperty TextField { get; set; }
-		public SerializedProperty VoiceField { get; set; }
-		public SerializedProperty AudioClipField { get; set; }
-		public SerializedProperty VoicePreview { get; set; }
-		public IntegerField IdField { get; private set; }
-		public Label Label { get; private set; }
-		
-		public ItemState State { get; set; }
-		public int Hash { get; private set; }
-		
+		private Button UpdateButton { get; set; }
+		private Button CopyIdButton { get; set; }
+		private SerializedProperty Property { get; set; }
+		private SerializedProperty TextProperty { get; set; }
+		private SerializedProperty VoiceIdProperty { get; set; }
+		private SerializedProperty AudioClipProperty { get; set; }
+		private SerializedProperty VoicePreviewProperty { get; set; }
+		private SerializedProperty IdProperty { get; set; }
+		private SerializedProperty TimestampProperty { get; set; }
+		private ItemState State { get; set; }
+
+		private IntegerField _idField;
 		private int _lastHash;
 		private readonly VoicesDatabase _database;
+		
+		private VoiceLibrary TargetLibrary => (Property.serializedObject.targetObject as VoiceLibrary);
+		
 		public VoiceItemElement()
 		{
 			_database = VoicesDatabase.Load();
+		}
+
+		private void CreateInspector()
+		{
+			var assetPath = AssetDatabase.GUIDToAssetPath("591c5c1ab96e74cfd9c11b6f1d26aec0");
+			var treeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(assetPath);
+			treeAsset.CloneTree(this);
 		}
 		
 		public void RegisterElement(SerializedProperty property)
 		{
 			Property = property;
-			TextField = property.FindPropertyRelative("text");
-			VoiceField = property.FindPropertyRelative("voiceId");
-			AudioClipField = property.FindPropertyRelative("audioClip");
-			VoicePreview = property.FindPropertyRelative("voicePreview");
-			Hash = property.GetHashCode();
+			IdProperty = property.FindPropertyRelative("id");
+			TextProperty = property.FindPropertyRelative("text");
+			VoiceIdProperty = property.FindPropertyRelative("voiceId");
+			AudioClipProperty = property.FindPropertyRelative("audioClip");
+			VoicePreviewProperty = property.FindPropertyRelative("voicePreview");
+			TimestampProperty = property.FindPropertyRelative("timestamp");
+			
 			// Create a new VisualElement to be the root the property UI
-			CreateWindow();
+			CreateInspector();
 			RegisterVisualElements();
 			UpdateState();
+			IdProperty.intValue = _lastHash;
+			Property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
 		}
+		
 		public override string ToString() => _lastHash.ToString();
 
 		private int CalculateCurrentHash()
 		{
-			var hash = Mathf.Abs(TextField.stringValue.GetHashCode() + VoiceField.intValue);
-			IdField.value = hash;
+			var listHash = TimestampProperty.longValue.GetHashCode() + 
+									TextProperty.stringValue.GetHashCode() +
+									VoiceIdProperty.intValue.GetHashCode();
+
+			int hash = CrcHelper.CRC16(listHash);
 			return hash;
 		}
-
+		
 		private ItemState CheckForState()
 		{
 			AudioClip audioClip = null;
@@ -83,7 +96,7 @@ namespace Gemelo.Voice.Editor.Library
 			if (currentHash.ToString() != audioClip.name)
 				return ItemState.NeedsUpdate;
 
-			if (!_database.PreviewExists(VoiceField.intValue, out _))
+			if (!_database.PreviewExists(VoiceIdProperty.intValue, out _))
 				return ItemState.NotSet;
 			
 			return ItemState.UpToDate;
@@ -91,7 +104,7 @@ namespace Gemelo.Voice.Editor.Library
 
 		private bool GetAudioClipInstance(out AudioClip audioClip)
 		{
-			if (AudioClipField.objectReferenceValue is AudioClip clip)
+			if (AudioClipProperty.objectReferenceValue is AudioClip clip)
 			{
 				audioClip = clip;
 				return true;
@@ -109,7 +122,7 @@ namespace Gemelo.Voice.Editor.Library
 				UpdateState();
 			};
 
-			var field = PopupWindow.Q<PropertyField>();
+			var field = this.Q<PropertyField>();
 		
 			field.visible = false;
 			
@@ -119,15 +132,15 @@ namespace Gemelo.Voice.Editor.Library
 			if (TargetLibrary != null)
 			{
 				await TargetLibrary.AddAudioClip(CalculateCurrentHash());
-				AudioClipField.serializedObject.Update();
+				AudioClipProperty.serializedObject.Update();
 				UpdateState();
 				field.visible = true;
+				LibraryInspector.SaveLibrary(TargetLibrary);
 			}
 			else
 				throw new Exception("Target object not set, or is not VoiceLibrary!");
 		}
-
-		private VoiceLibrary TargetLibrary => (Property.serializedObject.targetObject as VoiceLibrary);
+		
 		private void SetButtonFunctionFromState()
 		{
 			var buttonLabel = UpdateButton.Q<Label>();
@@ -186,7 +199,7 @@ namespace Gemelo.Voice.Editor.Library
 				return;
 			}
 
-			Debug.Log($"Playing:{clip.name}");
+			Debug.Log($"Playing: {clip.name}");
 			AudioPlayer.PlayClipStatic(clip);
 			EditorApplication.RepaintProjectWindow();
 		}
@@ -204,61 +217,52 @@ namespace Gemelo.Voice.Editor.Library
 			SetButtonFunctionFromState();
 
 			_lastHash = newFieldsHash;
-
-			PopupWindow.text = $"Voice item state: {State}";
 			
-			if (State != ItemState.UpToDate)
-				RefreshVoicePreview();
-		}
+			IdProperty.intValue = _lastHash;
+			this.Q<Label>().text = $"Voice item state: {State}";
 
-		//TODO: Move this to XML layout
+			if (State != ItemState.UpToDate)
+			{
+				RefreshVoicePreview();
+			}
+		}
+		
 		private void RegisterVisualElements()
 		{
-			Label = new Label();
-			IdField = new IntegerField("ID");
-			IdField.isReadOnly = true;
-			
-			CopyIdButton.Add(new Label("Copy ID"));
+			var voiceField = this.Q<IntegerField>("voiceIdField");
+			var textField = this.Q<TextField>("inputTextField");
+			var audioField = this.Q<ObjectField>("audioClipField");
+			_idField = this.Q<IntegerField>("idField");
+
+			audioField.BindProperty(AudioClipProperty);
+			textField.BindProperty(TextProperty);
+			voiceField.BindProperty(VoiceIdProperty);
+			_idField.BindProperty(IdProperty);
+
+			CopyIdButton = this.Q<Button>("copyButton");
 			CopyIdButton.clicked += ()=> EditorGUIUtility.systemCopyBuffer = ToString();
-			IdField.Add(CopyIdButton);
-			Label.Add(IdField);
 			
-			PopupWindow.Add(Label);
-			
-			var textField = new TextField("Text to voice", 500, true, false, ' ');
-			textField.BindProperty(TextField);
-
-			PopupWindow.Add(textField);
-
-			var voiceField = new IntegerField("Voice selection");
-			voiceField.name = "voiceId";
-			voiceField.BindProperty(VoiceField);
-			PopupWindow.Add(voiceField);
-			
-			var audioField = new PropertyField(AudioClipField, "AudioClip");
-			PopupWindow.Add(audioField);
-			
+			UpdateButton = this.Q<Button>("updateButton");
 			UpdateButton.Add(new Label("Control button"));
-			PopupWindow.Add(UpdateButton);
-			
-			Container.Add(PopupWindow);
 
-			_lastHash = CalculateCurrentHash();
+			_lastHash = IdProperty.intValue = CalculateCurrentHash();
+			Property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
+			
 			textField.RegisterValueChangedCallback((s) => UpdateState());
 			voiceField.RegisterValueChangedCallback((s) => UpdateState());
 			
 			RefreshVoicePreview();
 			State = ItemState.Initialized;
 		}
-
+		
 		private void RefreshVoicePreview()
 		{
-			var id = VoiceField.intValue;
-			var voiceField = PopupWindow.Q<IntegerField>("voiceId");
+			var voiceId = VoiceIdProperty.intValue;
+			var voiceField = this.Q<IntegerField>("voiceIdField");
 			
 			var buttonId = "selectVoiceButton";
 			
-			if (!_database.GetVoicePreviewById(id, out var preview))
+			if (!_database.GetVoicePreviewById(voiceId, out var preview))
 			{
 				//No item found, default to "Select"
 				SetVoiceFieldSelectButton(voiceField, buttonId);
@@ -294,12 +298,21 @@ namespace Gemelo.Voice.Editor.Library
 			{
 				text = "[Select voice]",
 				name = id,
+				style =
+				{
+					alignSelf = new StyleEnum<Align>(Align.Stretch),
+					flexBasis = new StyleLength(StyleKeyword.Auto),
+					flexGrow = 1,
+					maxHeight = integerField.style.maxHeight
+				}
 			};
-			button.AddToClassList(".round");
+			
+			button.AddToClassList("rounded-nobg");
 			button.RegisterCallback<ClickEvent>((e) =>
 			{
-				DatabaseListView.ShowSelectionWindow(_lastHash, TargetLibrary);
+				DatabaseListView.ShowSelectionWindow(TimestampProperty.longValue, TargetLibrary);
 			});
+			
 			integerField.Add(button);
 		}
 		
@@ -309,26 +322,20 @@ namespace Gemelo.Voice.Editor.Library
 
 			var id = "voicePreviewElement";
 			
-			var library = Property.serializedObject.targetObject as VoiceLibrary;
+			VoiceIdProperty.intValue = preview.Id;
 			
-			if (library.GetItemById(_lastHash, out var voiceItem))
-			{
-				voiceItem.SetVoicePreview(preview);
-			}
-			else
-			{
-				Debug.LogError("Can't find item with hash: "+_lastHash);
-			}
-
+			SetVoicePreviewForItemByTimestamp(Property.serializedObject, TimestampProperty.longValue, preview);
+			Property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
+			
 			var element = integerField.Q<PropertyField>(id);
 
 			if (element != null)
 			{
-				element.BindProperty(VoicePreview);
+				element.BindProperty(VoicePreviewProperty);
 				return;
 			}
 		
-			var voicePreviewField = new PropertyField(VoicePreview)
+			var voicePreviewField = new PropertyField(VoicePreviewProperty)
 			{
 				name = id,
 				style =
@@ -340,32 +347,84 @@ namespace Gemelo.Voice.Editor.Library
 				}
 			};
 			
-			voicePreviewField.BindProperty(VoicePreview);
+			voicePreviewField.BindProperty(VoicePreviewProperty);
 			
 			integerField.Add(voicePreviewField);
+			
+			UpdateState();
+		}
+		
+		public static void SetVoicePreviewForItemByTimestamp(SerializedObject serializedObject, long timestamp, VoicePreview voicePreview)
+		{
+			var items = serializedObject.FindProperty("items");
+
+			var index = -1L;
+
+			for (int i = 0; i < items.arraySize; i++)
+			{
+				var voiceItem = items.GetArrayElementAtIndex(i);
+
+				if (voiceItem.FindPropertyRelative("timestamp").longValue != timestamp)
+					continue;
+				
+				index = i;
+				var id = voiceItem.FindPropertyRelative("id").intValue;
+				SetPreviewForSerializedItem(voiceItem, voicePreview, id);
+				break;
+			}
+
+			if (index < 0)
+				Debug.LogError($"Can't find item with timestamp or index = {timestamp}");
+		}
+		
+		public static void SetVoicePreviewForItemById(SerializedObject serializedObject, int id, VoicePreview voicePreview)
+		{
+			var items = serializedObject.FindProperty("items");
+
+			var index = -1;
+
+			for (int i = 0; i < items.arraySize; i++)
+			{
+				var voiceItem = items.GetArrayElementAtIndex(i);
+
+				if (voiceItem.FindPropertyRelative("id").intValue != id)
+					continue;
+				
+				index = i;
+				SetPreviewForSerializedItem(voiceItem, voicePreview, id);
+				break;
+			}
+
+			if (index < 0)
+				Debug.LogError($"Can't find item with id = {id}");
+		}
+		
+		//Set public fields required by VoicePreviewElement in SerializedObject mode, [PreviewItemData] struct.
+		private static void SetPreviewForSerializedItem(SerializedProperty property, VoicePreview preview, int itemId)
+		{
+			property.FindPropertyRelative("voiceId").intValue = preview.Id;
+			
+			var p = property.FindPropertyRelative("voicePreview");
+			p.FindPropertyRelative("voiceItemId").intValue = itemId;
+			
+			var item = p.FindPropertyRelative("itemData");
+			
+			item.FindPropertyRelative("Id").intValue = preview.Id;
+			item.FindPropertyRelative("Name").stringValue = preview.Name;
+			item.FindPropertyRelative("Rating").floatValue = preview.Rating;
+		
+			FillDetailsLabel(item.FindPropertyRelative("Labels"), preview.Labels);
 		}
 
-		public void CreateWindow()
+		private static void FillDetailsLabel(SerializedProperty labelsProperty, string[] labelsList)
 		{
-			Container = new VisualElement();
+			labelsProperty.ClearArray();
 			
-			var noneStyle = new StyleColor(StyleKeyword.None);
-
-			PopupWindow = new PopupWindow
+			for (int i = 0; i < labelsList.Length; i++)
 			{
-				text = $"Voice item details [hash][state]",
-				style =
-				{
-					backgroundColor = noneStyle,
-					borderBottomColor = noneStyle,
-					borderTopColor = noneStyle,
-					borderLeftColor = noneStyle,
-					borderRightColor = noneStyle,
-				}
-			};
-
-			UpdateButton = new Button();
-			CopyIdButton = new Button();
+				labelsProperty.InsertArrayElementAtIndex(i);
+				labelsProperty.GetArrayElementAtIndex(i).stringValue = labelsList[i];
+			}
 		}
 	}
 }

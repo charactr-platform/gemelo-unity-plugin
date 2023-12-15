@@ -27,17 +27,18 @@ namespace Gemelo.Voice.Library
             get => audioClip;
             set => audioClip = value;
         }
-        
-        public int Id
-        {
-            get { return Mathf.Abs(text.GetHashCode() + voiceId); }
-        }
 
+        public long Timestamp => timestamp;
+        public int Id => id;
+        
         [SerializeField] private string text;
         [SerializeField] private int voiceId;
         [SerializeField] private AudioClip audioClip;
+        //Used in Editor Inspector
         [SerializeField] private VoicePreview voicePreview;
-        public bool IsValid() => !string.IsNullOrEmpty(Text) && VoiceId > 0 && voiceId < 999;
+        [SerializeField] private int id;
+        [SerializeField] private long timestamp;
+        public bool IsValid() => !string.IsNullOrEmpty(Text) && VoiceId > -1 && Timestamp > 0;
         public ConvertRequest GetRequest()
         {
             return new ConvertRequest()
@@ -47,15 +48,24 @@ namespace Gemelo.Voice.Library
             };
         }
 
+        public void InitializeEmpty()
+        {
+            timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            voiceId = 0;
+            text = Configuration.DEFAULT_TEXT;
+        }
+
         public VoiceItem(int voiceId)
         {
+            InitializeEmpty();
             this.voiceId = voiceId;
         }
-        
+
         public void SetVoicePreview(VoicePreview voicePreview)
         {
             this.voiceId = voicePreview.Id;
             this.voicePreview = voicePreview;
+            voicePreview.VoiceItemId = Id;
         }
         
         public async Task<AudioClip> GetAudioClip()

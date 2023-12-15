@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Gemelo.Voice.Editor.Preview;
 using UnityEditor;
+using UnityEngine;
 
 namespace Gemelo.Voice.Editor.Configuration
 {
@@ -8,25 +9,22 @@ namespace Gemelo.Voice.Editor.Configuration
 	public static class Bootstrapper
 	{
 		const int WAIT_TIME_SECS = 10;
-		static Bootstrapper()
-		{
-			if (!Gemelo.Voice.Configuration.Exists())
-			{
-				ApiWindow.ShowWindow();
-				return;
-			}
-			
-			InitializeLibrary();
-		}
+		static Bootstrapper() => InitializeLibrary();
 
 		public static async void InitializeLibrary()
 		{
+			await WaitForStartup(WAIT_TIME_SECS);
+			
+			if (!Gemelo.Voice.Configuration.Exists())
+			{
+				Debug.LogError("Please use Tools->Gemelo.ai Voice->Configuration menu to setup API access");
+				return;
+			}
+
 			var instance = VoicesDatabase.Load();
 			
 			if (instance.Validate())
 				return;
-
-			await WaitForStartup(WAIT_TIME_SECS);
 			
 			if (ShowCreateDatabaseDialog())
 			{

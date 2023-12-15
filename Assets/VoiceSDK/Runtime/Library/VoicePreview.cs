@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Gemelo.Voice.Audio;
 using Gemelo.Voice.Rest.Client;
 using Gemelo.Voice.Rest.Model;
-using NUnit.Framework;
 using UnityEngine;
 using CompressionLevel = System.IO.Compression.CompressionLevel;
 
@@ -52,9 +51,21 @@ namespace Gemelo.Voice.Editor.Preview
 		{
 			get => itemData.Rating;
 		}
+
+		public string[] Labels
+		{
+			get => itemData.Labels;
+		}
+		
 		public AudioDetails AudioDetails
 		{
 			get => audioDetails;
+		}
+
+		public long VoiceItemId
+		{
+			get => voiceItemId;
+			set => voiceItemId = value;
 		}
 		
 		public string CacheFilePath => Path.Combine(Configuration.CachePath, dataFileName);
@@ -65,7 +76,7 @@ namespace Gemelo.Voice.Editor.Preview
 		[SerializeField] private AudioDetails audioDetails;
 		[SerializeField] private long previewDataSize;
 		[SerializeField] private string dataFileName;
-		
+		[SerializeField] private long voiceItemId;
 		public VoicePreview(VoicePreviewItem item)
 		{
 			itemData = new PreviewItemData()
@@ -185,7 +196,6 @@ namespace Gemelo.Voice.Editor.Preview
 		public static async Task<byte[]> GetAudioPreviewData(string previewUrl)
 		{
 			var configuration = Configuration.Load();
-			Assert.NotNull(configuration);
 			var http = new EditorRestClient(configuration, Debug.LogError);
 			return await http.GetDataAsync(previewUrl);
 		}

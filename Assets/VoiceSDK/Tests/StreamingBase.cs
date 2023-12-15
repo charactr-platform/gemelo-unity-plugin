@@ -25,7 +25,7 @@ namespace Gemelo.Voice.Tests
 			" only cookies necessary to provide you the services will be used." +
 			" You may change your selection by clicking “Manage Cookies” at the bottom of the page.";
 
-		protected const int VoiceId = 151;
+		protected const int VoiceId = 105; //Free - Steven
 	}
 	
 	public class StreamingBase: StreamingTestsData
