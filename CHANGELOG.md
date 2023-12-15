@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v1.3.0] - 2023-12-15
+- Updated VoiceLibrary layout
+- Fixes for VoiceLibrary
+- Fixes for VoiceDatabase
+
+## [v1.2.0] - 2023-11-28
+- Added Voices preview database
+- Fixed Samples voices to free tier
+
 ## [v1.1.0] - 2023-11-28
 - Added Voices preview database
 - Fixed Samples voices to free tier
