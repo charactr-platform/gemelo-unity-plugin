@@ -13,10 +13,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Added Voices preview database
 - Fixed Samples voices to free tier
 
-## [v1.1.0] - 2023-11-28
+## [v1.1.0] - 2023-09-27
 - Added Voices preview database
 - Fixed Samples voices to free tier
 
+## [v1.0.1] - 2023-08-08
+- Fixed Resources folder creation on empty project
+- Minor documentation updates
+- 
 ## [v1.0.0] - 2023-08-03
 - Release of Gemelo.ai Voice Plugin (formerly Charactr Voice SDK)
 
