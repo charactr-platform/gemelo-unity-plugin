@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [v1.0.1] - 2023-08-08
 - Fixed Resources folder creation on empty project
 - Minor documentation updates
-- 
+ 
 ## [v1.0.0] - 2023-08-03
 - Release of Gemelo.ai Voice Plugin (formerly Charactr Voice SDK)
 
