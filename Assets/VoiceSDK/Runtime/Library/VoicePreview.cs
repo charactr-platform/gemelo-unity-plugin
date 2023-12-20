@@ -77,16 +77,20 @@ namespace Gemelo.Voice.Editor.Preview
 		[SerializeField] private long previewDataSize;
 		[SerializeField] private string dataFileName;
 		[SerializeField] private long voiceItemId;
-		public VoicePreview(VoicePreviewItem item)
+		public VoicePreview(IVoicePreview item)
 		{
 			itemData = new PreviewItemData()
 			{
 				Id = item.Id,
 				Name = item.Name,
-				PreviewUrl = item.Url,
-				Description = item.Description,
-				Rating = item.Rating,
-				Labels = item.Labels.Select(s=>s.Label).ToArray()
+				PreviewUrl = item.Url
+			};
+			
+			if (item is VoicePreviewItem preview)
+			{
+				itemData.Description = preview.Description;
+				itemData.Rating = preview.Rating;
+				itemData.Labels = preview.Labels.Select(s => s.Label).ToArray();
 			};
 		}
 

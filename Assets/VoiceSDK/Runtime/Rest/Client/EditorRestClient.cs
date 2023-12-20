@@ -21,7 +21,7 @@ namespace Gemelo.Voice.Rest.Client
 			_client.DefaultRequestHeaders.UserAgent.ParseAdd(Configuration.USER_AGENT);
 		}
 		
-		public async Task<T> GetAsync<T>(string url) where T: IAPIResponse
+		public async Task<T> GetAsync<T>(string url) where T: IVoicesResponse
 		{
 			var req = await _client.GetAsync(url);
 

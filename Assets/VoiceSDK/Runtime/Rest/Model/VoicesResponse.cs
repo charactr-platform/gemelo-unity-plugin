@@ -5,9 +5,9 @@ using Newtonsoft.Json;
 
 namespace Gemelo.Voice.Rest.Model
 {
-	public class VoicesResponse : List<VoicePreviewItem>, IAPIResponse
+	public class VoicesResponse : List<VoicePreviewItem>, IVoicesResponse
 	{
-		public List<VoicePreviewItem> Data => this.ToList();
+		public IEnumerable<IVoicePreview> Items => this.AsEnumerable();
 	}
 	
 	[Serializable]
@@ -19,27 +19,35 @@ namespace Gemelo.Voice.Rest.Model
 		[JsonProperty("label")]
 		public string Label { get; set; }
 	}
-    
-	[Serializable]
-	public class VoicePreviewItem
+	
+	public interface IVoicePreview
 	{
-		public string Url
-		{
-			get => PreviewUrls?.Count > 0 ? PreviewUrls[0] : string.Empty;
-		}
-		
+		string Url { get; }
+		int Id { get; set; }
+		string Name { get; set; }
+	}
+
+	public class BaseVoicePreviewItem
+	{
+		public string Url => PreviewUrls?.Count > 0 ? PreviewUrls[0] : string.Empty;
+
 		[JsonProperty("id")]
 		public int Id { get; set; }
 
 		[JsonProperty("name")]
 		public string Name { get; set; }
-
-		[JsonProperty("description")]
-		public string Description { get; set; }
-
+		
 		[JsonProperty("previewUrls")]
 		public List<string> PreviewUrls { get; set; }
+	}
 
+	[Serializable]
+	public class VoicePreviewItem : BaseVoicePreviewItem, IVoicePreview
+	{
+		
+		[JsonProperty("description")]
+		public string Description { get; set; }
+		
 		[JsonProperty("rating")]
 		public float Rating { get; set; }
 		

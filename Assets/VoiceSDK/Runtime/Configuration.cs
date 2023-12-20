@@ -6,7 +6,12 @@ namespace Gemelo.Voice
 {
 	public class Configuration : ScriptableObject
 	{
+#if DEVELOPMENT 
+		public const string HOST = "api.slowpoke.charactr.dev";
+#else
 		public const string HOST = "api.gemelo.ai";
+#endif
+		public const string CLONED_API = "https://" + HOST + "/v1/cloned-voices";
 		public const string CONVERT_API = "https://" + HOST + "/v1/tts/convert";
 		public const string VOICES_API = "https://" + HOST + "/v1/tts/voices";
 		public const string STREAMING_API = "wss://" + HOST + "/v1/tts/stream/simplex/ws";
@@ -14,7 +19,7 @@ namespace Gemelo.Voice
 		public const string USER_AGENT = "sdk-unity";
 		public const string API_CLIENT = "X-Client-Key";
 		public const string API_KEY = "X-Api-Key";
-		public const string SAVE_PATH = GLOBAL_SAVE_PATH+FILENAME+".asset";
+		public const string SAVE_PATH = GLOBAL_SAVE_PATH + FILENAME + ".asset";
 		public const string GLOBAL_SAVE_PATH = "Assets/Resources/";
 		
 		public const string DEFAULT_TEXT = "Hello from Gemelo.AI Unity Plugin!";
@@ -22,7 +27,6 @@ namespace Gemelo.Voice
 
 		private const string FILENAME = "Configuration";
 
-	
 		public string ApiClient
 		{
 			get => apiClient;

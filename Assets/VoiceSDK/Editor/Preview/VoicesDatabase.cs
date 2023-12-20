@@ -36,7 +36,7 @@ namespace Gemelo.Voice.Editor.Preview
 			return instance;
 		}
 		
-		public async Task<bool> AddVoicePreview(VoicePreviewItem previewItem, IProgress<float> onProgress)
+		public async Task<bool> AddVoicePreview(IVoicePreview previewItem, IProgress<float> onProgress)
 		{
 			voices ??= new List<VoicePreview>();
 

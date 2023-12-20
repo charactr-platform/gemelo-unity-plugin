@@ -22,8 +22,8 @@ namespace Gemelo.Voice.Tests
         {
             var voices = await GetVoicesResponse();
             Assert.NotNull(voices);
-            Assert.IsNotEmpty(voices.Data);
-            Assert.NotNull(voices.Data.First());
+            Assert.IsNotEmpty(voices.Items);
+            Assert.NotNull(voices.Items.First());
         }
 
         private async Task<VoicesResponse> GetVoicesResponse(bool all = true)
@@ -37,7 +37,7 @@ namespace Gemelo.Voice.Tests
         {
             var data = await GetVoicesResponse();
             Assert.NotNull(data);
-            var item = data.Data.FirstOrDefault(f => f.Name.Contains("beta", StringComparison.OrdinalIgnoreCase));
+            var item = data.Items.FirstOrDefault(f => f.Name.Contains("beta", StringComparison.OrdinalIgnoreCase));
             Assert.NotNull(item);
             var buffer = await EditorHttp.GetDataAsync(item.Url);
             Assert.IsNotEmpty(buffer);
@@ -63,7 +63,7 @@ namespace Gemelo.Voice.Tests
         {
             var data = await GetVoicesResponse();
             Assert.NotNull(data);
-            var item = data.Data.First();
+            var item = data.Items.First();
             Assert.NotNull(item);
             var buffer = await EditorHttp.GetDataAsync(item.Url);
             Assert.IsNotEmpty(buffer);
@@ -117,7 +117,7 @@ namespace Gemelo.Voice.Tests
         public async Task VoicePreview_NotNull()
         {
             var data = await GetVoicesResponse();
-            var item = data.Data.First();
+            var item = data.Items.First();
             var preview = await CreateVoicePreviewFromVoiceItem(item);
             Assert.NotNull(preview);
         }
@@ -126,7 +126,7 @@ namespace Gemelo.Voice.Tests
         public async Task VoicePreview_AudioClip_NotNull()
         {
             var data = await GetVoicesResponse();
-            var item = data.Data.First();
+            var item = data.Items.First();
             var preview = await CreateVoicePreviewFromVoiceItem(item);
             Assert.NotNull(preview);
             var clip = preview.GenerateAudioClip();
@@ -134,7 +134,7 @@ namespace Gemelo.Voice.Tests
             await AudioPlayer.PlayClipStatic(clip);
         }
         
-        private async Task<VoicePreview> CreateVoicePreviewFromVoiceItem(VoicePreviewItem item)
+        private async Task<VoicePreview> CreateVoicePreviewFromVoiceItem(IVoicePreview item)
         {
             Assert.IsNotEmpty(item.Url);
             var buffer = await VoicePreview.GetAudioPreviewData(item.Url);
@@ -184,7 +184,7 @@ namespace Gemelo.Voice.Tests
             var instance = VoicesDatabase.CreateInstance();
             Assert.NotNull(instance);
             var data = await GetVoicesResponse();
-            var item = data.Data.First();
+            var item = data.Items.First();
           
             var result = await instance.AddVoicePreview(item, 
                 new Progress<float>((s)=> Debug.Log("Progress: " + s)));
