@@ -101,12 +101,12 @@ namespace Gemelo.Voice.Editor.Preview
 			return false;
 		}
 
-		public static async Task<VoicesResponse> GetVoicesResponse(bool all = false)
+		public static async Task<SystemVoicesResponse> GetVoicesResponse(bool all = false)
 		{
 			var configuration = Voice.Configuration.Load();
 			var http = new EditorRestClient(configuration, message => Debug.LogError(message.Message));
 			var url = Voice.Configuration.VOICES_API + (all ? "?show=all" : string.Empty); 
-			return await http.GetAsync<VoicesResponse>(url);
+			return await http.GetAsync<SystemVoicesResponse>(url);
 		}
 		
 		public async Task<bool[]> UpdatePreviewsDatabase(IProgress<float> onProgress)

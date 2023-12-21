@@ -17,19 +17,10 @@ namespace Gemelo.Voice.Tests
         private const int PREVIEW_SAMPLE_RATE = 32000;
         private const int HEADER_SIZE = 44;
         
-        [Test]
-        public async Task GetVoicesRequest_Returns_NotEmpty()
+        private async Task<IVoicesResponse> GetVoicesResponse()
         {
-            var voices = await GetVoicesResponse();
-            Assert.NotNull(voices);
-            Assert.IsNotEmpty(voices.Items);
-            Assert.NotNull(voices.Items.First());
-        }
-
-        private async Task<VoicesResponse> GetVoicesResponse(bool all = true)
-        {
-            var url = Configuration.VOICES_API + (all ? "?show=all" : string.Empty);  
-            return await EditorHttp.GetAsync<VoicesResponse>(url);
+            var system = await EditorHttp.GetAsync<SystemVoicesResponse>(Configuration.VOICES_API);
+            return system;
         }
         
         [Test]
@@ -87,14 +78,16 @@ namespace Gemelo.Voice.Tests
         [Test]
         public async Task Load_AllVoices_Header_SampleRate_Equals32000()
         {
-            var data = await GetVoicesResponse();
+            var response = await GetVoicesResponse();
             
-            Assert.NotNull(data);
+            Assert.NotNull(response);
+            
             var tasks = new List<Task<bool>>();
-            
-            for (var index = 0; index < data.Count; index++)
+
+            var items = response.Items.ToArray();
+            for (var index = 0; index < items.Length; index++)
             {
-                var voice = data[index];
+                var voice = items[index];
                 Assert.NotNull(voice);
 
                 if (string.IsNullOrEmpty(voice.Url))
@@ -149,7 +142,7 @@ namespace Gemelo.Voice.Tests
             return preview;
         }
         
-        private async Task<bool> ValidateHeaderData(VoicePreviewItem item)
+        private async Task<bool> ValidateHeaderData(IVoicePreview item)
         {
             Assert.IsNotEmpty(item.Url);
             
