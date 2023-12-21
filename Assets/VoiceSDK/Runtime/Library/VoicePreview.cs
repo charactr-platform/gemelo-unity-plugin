@@ -22,15 +22,7 @@ namespace Gemelo.Voice.Editor.Preview
 		public string Description;
 		public string[] Labels;
 		public float Rating;
-	}
-
-	[Serializable]
-	public struct AudioDetails
-	{
-		public int SampleRate;
-		public int BitDepth;
-		public float Duration;
-		public int DataOffset;
+		public VoiceType Type;
 	}
 	
 	[Serializable]
@@ -57,11 +49,6 @@ namespace Gemelo.Voice.Editor.Preview
 			get => itemData.Labels;
 		}
 		
-		public AudioDetails AudioDetails
-		{
-			get => audioDetails;
-		}
-
 		public long VoiceItemId
 		{
 			get => voiceItemId;
@@ -73,27 +60,35 @@ namespace Gemelo.Voice.Editor.Preview
 		public override string ToString() => $"{Name} - {dataFileName}";
 
 		[SerializeField] private PreviewItemData itemData;
-		[SerializeField] private AudioDetails audioDetails;
 		[SerializeField] private long previewDataSize;
 		[SerializeField] private string dataFileName;
 		[SerializeField] private long voiceItemId;
-		public VoicePreview(IVoicePreview item)
+		[SerializeField] private int sampleRate;
+		[SerializeField] private int bitDepth;
+		public VoicePreview(IVoicePreviewItem item)
 		{
 			itemData = new PreviewItemData()
 			{
 				Id = item.Id,
 				Name = item.Name,
-				PreviewUrl = item.Url
+				PreviewUrl = item.Url,
+				Type = item.Type
 			};
-			
-			if (item is VoicePreviewItem preview)
+
+			if (item.Type == VoiceType.System)
+				SetSystemDetails(item);
+		}
+
+		private void SetSystemDetails(IVoicePreviewItem item)
+		{
+			if (item is SystemVoicePreviewItem preview)
 			{
 				itemData.Description = preview.Description;
 				itemData.Rating = preview.Rating;
 				itemData.Labels = preview.Labels.Select(s => s.Label).ToArray();
 			};
 		}
-
+		
 		public long EncodePcmFramesToCache(List<PcmFrame> pcmFrames, out string fileName)
 		{
 			var size = 0L;
@@ -167,15 +162,13 @@ namespace Gemelo.Voice.Editor.Preview
 			if (frames== null || frames.Count == 0)
 				throw new Exception("Can't create audio clip, data is empty");
 			
-			var builder = new WavBuilder(audioDetails.SampleRate, audioDetails.BitDepth);
+			var builder = new WavBuilder(sampleRate, bitDepth);
 			
 			foreach (var pcmFrame in frames)
 				builder.BufferSamples(pcmFrame);
 
 			if (builder.BufferLastFrame(out var frame))
 				builder.BufferSamples(frame);
-
-			audioDetails.Duration = builder.Duration;
 			
 			return builder.CreateAudioClipStream(itemData.Name, Mathf.CeilToInt(builder.Duration));
 		}
@@ -185,14 +178,6 @@ namespace Gemelo.Voice.Editor.Preview
 			var header = new WavHeaderData(data);
 			
 			var wavBuilder = new WavBuilder(header.SampleRate, header.BitDepth, data.AsSpan(0, header.DataOffset).ToArray());
-			
-			audioDetails = new AudioDetails
-			{
-				SampleRate = header.SampleRate,
-				DataOffset = header.DataOffset,
-				BitDepth = header.BitDepth,
-				Duration = wavBuilder.Duration
-			};
 			
 			return wavBuilder.ToPcmFrames(data.AsSpan(header.DataOffset).ToArray());
 		}

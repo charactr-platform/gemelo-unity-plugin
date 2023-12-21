@@ -36,11 +36,11 @@ namespace Gemelo.Voice.Editor.Preview
 			return instance;
 		}
 		
-		public async Task<bool> AddVoicePreview(IVoicePreview previewItem, IProgress<float> onProgress)
+		public async Task<bool> AddVoicePreview(IVoicePreviewItem previewItemItem, IProgress<float> onProgress)
 		{
 			voices ??= new List<VoicePreview>();
 
-			var preview = new VoicePreview(previewItem);
+			var preview = new VoicePreview(previewItemItem);
 			
 			onProgress.Report(0.5f);
 			

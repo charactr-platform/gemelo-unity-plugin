@@ -26,7 +26,7 @@ namespace Gemelo.Voice.Tests
 			Assert.IsNotEmpty(response.Items);
 			var firstItem = response.Items.First();
 			Assert.NotNull(firstItem);
-			Assert.IsInstanceOf<VoicePreviewItem>(firstItem);
+			Assert.IsInstanceOf<SystemVoicePreviewItem>(firstItem);
 			Assert.AreEqual(VoiceType.System, firstItem.Type);
 		}
 		
@@ -50,7 +50,7 @@ namespace Gemelo.Voice.Tests
 			
 			var firstItem = response.Items.First();
 			Assert.NotNull(firstItem);
-			Assert.IsInstanceOf<ClonedVoicePreviewItem>(firstItem);
+			Assert.IsInstanceOf<ClonedVoicePreviewItemItem>(firstItem);
 			Assert.AreEqual(VoiceType.Clone, firstItem.Type);
 		}
 
@@ -60,10 +60,10 @@ namespace Gemelo.Voice.Tests
 			var system = await EditorHttp.GetAsync<SystemVoicesResponse>(Configuration.VOICES_API);
 			var cloned = await EditorHttp.GetAsync<ClonedVoicesResponse>(Configuration.CLONED_API);
 			
-			var items = new List<IVoicePreview>();
+			var items = new List<IVoicePreviewItem>();
 			items.AddRange(system.Items);
 			items.AddRange(cloned.Items);
-			var response = new CommonVoicesResponse(items);
+			var response = new VoicesResponse(items);
 			
 			Assert.NotNull(response);
 			Assert.IsNotEmpty(response.Items);

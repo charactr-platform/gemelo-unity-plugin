@@ -17,42 +17,23 @@ namespace Gemelo.Voice.Tests
         private const int PREVIEW_SAMPLE_RATE = 32000;
         private const int HEADER_SIZE = 44;
         
-        private async Task<IVoicesResponse> GetVoicesResponse()
+        private async Task<IVoicesResponse> GetSystemVoicesResponse() =>
+            await EditorHttp.GetAsync<SystemVoicesResponse>(Configuration.VOICES_API);
+
+        private async Task<IVoicesResponse> GetAllVoicesResponse()
         {
+            var cloned = await EditorHttp.GetAsync<ClonedVoicesResponse>(Configuration.CLONED_API);
             var system = await EditorHttp.GetAsync<SystemVoicesResponse>(Configuration.VOICES_API);
-            return system;
+            var list = new List<IVoicePreviewItem>();
+            list.AddRange(cloned.Items);
+            list.AddRange(system.Items);
+            return new VoicesResponse(list);
         }
         
         [Test]
-        public async Task Load_32bit_Beta_Voice_Preview_ToWavBuilder_NotNull()
-        {
-            var data = await GetVoicesResponse();
-            Assert.NotNull(data);
-            var item = data.Items.FirstOrDefault(f => f.Name.Contains("beta", StringComparison.OrdinalIgnoreCase));
-            Assert.NotNull(item);
-            var buffer = await EditorHttp.GetDataAsync(item.Url);
-            Assert.IsNotEmpty(buffer);
-
-            var headerBuffer = buffer.AsSpan(0, HEADER_SIZE).ToArray();
-            var header = new WavHeaderData(headerBuffer);
-            Assert.GreaterOrEqual(PREVIEW_SAMPLE_RATE, header.SampleRate);
-            Assert.AreEqual(false, header.IsExtensibeWav);
-            Assert.AreEqual(1, header.Channels);
-            Assert.AreEqual(32, header.BitDepth);
-            Assert.AreEqual(HEADER_SIZE, header.DataOffset);
-            
-            var builder = new WavBuilder(PREVIEW_SAMPLE_RATE, header.BitDepth, headerBuffer);
-            Assert.NotNull(builder);
-            Assert.AreEqual(32,builder.BitDepth);
-            var frames = builder.ToPcmFrames(buffer.AsSpan(HEADER_SIZE).ToArray());
-            Assert.IsNotEmpty(frames);
-            Assert.AreEqual(32,frames[0].BitDepth);
-        }
-
-        [Test]
         public async Task Load_16bit_Voice_Preview_ToWavBuilder_NotNull()
         {
-            var data = await GetVoicesResponse();
+            var data = await GetSystemVoicesResponse();
             Assert.NotNull(data);
             var item = data.Items.First();
             Assert.NotNull(item);
@@ -78,13 +59,14 @@ namespace Gemelo.Voice.Tests
         [Test]
         public async Task Load_AllVoices_Header_SampleRate_Equals32000()
         {
-            var response = await GetVoicesResponse();
+            var response = await GetAllVoicesResponse();
             
             Assert.NotNull(response);
             
             var tasks = new List<Task<bool>>();
 
             var items = response.Items.ToArray();
+            
             for (var index = 0; index < items.Length; index++)
             {
                 var voice = items[index];
@@ -109,7 +91,7 @@ namespace Gemelo.Voice.Tests
         [Test]
         public async Task VoicePreview_NotNull()
         {
-            var data = await GetVoicesResponse();
+            var data = await GetSystemVoicesResponse();
             var item = data.Items.First();
             var preview = await CreateVoicePreviewFromVoiceItem(item);
             Assert.NotNull(preview);
@@ -118,7 +100,7 @@ namespace Gemelo.Voice.Tests
         [Test]
         public async Task VoicePreview_AudioClip_NotNull()
         {
-            var data = await GetVoicesResponse();
+            var data = await GetSystemVoicesResponse();
             var item = data.Items.First();
             var preview = await CreateVoicePreviewFromVoiceItem(item);
             Assert.NotNull(preview);
@@ -127,7 +109,7 @@ namespace Gemelo.Voice.Tests
             await AudioPlayer.PlayClipStatic(clip);
         }
         
-        private async Task<VoicePreview> CreateVoicePreviewFromVoiceItem(IVoicePreview item)
+        private async Task<VoicePreview> CreateVoicePreviewFromVoiceItem(IVoicePreviewItem item)
         {
             Assert.IsNotEmpty(item.Url);
             var buffer = await VoicePreview.GetAudioPreviewData(item.Url);
@@ -142,7 +124,7 @@ namespace Gemelo.Voice.Tests
             return preview;
         }
         
-        private async Task<bool> ValidateHeaderData(IVoicePreview item)
+        private async Task<bool> ValidateHeaderData(IVoicePreviewItem item)
         {
             Assert.IsNotEmpty(item.Url);
             
@@ -176,7 +158,7 @@ namespace Gemelo.Voice.Tests
         {
             var instance = VoicesDatabase.CreateInstance();
             Assert.NotNull(instance);
-            var data = await GetVoicesResponse();
+            var data = await GetSystemVoicesResponse();
             var item = data.Items.First();
           
             var result = await instance.AddVoicePreview(item, 

@@ -4,26 +4,16 @@ using Newtonsoft.Json;
 
 namespace Gemelo.Voice.Rest.Model
 {
-	public class CommonVoicesResponse : IVoicesResponse
-	{
-		public IEnumerable<IVoicePreview> Items { get; }
-
-		public CommonVoicesResponse(IEnumerable<IVoicePreview> items)
-		{
-			Items = items;
-		}
-	}
-	
 	public class ClonedVoicesResponse : IVoicesResponse
 	{
 		[JsonProperty("items")] 
-		private List<ClonedVoicePreviewItem> items;
+		private List<ClonedVoicePreviewItemItem> items;
 
-		public IEnumerable<IVoicePreview> Items { get => items; }
+		public IEnumerable<IVoicePreviewItem> Items { get => items; }
 	}
 	
 	[Serializable]
-	public class ClonedVoicePreviewItem : BaseVoicePreviewItem, IVoicePreview
+	public class ClonedVoicePreviewItemItem : BaseVoicePreviewItem, IVoicePreviewItem
 	{
 		public VoiceType Type => VoiceType.Clone;
 		
