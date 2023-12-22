@@ -32,7 +32,7 @@ namespace Gemelo.Voice.Rest.Model
 	{
 		None = 0,
 		System = 1,
-		Clone = 2,
+		Cloned = 2,
 	}
 	
 	public class BaseVoicePreviewItem

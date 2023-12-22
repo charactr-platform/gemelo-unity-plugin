@@ -15,7 +15,7 @@ namespace Gemelo.Voice.Rest.Model
 	[Serializable]
 	public class ClonedVoicePreviewItemItem : BaseVoicePreviewItem, IVoicePreviewItem
 	{
-		public VoiceType Type => VoiceType.Clone;
+		public VoiceType Type => VoiceType.Cloned;
 		
 		[JsonProperty("createdAt")]
 		public DateTime CreatedAt { get; set; }

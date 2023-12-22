@@ -51,7 +51,7 @@ namespace Gemelo.Voice.Tests
 			var firstItem = response.Items.First();
 			Assert.NotNull(firstItem);
 			Assert.IsInstanceOf<ClonedVoicePreviewItemItem>(firstItem);
-			Assert.AreEqual(VoiceType.Clone, firstItem.Type);
+			Assert.AreEqual(VoiceType.Cloned, firstItem.Type);
 		}
 
 		[Test]
@@ -68,7 +68,7 @@ namespace Gemelo.Voice.Tests
 			Assert.NotNull(response);
 			Assert.IsNotEmpty(response.Items);
 		
-			Assert.NotZero(response.Items.Count(c => c.Type.Equals(VoiceType.Clone)));
+			Assert.NotZero(response.Items.Count(c => c.Type.Equals(VoiceType.Cloned)));
 			Assert.NotZero(response.Items.Count(c => c.Type.Equals(VoiceType.System)));
 		}
 	}

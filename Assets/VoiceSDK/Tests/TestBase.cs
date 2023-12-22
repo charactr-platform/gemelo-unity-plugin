@@ -7,7 +7,11 @@ namespace Gemelo.Voice.Tests
 {
 	public class TestBase
 	{
-		public const int VOICE_ID = 151; //Liam voice
+	#if DEVELOPMENT
+		public const int VOICE_ID = 142; //Olivia
+	#else
+		public const int VOICE_ID = 151; //Liam
+	#endif
 		
 		protected EditorRestClient EditorHttp;
 		protected RuntimeRestClient RuntimeHttp;
@@ -23,10 +27,18 @@ namespace Gemelo.Voice.Tests
 			RuntimeHttp = new RuntimeRestClient(Configuration);
 		}
 
-		protected ConvertRequest CreateRequest() => new ConvertRequest()
+		protected ConvertRequest CreateDefaultRequest() => new ConvertRequest()
 		{
 			Text = "This is sample text to convert using Charactr API",
 			VoiceId = VOICE_ID
 		};
+
+		protected ConvertRequest CreateRequest(VoiceType voiceType, int voiceId) => new ConvertRequest()
+		{
+			Text = "This is sample text to convert using Charactr API",
+			VoiceId = voiceId,
+			VoiceType = voiceType.ToString().ToLower()
+		};
+
 	}
 }

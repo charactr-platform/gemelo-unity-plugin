@@ -9,5 +9,8 @@ namespace Gemelo.Voice.Rest.Model
 
 		[JsonProperty("text")]
 		public string Text { get; set; }
+		
+		[JsonProperty("voiceType")]
+		public string VoiceType { get; set; }
 	}
 }
