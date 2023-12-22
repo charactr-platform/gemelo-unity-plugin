@@ -57,8 +57,7 @@ namespace Gemelo.Voice.Editor.Preview
 		{
 			var item = property.FindPropertyRelative("itemData");
 			var id = item.FindPropertyRelative("Id").intValue;
-			var audio = property.FindPropertyRelative("audioDetails");
-		
+
 			//Recycling view 
 			if (_property != null)
 			{
@@ -76,7 +75,7 @@ namespace Gemelo.Voice.Editor.Preview
 			_detailsButton = RegisterDetailsButton();
 			_changeButton = RegisterChangeButton();
 			_playButton = RegisterPlayButton();
-			_detailsPopup = CreateDetailsPopup(item, audio);
+			_detailsPopup = CreateDetailsPopup(item);
 		}
 
 		private void CreateLabel(SerializedProperty previewItem)
@@ -95,24 +94,18 @@ namespace Gemelo.Voice.Editor.Preview
 			label.text = $"{itemNam.stringValue} {labelsValue}";
 		}
 
-		private PopupWindow CreateDetailsPopup(SerializedProperty previewItem, SerializedProperty audioDetails)
+		private PopupWindow CreateDetailsPopup(SerializedProperty previewItem)
 		{
-			var label = new Label()
+			var label = new Label
 			{
 				style = 
 				{
 					flexBasis = new StyleLength(StyleKeyword.Auto),
 					flexGrow = 1,
 					flexWrap = new StyleEnum<Wrap>(Wrap.Wrap)
-				}
+				},
+				text = $"ID: {_id}\nLabels: {FillDetailsLabel(previewItem)}"
 			};
-			
-			var bits = audioDetails.FindPropertyRelative("BitDepth");
-			var hz = audioDetails.FindPropertyRelative("SampleRate");
-			
-			label.text = $"ID: {_id}\n" +
-			             $"Audio: {bits.intValue} bit, {(hz.intValue/1000f):F1} kHz\n"+
-			             $"Labels: {FillDetailsLabel(previewItem)}";
 			
 			_detailsPopup = CreatePopup();
 			_detailsPopup.Add(label);

@@ -54,6 +54,11 @@ namespace Gemelo.Voice.Editor.Preview
 			get => voiceItemId;
 			set => voiceItemId = value;
 		}
+
+		public VoiceType Type
+		{
+			get => itemData.Type;
+		}
 		
 		public string CacheFilePath => Path.Combine(Configuration.CachePath, dataFileName);
 		public bool CacheExists => File.Exists(CacheFilePath);
@@ -70,9 +75,9 @@ namespace Gemelo.Voice.Editor.Preview
 			itemData = new PreviewItemData()
 			{
 				Id = item.Id,
+				Type = item.Type,
 				Name = item.Name,
 				PreviewUrl = item.Url,
-				Type = item.Type
 			};
 
 			if (item.Type == VoiceType.System)

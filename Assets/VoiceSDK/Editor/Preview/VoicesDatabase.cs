@@ -101,24 +101,31 @@ namespace Gemelo.Voice.Editor.Preview
 			return false;
 		}
 
-		public static async Task<SystemVoicesResponse> GetVoicesResponse(bool all = false)
+		private async Task<SystemVoicesResponse> GetVoicesResponse(bool all = false)
 		{
 			var configuration = Voice.Configuration.Load();
 			var http = new EditorRestClient(configuration, message => Debug.LogError(message.Message));
 			var url = Voice.Configuration.VOICES_API + (all ? "?show=all" : string.Empty); 
 			return await http.GetAsync<SystemVoicesResponse>(url);
 		}
+
+		private async Task<ClonedVoicesResponse> GetClonedVoicesResponse()
+		{
+			var configuration = Voice.Configuration.Load();
+			var http = new EditorRestClient(configuration, message => Debug.LogError(message.Message));
+			return await http.GetAsync<ClonedVoicesResponse>(Voice.Configuration.CLONED_API);
+		}
 		
 		public async Task<bool[]> UpdatePreviewsDatabase(IProgress<float> onProgress)
 		{
-			var voicesResponse = await GetVoicesResponse();
+			IVoicesResponse voicesResponse = await GetClonedVoicesResponse(); //await GetVoicesResponse();
 			
 			voices = new List<VoicePreview>();
 
 			var tasks = new List<Task<bool>>();
 
 			var completedCount = 0F;
-			var totalCount = voicesResponse.Count;
+			var totalCount = voicesResponse.Items.Count();
 			
 			var progress = new Progress<float>((p) =>
 			{
@@ -126,7 +133,7 @@ namespace Gemelo.Voice.Editor.Preview
 				onProgress.Report(completedCount / totalCount);
 			});
 			
-			foreach (var voiceData in voicesResponse)
+			foreach (var voiceData in voicesResponse.Items)
 			{
 				var task = AddVoicePreview(voiceData, progress);
 				tasks.Add(task);
