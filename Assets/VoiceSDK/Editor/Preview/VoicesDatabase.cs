@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -43,16 +44,18 @@ namespace Gemelo.Voice.Editor.Preview
 			var preview = new VoicePreview(previewItemItem);
 			
 			onProgress.Report(0.5f);
+
+			var success = await preview.FetchVoicePreviewData();
 			
-			if (await preview.FetchVoicePreviewData())
+			if (success)
 			{
 				voices.Add(preview);
 				Debug.Log($"Added voice preview for Voice: {preview.Name}");
-				onProgress.Report(0.5f);
-				return true;
 			}
-			
-			return false;
+
+			onProgress.Report(0.5f);
+
+			return success;
 		}
 
 		public bool GetVoicePreviewByName(string itemName, out VoicePreview voicePreview)
@@ -104,7 +107,7 @@ namespace Gemelo.Voice.Editor.Preview
 		private async Task<SystemVoicesResponse> GetVoicesResponse(bool all = false)
 		{
 			var configuration = Voice.Configuration.Load();
-			var http = new EditorRestClient(configuration, message => Debug.LogError(message.Message));
+			var http = new EditorRestClient(configuration, message => Debug.LogWarning(message.Message));
 			var url = Voice.Configuration.VOICES_API + (all ? "?show=all" : string.Empty); 
 			return await http.GetAsync<SystemVoicesResponse>(url);
 		}
@@ -118,10 +121,11 @@ namespace Gemelo.Voice.Editor.Preview
 		
 		public async Task<bool[]> UpdatePreviewsDatabase(IProgress<float> onProgress)
 		{
-			IVoicesResponse voicesResponse = await GetClonedVoicesResponse(); //await GetVoicesResponse();
-			
-			voices = new List<VoicePreview>();
+			var systemVoices = await GetVoicesResponse();
+			var clonedVoices = await GetClonedVoicesResponse();
 
+			var voicesResponse = new VoicesResponse(systemVoices.Concat(clonedVoices.Items));
+			
 			var tasks = new List<Task<bool>>();
 
 			var completedCount = 0F;

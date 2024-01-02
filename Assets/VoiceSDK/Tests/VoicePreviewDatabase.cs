@@ -190,7 +190,7 @@ namespace Gemelo.Voice.Tests
                 Debug.Log($"Progress {progress}");
             }));
             
-            Assert.IsTrue(result.All(a=> a == true));
+            Assert.IsTrue(result.All(a=> a));
             Assert.GreaterOrEqual(progress, 0.99f);
             
             var path = Configuration.GLOBAL_SAVE_PATH + VoicesDatabase.FILE_ASSET + ".asset";

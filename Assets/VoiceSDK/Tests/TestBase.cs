@@ -23,7 +23,7 @@ namespace Gemelo.Voice.Tests
 			Configuration = Configuration.Load();
 			Assert.NotNull(Configuration);
 			
-			EditorHttp = new EditorRestClient(Configuration, Debug.LogError);
+			EditorHttp = new EditorRestClient(Configuration, Debug.LogWarning);
 			RuntimeHttp = new RuntimeRestClient(Configuration);
 		}
 

@@ -1,7 +1,6 @@
 using System;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Gemelo.Voice.Rest.Model;
@@ -28,7 +27,7 @@ namespace Gemelo.Voice.Rest.Client
 			if (req.StatusCode != HttpStatusCode.OK)
 			{
 				ReturnErrorMessage(ToString(), (int)req.StatusCode);
-				return default;
+				throw new Exception($"Can't read data from HTTP resource [{req.StatusCode}]");
 			}
 
 			var content = await req.Content.ReadAsStringAsync();
@@ -43,7 +42,7 @@ namespace Gemelo.Voice.Rest.Client
 			if (req.StatusCode != HttpStatusCode.OK)
 			{
 				ReturnErrorMessage(ToString(), (int)req.StatusCode);
-				return default;
+				throw new Exception($"Can't read data from HTTP resource [{req.StatusCode}]");
 			}
 
 			return await req.Content.ReadAsByteArrayAsync();
@@ -59,7 +58,7 @@ namespace Gemelo.Voice.Rest.Client
 			if (req.StatusCode != HttpStatusCode.OK)
 			{
 				ReturnErrorMessage(ToString(), (int)req.StatusCode);
-				return default;
+				throw new Exception($"Can't write data to HTTP resource [{req.StatusCode}]");
 			}
 			
 			var content = await req.Content.ReadAsByteArrayAsync();

@@ -190,7 +190,7 @@ namespace Gemelo.Voice.Editor.Preview
 		public static async Task<byte[]> GetAudioPreviewData(string previewUrl)
 		{
 			var configuration = Configuration.Load();
-			var http = new EditorRestClient(configuration, Debug.LogError);
+			var http = new EditorRestClient(configuration, Debug.LogWarning);
 			return await http.GetDataAsync(previewUrl);
 		}
 
@@ -207,7 +207,9 @@ namespace Gemelo.Voice.Editor.Preview
 			}
 			catch (Exception e)
 			{
+		#if !DEVELOPMENT
 				Debug.LogError($"Can't download data from remote resource, id: {itemData.Id}, Exception: {e.Message}");
+		#endif
 				return false;
 			}
 
