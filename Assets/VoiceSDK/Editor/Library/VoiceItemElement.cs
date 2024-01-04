@@ -3,6 +3,7 @@ using System.Globalization;
 using Gemelo.Voice.Audio;
 using Gemelo.Voice.Editor.Preview;
 using Gemelo.Voice.Library;
+using Gemelo.Voice.Rest.Model;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -411,7 +412,10 @@ namespace Gemelo.Voice.Editor.Library
 			
 			UpdateItemData(itemDataProperty, preview);
 			
-			FillDetailsLabel(itemDataProperty.FindPropertyRelative("Labels"), preview.Labels);
+			if (preview.Type != VoiceType.System)
+				return;
+			
+			FillSystemDetailsLabel(itemDataProperty.FindPropertyRelative("Labels"), preview.Labels);
 		}
 
 		private static void UpdateItemData(SerializedProperty itemData, VoicePreview preview)
@@ -422,7 +426,7 @@ namespace Gemelo.Voice.Editor.Library
 			itemData.FindPropertyRelative("Rating").floatValue = preview.Rating;
 		}
 		
-		private static void FillDetailsLabel(SerializedProperty labelsProperty, string[] labelsList)
+		private static void FillSystemDetailsLabel(SerializedProperty labelsProperty, string[] labelsList)
 		{
 			labelsProperty.ClearArray();
 			
