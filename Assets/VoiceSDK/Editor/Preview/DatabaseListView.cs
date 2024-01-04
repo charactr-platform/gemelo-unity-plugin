@@ -13,8 +13,7 @@ namespace Gemelo.Voice.Editor.Library
 	public class DatabaseListView : EditorWindow
 	{
 		public VisualTreeAsset visualTreeAsset;
-
-		private const string TITLE = "Preview and select voice:";
+		
 		private Button _button;
 		private ListView _listView;
 	
@@ -29,7 +28,7 @@ namespace Gemelo.Voice.Editor.Library
 		public static void ShowWindow()
 		{
 			var wnd = CreateInstance<DatabaseListView>();
-			wnd.titleContent = new GUIContent(TITLE);
+			wnd.titleContent = new GUIContent();
 			wnd.SetListType(ListType.None);
 			wnd.Show(true);
 		}
@@ -37,7 +36,7 @@ namespace Gemelo.Voice.Editor.Library
 		public static void ShowSelectionWindow(SerializedProperty property)
 		{
 			var wnd = CreateInstance<DatabaseListView>();
-			wnd.titleContent = new GUIContent(TITLE);
+			wnd.titleContent = new GUIContent();
 			wnd.SetListType(ListType.Selection);
 			wnd.RegisterItemProperty(property);
 			wnd.ShowModal();
@@ -48,7 +47,7 @@ namespace Gemelo.Voice.Editor.Library
 			var wnd = CreateInstance<DatabaseListView>();
 			wnd.SetListType(ListType.Creation);
 			wnd.RegisterItemTimestamp(timestamp, targetLibrary);
-			wnd.titleContent = new GUIContent(TITLE);
+			wnd.titleContent = new GUIContent();
 			wnd.ShowModal();
 		}
 
