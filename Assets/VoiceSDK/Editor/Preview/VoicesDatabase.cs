@@ -47,17 +47,26 @@ namespace Gemelo.Voice.Editor.Preview
 
 			var success = await preview.FetchVoicePreviewData();
 			
-			if (success)
-			{
-				voices.Add(preview);
-				Debug.Log($"Added voice preview for Voice: {preview.Name}");
-			}
+			if (success && AddOrUpdatePreview(preview))
+				Debug.Log($"Added new voice preview for Voice: {preview.Name}");
 
 			onProgress.Report(0.5f);
 
 			return success;
 		}
 
+		private bool AddOrUpdatePreview(VoicePreview preview)
+		{
+			if (PreviewExists(preview.Id, out var index))
+			{
+				voices[index] = preview;
+				return false;
+			}
+			
+			voices.Add(preview);
+			return true;
+		}
+		
 		public bool GetVoicePreviewByName(string itemName, out VoicePreview voicePreview)
 		{
 			voicePreview = null;
