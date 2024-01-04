@@ -181,8 +181,10 @@ namespace Gemelo.Voice.Editor.Preview
 		public List<PcmFrame> WriteAudioFrames(byte[] data)
 		{
 			var header = new WavHeaderData(data);
+			sampleRate = header.SampleRate;
+			bitDepth = header.BitDepth;
 			
-			var wavBuilder = new WavBuilder(header.SampleRate, header.BitDepth, data.AsSpan(0, header.DataOffset).ToArray());
+			var wavBuilder = new WavBuilder(sampleRate, bitDepth, data.AsSpan(0, header.DataOffset).ToArray());
 			
 			return wavBuilder.ToPcmFrames(data.AsSpan(header.DataOffset).ToArray());
 		}
