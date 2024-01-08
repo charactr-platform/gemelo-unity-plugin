@@ -42,7 +42,7 @@ namespace Gemelo.Voice.Library
         
         public ConvertRequest GetRequest(VoiceType type)
         {
-            if (type == VoiceType.None)
+            if (type == VoiceType.All)
                 throw new Exception("VoiceType not set!");
             
             return new ConvertRequest()

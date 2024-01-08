@@ -130,7 +130,7 @@ namespace Gemelo.Voice.Editor.Preview
 		
 		private PopupWindow CreateDetailsPopup(SerializedProperty previewItem, bool isSystemPreview)
 		{
-			var labelString = $"ID: {_id}\n";
+			var labelString = $"ID: {_id}\nType: {_voiceType}\n";
 
 			if (isSystemPreview)
 			{
