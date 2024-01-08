@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Gemelo.Voice.Editor.Preview;
 using Gemelo.Voice.Library;
+using Gemelo.Voice.Rest.Model;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using PopupWindow = UnityEngine.UIElements.PopupWindow;
 
 namespace Gemelo.Voice.Editor.Library
 {
@@ -14,9 +14,9 @@ namespace Gemelo.Voice.Editor.Library
 	{
 		public VisualTreeAsset visualTreeAsset;
 		
+		private const string TITLE = "Preview and select voice:";
+		
 		private Button _button;
-		private ListView _listView;
-	
 		private int _voiceItemId = -1;
 		private long _voiceItemTimestamp = -1;
 		private VoiceLibrary _targetLibrary;
@@ -28,7 +28,7 @@ namespace Gemelo.Voice.Editor.Library
 		public static void ShowWindow()
 		{
 			var wnd = CreateInstance<DatabaseListView>();
-			wnd.titleContent = new GUIContent();
+			wnd.titleContent = new GUIContent(TITLE);
 			wnd.SetListType(ListType.None);
 			wnd.Show(true);
 		}
@@ -36,7 +36,7 @@ namespace Gemelo.Voice.Editor.Library
 		public static void ShowSelectionWindow(SerializedProperty property)
 		{
 			var wnd = CreateInstance<DatabaseListView>();
-			wnd.titleContent = new GUIContent();
+			wnd.titleContent = new GUIContent(TITLE);
 			wnd.SetListType(ListType.Selection);
 			wnd.RegisterItemProperty(property);
 			wnd.ShowModal();
@@ -47,7 +47,7 @@ namespace Gemelo.Voice.Editor.Library
 			var wnd = CreateInstance<DatabaseListView>();
 			wnd.SetListType(ListType.Creation);
 			wnd.RegisterItemTimestamp(timestamp, targetLibrary);
-			wnd.titleContent = new GUIContent();
+			wnd.titleContent = new GUIContent(TITLE);
 			wnd.ShowModal();
 		}
 
@@ -71,16 +71,33 @@ namespace Gemelo.Voice.Editor.Library
 		private void CreateGUI()
 		{
 			// Each editor window contains a root VisualElement object
-			var root = rootVisualElement;
-			var popup = CreatePopup();
-			popup.Add(visualTreeAsset.Instantiate());
-			root.Add(popup);
-			
-			_listView = popup.Q<ListView>();
-			CreateList(_listView, LoadPreviewItems());
+			visualTreeAsset.CloneTree(rootVisualElement);
+			CreateList(rootVisualElement.Q<ListView>(), LoadPreviewItems(VoiceType.All));
+			CreateDropdownSelection();
 		}
 		
-		public static List<SerializedProperty> LoadPreviewItems()
+		private void CreateDropdownSelection()
+		{
+			var voiceType = rootVisualElement.Q<DropdownField>("voiceTypeDropdown");
+			
+			voiceType.choices = new List<string>()
+			{
+				"All", "System", "Cloned"
+			};
+			
+			voiceType.SetValueWithoutNotify(voiceType.choices[0]);
+			
+			voiceType.RegisterValueChangedCallback((e)=>UpdateList(e.newValue));
+		}
+
+		private void UpdateList(string newValue)
+		{
+			Debug.Log("On value :"+ newValue);
+			var voiceType = Enum.Parse<VoiceType>(newValue);
+			CreateList(rootVisualElement.Q<ListView>(), LoadPreviewItems(voiceType));
+		}
+		
+		public static List<SerializedProperty> LoadPreviewItems(VoiceType voiceType)
 		{
 			_itemsDictionary = new Dictionary<VoicePreview, SerializedProperty>();
 			var fields = new List<SerializedProperty>();
@@ -92,9 +109,19 @@ namespace Gemelo.Voice.Editor.Library
 			{
 				var element = database.Voices[i];
 				var property = voices.GetArrayElementAtIndex(i);
-				
-				_itemsDictionary.Add(element, property);
-				fields.Add(property);
+
+				if (voiceType == VoiceType.All)
+				{
+					_itemsDictionary.Add(element, property);
+					fields.Add(property);
+					continue;
+				}
+
+				if (element.Type == voiceType)
+				{
+					_itemsDictionary.Add(element, property);
+					fields.Add(property);
+				}
 			}
 			return fields;
 		}
@@ -152,32 +179,6 @@ namespace Gemelo.Voice.Editor.Library
 			libraryObject.ApplyModifiedPropertiesWithoutUndo();
 			libraryObject.Dispose();
 			Close();
-		}
-		
-		private PopupWindow CreatePopup()
-		{
-			var text = _listType switch
-			{
-				ListType.None => "Available voices: ",
-				ListType.Change => "Click 'Change' to change current voice:",
-				ListType.Creation => "Click 'Select' to set new voice:",
-				ListType.Selection => "Click 'Select' to select new voice:",
-				_ => string.Empty
-			};
-
-			var popup = new PopupWindow
-			{
-				text = text,
-				style =
-				{
-					position = new StyleEnum<Position>(Position.Relative),
-					flexBasis = new StyleLength(StyleKeyword.Auto),
-					flexGrow = 1,
-					borderTopLeftRadius = 0,
-					borderTopRightRadius = 0
-				}
-			};
-			return popup;
 		}
 	}
 }

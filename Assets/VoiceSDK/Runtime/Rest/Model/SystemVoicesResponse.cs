@@ -30,7 +30,8 @@ namespace Gemelo.Voice.Rest.Model
 
 	public enum VoiceType
 	{
-		None = 0,
+		None = -1,
+		All = 0,
 		System = 1,
 		Cloned = 2,
 	}
