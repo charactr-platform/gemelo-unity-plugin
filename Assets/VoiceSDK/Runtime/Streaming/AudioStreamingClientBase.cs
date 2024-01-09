@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Gemelo.Voice.Audio;
+using Gemelo.Voice.Rest.Model;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -13,9 +14,11 @@ namespace Gemelo.Voice.Streaming
 		public AudioClip AudioClip => _clip;
 		public AudioDataType DataType => _audioParameters.AudioDataType;
 		public int SampleRate => _audioParameters.SampleRate;
+		public VoiceType VoiceType => _audioParameters.VoiceType;
 		public bool BufferingCompleted { get; private set; }
 		public float AudioLength => AudioClipBuilder.Duration;
 		public int TimeSamples { get; private set; }
+		
 		private AudioClipBuilder AudioClipBuilder { get; set; }
 
 		private readonly Queue<string> _commands;
@@ -62,8 +65,11 @@ namespace Gemelo.Voice.Streaming
 				default:
 					throw new Exception($"Can't set unsupported transcoder sampling rate: {SampleRate}");
 			}
+
+			var audio = DataType.ToString().ToLower();
+			var voice = VoiceType.ToString().ToLower();
 			
-			return url + $"&format={DataType.ToString().ToLower()}&sr={SampleRate}";
+			return url + $"&format={audio}&sr={SampleRate}&voiceType={voice}";
 		}
 		
 		public void DepleteBufferQueue()
