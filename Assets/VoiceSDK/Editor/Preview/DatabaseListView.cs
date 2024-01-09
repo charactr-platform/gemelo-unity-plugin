@@ -14,8 +14,6 @@ namespace Gemelo.Voice.Editor.Library
 	{
 		public VisualTreeAsset visualTreeAsset;
 		
-		private const string TITLE = "Preview and select voice:";
-		
 		private Button _button;
 		private int _voiceItemId = -1;
 		private long _voiceItemTimestamp = -1;
@@ -28,16 +26,14 @@ namespace Gemelo.Voice.Editor.Library
 		public static void ShowWindow()
 		{
 			var wnd = CreateInstance<DatabaseListView>();
-			wnd.titleContent = new GUIContent(TITLE);
-			wnd.SetListType(ListType.None);
+			wnd.SetType(ListType.None);
 			wnd.Show(true);
 		}
 		
 		public static void ShowSelectionWindow(SerializedProperty property)
 		{
 			var wnd = CreateInstance<DatabaseListView>();
-			wnd.titleContent = new GUIContent(TITLE);
-			wnd.SetListType(ListType.Selection);
+			wnd.SetType(ListType.Selection);
 			wnd.RegisterItemProperty(property);
 			wnd.ShowModal();
 		}
@@ -45,15 +41,16 @@ namespace Gemelo.Voice.Editor.Library
 		public static void ShowSelectionWindow(long timestamp, VoiceLibrary targetLibrary)
 		{
 			var wnd = CreateInstance<DatabaseListView>();
-			wnd.SetListType(ListType.Creation);
+			wnd.SetType(ListType.Creation);
+		
 			wnd.RegisterItemTimestamp(timestamp, targetLibrary);
-			wnd.titleContent = new GUIContent(TITLE);
 			wnd.ShowModal();
 		}
 
-		public void SetListType(ListType type)
+		private void SetType(ListType type)
 		{
 			_listType = type;
+			titleContent = new GUIContent(GetTitle(type));
 		}
 		
 		private void RegisterItemTimestamp(long timestamp, VoiceLibrary targetLibrary)
@@ -67,6 +64,15 @@ namespace Gemelo.Voice.Editor.Library
 			_voiceItemId = property.FindPropertyRelative("voiceItemId").intValue;
 			_targetLibrary = property.serializedObject.targetObject as VoiceLibrary;
 		}
+		
+		private static string GetTitle(ListType listType) => listType switch
+		{
+			ListType.None => "Available voices",
+			ListType.Change => "Click 'Change' to change current voice",
+			ListType.Creation => "Click 'Select' to set new voice",
+			ListType.Selection => "Click 'Select' to select new voice",
+			_ => string.Empty
+		};
 		
 		private void CreateGUI()
 		{
