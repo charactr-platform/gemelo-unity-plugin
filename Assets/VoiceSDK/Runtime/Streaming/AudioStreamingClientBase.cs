@@ -40,7 +40,7 @@ namespace Gemelo.Voice.Streaming
 			
 			//Fix cases where it sets defaulted to All in inspector
 			if (VoiceType.Equals(VoiceType.All))
-				audioParameters.SetVoiceType(VoiceType.All);
+				audioParameters.SetVoiceType(VoiceType.System);
 		}
 
 		protected void EnqueueCommand(string command)
