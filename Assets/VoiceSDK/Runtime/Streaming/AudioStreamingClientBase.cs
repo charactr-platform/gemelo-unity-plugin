@@ -37,6 +37,10 @@ namespace Gemelo.Voice.Streaming
 			_pcmDataProvider = new StreamPcmDataProvider();
 			_configuration = configuration;
 			_audioParameters = audioParameters;
+			
+			//Fix cases where it sets defaulted to All in inspector
+			if (VoiceType.Equals(VoiceType.All))
+				audioParameters.SetVoiceType(VoiceType.All);
 		}
 
 		protected void EnqueueCommand(string command)
