@@ -11,7 +11,7 @@ namespace Gemelo.Voice.Rest
 
 	public interface IVoices
 	{
-		Task<VoicesResponse> GetVoices();
+		Task<SystemVoicesResponse> GetVoices();
 		Task<AudioClip> GetVoicePreview(int id);
 	}
 }

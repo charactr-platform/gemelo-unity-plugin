@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Gemelo.Voice.Audio;
+using Gemelo.Voice.Rest.Model;
 using Gemelo.Voice.Streaming;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +15,7 @@ namespace Gemelo.Voice.Samples.Streaming
         public struct VoiceDb
         {
             public string Text;
+            public VoiceType Type;
             public int VoiceId;
         }
 
@@ -85,15 +87,16 @@ namespace Gemelo.Voice.Samples.Streaming
             var current = texts[i];
 
             textToSpeechText.text = $"Text: {current.Text}";
-            voiceIdText.text = $"VoiceID: {current.VoiceId}";
+            voiceIdText.text = $"VoiceID: {current.VoiceId} [{current.Type}]";
 
-            yield return StreamTextToSpeech(current.Text, current.VoiceId);
+            yield return StreamTextToSpeech(current);
         }
 
-        private IEnumerator StreamTextToSpeech(string text, int voiceID)
+        private IEnumerator StreamTextToSpeech(VoiceDb voiceDb)
         {
-            streamingManager.SetVoiceId(voiceID);
-            yield return streamingManager.ConvertAndStartPlaying(text);
+            streamingManager.SetVoiceId(voiceDb.VoiceId);
+            streamingManager.SetVoiceType(voiceDb.Type);
+            yield return streamingManager.ConvertAndStartPlaying(voiceDb.Text);
         }
     }
 }

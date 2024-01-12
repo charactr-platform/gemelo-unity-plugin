@@ -39,12 +39,17 @@ namespace Gemelo.Voice.Library
         [SerializeField] private int id;
         [SerializeField] private long timestamp;
         public bool IsValid() => !string.IsNullOrEmpty(Text) && VoiceId > -1 && Timestamp > 0;
-        public ConvertRequest GetRequest()
+        
+        public ConvertRequest GetRequest(VoiceType type)
         {
+            if (type == VoiceType.All)
+                throw new Exception("VoiceType not set!");
+            
             return new ConvertRequest()
             {
                 Text = text,
-                VoiceId = voiceId
+                VoiceId = voiceId,
+                VoiceType = type.ToString().ToLower()
             };
         }
 
@@ -61,11 +66,11 @@ namespace Gemelo.Voice.Library
             this.voiceId = voiceId;
         }
 
-        public void SetVoicePreview(VoicePreview voicePreview)
+        public void SetVoicePreview(VoicePreview preview)
         {
-            this.voiceId = voicePreview.Id;
-            this.voicePreview = voicePreview;
-            voicePreview.VoiceItemId = Id;
+            voiceId = preview.Id;
+            voicePreview = preview;
+            preview.VoiceItemId = Id;
         }
         
         public async Task<AudioClip> GetAudioClip()
@@ -78,7 +83,7 @@ namespace Gemelo.Voice.Library
 
             using (var convert = new Convert())
             {
-                audioClip = await convert.ConvertToAudioClip(GetRequest());
+                audioClip = await convert.ConvertToAudioClip(GetRequest(voicePreview.Type));
     #if UNITY_EDITOR
                 TryRemoveClip();
                 SaveInProject(convert);
@@ -110,6 +115,7 @@ namespace Gemelo.Voice.Library
                 Debug.Log($"Removed old asset : {path}");
 
         }
+        
         public void SaveInProject(Convert convert)
         {
             if (audioClip == null)
@@ -136,16 +142,18 @@ namespace Gemelo.Voice.Library
             Debug.Assert(AudioClip != null);
 
         }
+        
         private void SetClipHashData(AudioClip clip)
-		{
-			var path = AssetDatabase.GetAssetPath(clip);
+        {
+            var path = AssetDatabase.GetAssetPath(clip);
             
-			var importer = AssetImporter.GetAtPath(path);
+            var importer = AssetImporter.GetAtPath(path);
             
-			importer.userData = GetHashCode().ToString();
-			importer.SaveAndReimport();
-		}
+            importer.userData = GetHashCode().ToString();
+            importer.SaveAndReimport();
+        }
+      
     #endif
 #endregion
-    }
+    } 
 }

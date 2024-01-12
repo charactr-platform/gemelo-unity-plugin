@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Gemelo.Voice.Audio;
 using Gemelo.Voice.Editor.Library;
+using Gemelo.Voice.Rest.Model;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -27,6 +28,7 @@ namespace Gemelo.Voice.Editor.Preview
 		private SerializedProperty _property;
 		private PopupWindow _detailsPopup;
 		private int _id;
+		private VoiceType _voiceType;
 		private readonly ListType _listType;
 		private Action<int> _onSelect;
 		
@@ -57,8 +59,7 @@ namespace Gemelo.Voice.Editor.Preview
 		{
 			var item = property.FindPropertyRelative("itemData");
 			var id = item.FindPropertyRelative("Id").intValue;
-			var audio = property.FindPropertyRelative("audioDetails");
-		
+			var voiceType = (VoiceType) item.FindPropertyRelative("Type").enumValueIndex;
 			//Recycling view 
 			if (_property != null)
 			{
@@ -70,49 +71,82 @@ namespace Gemelo.Voice.Editor.Preview
 			
 			_id = id;
 			_property = property;
-
-			CreateLabel(item);
+			_voiceType = voiceType;
+			
+			CreateNameLabel(item);
+			
+			switch (_voiceType)
+			{
+				case VoiceType.System:
+					CreateRatingLabel(item);
+					CreateSystemLabels(item);
+					break;
+				
+				case VoiceType.Cloned:
+					CreateClonedLabels();
+					break;
+			}
+			
 			_selectButton = RegisterSelectButton();
 			_detailsButton = RegisterDetailsButton();
 			_changeButton = RegisterChangeButton();
 			_playButton = RegisterPlayButton();
-			_detailsPopup = CreateDetailsPopup(item, audio);
+			_detailsPopup = CreateDetailsPopup(item, _voiceType == VoiceType.System);
 		}
 
-		private void CreateLabel(SerializedProperty previewItem)
+		private void CreateNameLabel(SerializedProperty previewItem)
 		{
 			var label = this.Q<Label>("nameLabel");
+			var itemName = previewItem.FindPropertyRelative("Name");
+			label.text = $"{itemName.stringValue}";
+		}
+		
+		private void CreateRatingLabel(SerializedProperty previewItem)
+		{
 			var rate = this.Q<Label>("rateLabel");
-			
+			rate.text = $"{previewItem.FindPropertyRelative("Rating").floatValue:F1}";
+		}
+
+		private void CreateSystemLabels(SerializedProperty previewItem)
+		{
 			var labelsValue = string.Empty;
-			var itemNam = previewItem.FindPropertyRelative("Name");
+			
 			var labels = previewItem.FindPropertyRelative("Labels");
 			
 			if (labels.isArray && labels.arraySize > 0)
 				labelsValue = $"({labels.GetArrayElementAtIndex(0).stringValue})";
-			
-			rate.text = $"{previewItem.FindPropertyRelative("Rating").floatValue:F1}";
-			label.text = $"{itemNam.stringValue} {labelsValue}";
-		}
 
-		private PopupWindow CreateDetailsPopup(SerializedProperty previewItem, SerializedProperty audioDetails)
+			this.Q<Label>("nameLabel").text += $"{labelsValue}";
+		}
+		
+		private void CreateClonedLabels()
 		{
-			var label = new Label()
+			var rate = this.Q<Label>("rateLabel");
+			var rateImage = this.Q<Label>("rateImage");
+			rate.text = "Cloned";
+			rateImage.RemoveFromClassList("starIcon");
+			rateImage.AddToClassList("clonedIcon");
+		}
+		
+		private PopupWindow CreateDetailsPopup(SerializedProperty previewItem, bool isSystemPreview)
+		{
+			var labelString = $"ID: {_id}\nType: {_voiceType}\n";
+
+			if (isSystemPreview)
+			{
+				labelString += $"Labels: {FillDetailsLabel(previewItem)}";
+			}
+			
+			var label = new Label
 			{
 				style = 
 				{
 					flexBasis = new StyleLength(StyleKeyword.Auto),
 					flexGrow = 1,
 					flexWrap = new StyleEnum<Wrap>(Wrap.Wrap)
-				}
+				},
+				text = labelString
 			};
-			
-			var bits = audioDetails.FindPropertyRelative("BitDepth");
-			var hz = audioDetails.FindPropertyRelative("SampleRate");
-			
-			label.text = $"ID: {_id}\n" +
-			             $"Audio: {bits.intValue} bit, {(hz.intValue/1000f):F1} kHz\n"+
-			             $"Labels: {FillDetailsLabel(previewItem)}";
 			
 			_detailsPopup = CreatePopup();
 			_detailsPopup.Add(label);

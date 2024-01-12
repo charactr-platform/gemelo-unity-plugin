@@ -30,6 +30,14 @@
     justify-content: space-around;
 }
 
+.clonedIcon {
+    -unity-background-scale-mode: scale-to-fit;
+    background-image: resource('Hidden@2x');
+    align-items: flex-start;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
 .playIcon {
     padding-left: 140px;
     margin-right: 110px;

@@ -22,15 +22,7 @@ namespace Gemelo.Voice.Editor.Preview
 		public string Description;
 		public string[] Labels;
 		public float Rating;
-	}
-
-	[Serializable]
-	public struct AudioDetails
-	{
-		public int SampleRate;
-		public int BitDepth;
-		public float Duration;
-		public int DataOffset;
+		public VoiceType Type;
 	}
 	
 	[Serializable]
@@ -57,15 +49,15 @@ namespace Gemelo.Voice.Editor.Preview
 			get => itemData.Labels;
 		}
 		
-		public AudioDetails AudioDetails
-		{
-			get => audioDetails;
-		}
-
 		public long VoiceItemId
 		{
 			get => voiceItemId;
 			set => voiceItemId = value;
+		}
+
+		public VoiceType Type
+		{
+			get => itemData.Type;
 		}
 		
 		public string CacheFilePath => Path.Combine(Configuration.CachePath, dataFileName);
@@ -73,23 +65,35 @@ namespace Gemelo.Voice.Editor.Preview
 		public override string ToString() => $"{Name} - {dataFileName}";
 
 		[SerializeField] private PreviewItemData itemData;
-		[SerializeField] private AudioDetails audioDetails;
 		[SerializeField] private long previewDataSize;
 		[SerializeField] private string dataFileName;
 		[SerializeField] private long voiceItemId;
-		public VoicePreview(VoicePreviewItem item)
+		[SerializeField] private int sampleRate;
+		[SerializeField] private int bitDepth;
+		public VoicePreview(IVoicePreviewItem item)
 		{
 			itemData = new PreviewItemData()
 			{
 				Id = item.Id,
+				Type = item.Type,
 				Name = item.Name,
 				PreviewUrl = item.Url,
-				Description = item.Description,
-				Rating = item.Rating,
-				Labels = item.Labels.Select(s=>s.Label).ToArray()
 			};
+
+			if (item.Type == VoiceType.System)
+				SetSystemDetails(item);
 		}
 
+		private void SetSystemDetails(IVoicePreviewItem item)
+		{
+			if (item is SystemVoicePreviewItem preview)
+			{
+				itemData.Description = preview.Description;
+				itemData.Rating = preview.Rating;
+				itemData.Labels = preview.Labels.Select(s => s.Label).ToArray();
+			};
+		}
+		
 		public long EncodePcmFramesToCache(List<PcmFrame> pcmFrames, out string fileName)
 		{
 			var size = 0L;
@@ -163,15 +167,13 @@ namespace Gemelo.Voice.Editor.Preview
 			if (frames== null || frames.Count == 0)
 				throw new Exception("Can't create audio clip, data is empty");
 			
-			var builder = new WavBuilder(audioDetails.SampleRate, audioDetails.BitDepth);
+			var builder = new WavBuilder(sampleRate, bitDepth);
 			
 			foreach (var pcmFrame in frames)
 				builder.BufferSamples(pcmFrame);
 
 			if (builder.BufferLastFrame(out var frame))
 				builder.BufferSamples(frame);
-
-			audioDetails.Duration = builder.Duration;
 			
 			return builder.CreateAudioClipStream(itemData.Name, Mathf.CeilToInt(builder.Duration));
 		}
@@ -179,16 +181,10 @@ namespace Gemelo.Voice.Editor.Preview
 		public List<PcmFrame> WriteAudioFrames(byte[] data)
 		{
 			var header = new WavHeaderData(data);
+			sampleRate = header.SampleRate;
+			bitDepth = header.BitDepth;
 			
-			var wavBuilder = new WavBuilder(header.SampleRate, header.BitDepth, data.AsSpan(0, header.DataOffset).ToArray());
-			
-			audioDetails = new AudioDetails
-			{
-				SampleRate = header.SampleRate,
-				DataOffset = header.DataOffset,
-				BitDepth = header.BitDepth,
-				Duration = wavBuilder.Duration
-			};
+			var wavBuilder = new WavBuilder(sampleRate, bitDepth, data.AsSpan(0, header.DataOffset).ToArray());
 			
 			return wavBuilder.ToPcmFrames(data.AsSpan(header.DataOffset).ToArray());
 		}
@@ -196,7 +192,7 @@ namespace Gemelo.Voice.Editor.Preview
 		public static async Task<byte[]> GetAudioPreviewData(string previewUrl)
 		{
 			var configuration = Configuration.Load();
-			var http = new EditorRestClient(configuration, Debug.LogError);
+			var http = new EditorRestClient(configuration, Debug.LogWarning);
 			return await http.GetDataAsync(previewUrl);
 		}
 
@@ -213,7 +209,9 @@ namespace Gemelo.Voice.Editor.Preview
 			}
 			catch (Exception e)
 			{
+		#if !DEVELOPMENT
 				Debug.LogError($"Can't download data from remote resource, id: {itemData.Id}, Exception: {e.Message}");
+		#endif
 				return false;
 			}
 
