@@ -29,6 +29,7 @@ Please visit [Gemelo.ai](https://app.gemelo.ai) for account creation and API key
 
 * Play VoiceLibrary item:
 ```
+//Reference assemblies Gemelo.Voice and Gemelo.Voice.Audio if assembly definitions are used
 using Gemelo.Voice.Audio;
 using Gemelo.Voice.Library;
 using UnityEngine;
@@ -46,7 +47,7 @@ public class PlayVoiceLibrary : MonoBehaviour
         PlayVoiceClipById(itemId);
     }
 
-    private void PlayAudioClipById(int id)
+    private void PlayVoiceClipById(int id)
     {
         if (voiceLibrary.GetAudioClipById(id, out var audioClip))
             AudioPlayer.PlayClipStatic(audioClip);
@@ -55,6 +56,7 @@ public class PlayVoiceLibrary : MonoBehaviour
 ```
 * Create runtime instance of VoiceLibrary:
 ```
+//Reference assembly Gemelo.Voice if assembly definitions are used
 using Gemelo.Voice.Library;
 using UnityEngine;
 
