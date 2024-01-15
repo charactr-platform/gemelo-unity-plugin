@@ -3,6 +3,7 @@ using System.Globalization;
 using Gemelo.Voice.Audio;
 using Gemelo.Voice.Editor.Preview;
 using Gemelo.Voice.Library;
+using Gemelo.Voice.Rest.Model;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -404,19 +405,28 @@ namespace Gemelo.Voice.Editor.Library
 		{
 			property.FindPropertyRelative("voiceId").intValue = preview.Id;
 			
-			var p = property.FindPropertyRelative("voicePreview");
-			p.FindPropertyRelative("voiceItemId").intValue = itemId;
+			var previewProperty = property.FindPropertyRelative("voicePreview");
+			previewProperty.FindPropertyRelative("voiceItemId").intValue = itemId;
+
+			var itemDataProperty = previewProperty.FindPropertyRelative("itemData");
 			
-			var item = p.FindPropertyRelative("itemData");
+			UpdateItemData(itemDataProperty, preview);
 			
-			item.FindPropertyRelative("Id").intValue = preview.Id;
-			item.FindPropertyRelative("Name").stringValue = preview.Name;
-			item.FindPropertyRelative("Rating").floatValue = preview.Rating;
-		
-			FillDetailsLabel(item.FindPropertyRelative("Labels"), preview.Labels);
+			if (preview.Type != VoiceType.System)
+				return;
+			
+			FillSystemDetailsLabel(itemDataProperty.FindPropertyRelative("Labels"), preview.Labels);
 		}
 
-		private static void FillDetailsLabel(SerializedProperty labelsProperty, string[] labelsList)
+		private static void UpdateItemData(SerializedProperty itemData, VoicePreview preview)
+		{
+			itemData.FindPropertyRelative("Id").intValue = preview.Id;
+			itemData.FindPropertyRelative("Type").enumValueIndex = (int) preview.Type;
+			itemData.FindPropertyRelative("Name").stringValue = preview.Name;
+			itemData.FindPropertyRelative("Rating").floatValue = preview.Rating;
+		}
+		
+		private static void FillSystemDetailsLabel(SerializedProperty labelsProperty, string[] labelsList)
 		{
 			labelsProperty.ClearArray();
 			

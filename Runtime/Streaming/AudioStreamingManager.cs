@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Gemelo.Voice.Audio;
+using Gemelo.Voice.Rest.Model;
 using UnityEngine;
 
 namespace Gemelo.Voice.Streaming
@@ -131,9 +132,10 @@ namespace Gemelo.Voice.Streaming
         }
         
         public void SetVoiceId(int voice) => voiceId = voice;
+        public void SetAudioParameters(AudioParameters parameters) => AudioParameters = parameters;
         public void SetSamplingRate(int rate) => AudioParameters.SetSamplingRate(rate);
         public void SetMaxLenght(int lenght) => AudioParameters.SetMaxLenght(lenght);
-        public void SetAudioDataType(AudioDataType type) => AudioParameters.SetAudioDataType(type);
-        public void SetAudioParameters(AudioParameters parameters) => AudioParameters = parameters;
+        public void SetAudioDataType(AudioDataType audioType) => AudioParameters.SetAudioDataType(audioType);
+        public void SetVoiceType(VoiceType voiceType) => AudioParameters.SetVoiceType(voiceType);
     }
 }

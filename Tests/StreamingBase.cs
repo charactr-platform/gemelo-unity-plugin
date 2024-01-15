@@ -18,12 +18,13 @@ namespace Gemelo.Voice.Tests
 	public class StreamingTestsData
 	{
 		protected const string Text = "Hello from Charactr Software Development Kit for Unity";
-
+		/// <summary>
+		/// Limit to 300 characters
+		/// </summary>
 		protected const string LongText =
 			"We use optional cookies to improve your experience on our websites, such as through social media connections," +
 			" and to display personalized advertising based on your online activity. If you reject optional cookies," +
-			" only cookies necessary to provide you the services will be used." +
-			" You may change your selection by clicking “Manage Cookies” at the bottom of the page.";
+			" only cookies necessary to provide you the services will be used.";
 
 		protected const int VoiceId = 105; //Free - Steven
 	}

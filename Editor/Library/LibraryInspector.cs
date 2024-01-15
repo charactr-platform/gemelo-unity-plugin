@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Gemelo.Voice.Library;
 using UnityEditor;
@@ -39,36 +40,39 @@ namespace Gemelo.Voice.Editor.Library
 			_saveButton.RegisterCallback<ClickEvent>((e) => OnSaveButton());
 			_saveButton.SetEnabled(false);
 			
-			LoadSerializedData();
+			_listView = LoadSerializedDataToList();
 			
-			_listView.onSelectedIndicesChange += ints =>
-			{
-
-				var selectionFound = ints.Any();
-				_removeButton.SetEnabled(selectionFound);
-				if (selectionFound)
-				{
-					var index = ints.FirstOrDefault();
-					Debug.Log($"Selected = [{index}]");
-					_selectedIndex = index;
-				}
-			};
+			_listView.onSelectedIndicesChange += SetSelectionIndex;
 			
 			return _inspector;
 		}
 
-		private void LoadSerializedData()
+		private void SetSelectionIndex(IEnumerable<int> ints)
 		{
-			_listView = _inspector.Q<ListView>();
+			var enumerable = ints as int[] ?? ints.ToArray();
+			var selectionFound = enumerable.Any();
+			_removeButton.SetEnabled(selectionFound);
+
+			if (!selectionFound)
+				return;
+
+			var index = enumerable.FirstOrDefault();
+			_selectedIndex = index;
+		}
+
+		private ListView LoadSerializedDataToList()
+		{
+			var list = _inspector.Q<ListView>();
 
 			serializedObject.UpdateIfRequiredOrScript();
 			
 			_items = serializedObject.FindProperty("items");
 			
-			_listView.BindProperty(_items);
+			list.BindProperty(_items);
 
 			_initialHash = CalculateListHashFromItems(_items);
 			Debug.Log($"Initial hash: {_initialHash}");
+			return list;
 		}
 		
 		private int CalculateListHashFromItems(SerializedProperty items)
@@ -95,7 +99,7 @@ namespace Gemelo.Voice.Editor.Library
 			_items.serializedObject.ApplyModifiedProperties();
 			_listView.ClearSelection();
 			_selectedIndex = -1;
-			LoadSerializedData();
+			_listView = LoadSerializedDataToList();
 			_listView.RefreshItems();
 		}
 

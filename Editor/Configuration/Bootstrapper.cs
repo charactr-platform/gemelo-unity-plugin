@@ -26,6 +26,7 @@ namespace Gemelo.Voice.Editor.Configuration
 			if (instance.Validate())
 				return;
 			
+#if !DEVELOPMENT 		
 			if (ShowCreateDatabaseDialog())
 			{
 				await DatabaseInspector.UpdateLibraryInstance(instance);
@@ -33,6 +34,7 @@ namespace Gemelo.Voice.Editor.Configuration
 				if (!instance.Validate())
 					EditorUtility.DisplayDialog("Error", "Something went wrong!", "OK");
 			}
+#endif
 		}
 		
 		private static async Task WaitForStartup(int secs)
