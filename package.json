@@ -1,6 +1,6 @@
 {
   "name": "ai.gemelo.voice",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "displayName": "Gemelo.ai Voice Plugin",
   "description": "Voice Plugin allows to convert and stream text-to-speech voices in real time",
   "unity": "2021.3",

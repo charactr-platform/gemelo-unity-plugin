@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v1.4.0] - 2024-01-15
+- Added Cloned Voices support
+- Various fixes 
+
 ## [v1.3.0] - 2023-12-15
 - Updated VoiceLibrary layout
 - Fixes for VoiceLibrary
