@@ -103,18 +103,15 @@ namespace Gemelo.Voice.Editor.Library
 			var listView = rootVisualElement.Q<ListView>();
 			
 			if (items.Count == 0)
-			{
 				DisplayNoItems();
-				return;
-			}
-			
+
 			CreateList(listView, items);
 		}
 
 		private void DisplayNoItems()
 		{
 			EditorUtility.DisplayDialog("No items found",
-				"Please use 'Tools->Gemelo.Ai->Update voice previews' menu\n" +
+				"Please use 'Tools -> Gemelo.ai Voice -> Update voice previews'\n" +
 				"to fetch voice previews database", "OK");
 		}
 		

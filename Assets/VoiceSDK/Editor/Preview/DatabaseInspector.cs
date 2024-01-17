@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Gemelo.Voice.Rest.Model;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -41,10 +42,16 @@ namespace Gemelo.Voice.Editor.Preview
 		private void UpdateStatusLabel()
 		{
 			var items = LoadPreviewItems();
-			var sum = items.Sum(s => s.FindPropertyRelative("previewDataSize").intValue);
-			var names = items.Select(s => s.FindPropertyRelative("itemData").FindPropertyRelative("Name").stringValue);
-			_statusLabel.text = $"Added previews: {items.Count}, Cache size: {sum / 1024f / 1024:F2}MB";
-			_statusLabel.text += $"\n\n {string.Join(" | ",names)} \n";
+			var sum = items.Sum(s => s.Size);
+			var names = items.GroupBy(s => s.ItemData.Type, e => e.ItemData.Name).ToList();
+			_statusLabel.text = $"Cache size [{items.Count}] ({sum / 1024f / 1024:F2}MB)\n";
+			var s =  names.FirstOrDefault(f => f.Key == VoiceType.System)?.ToArray();
+			var c =  names.FirstOrDefault(f => f.Key == VoiceType.Cloned)?.ToArray();
+			var empty = new string[] {"(no items found)"};
+			_statusLabel.text += $"\nSystem:\n {string.Join(" | ", s ?? empty)} \n"+
+			                     $"\nCloned:\n {string.Join(" | ", c ?? empty)} \n";
+
+			
 		}
 		
 		private void OnPurgeButton()
@@ -56,14 +63,14 @@ namespace Gemelo.Voice.Editor.Preview
 				Selection.objects = null;
 			}
 		}
-		
-		private List<SerializedProperty> LoadPreviewItems()
+
+		private List<VoicePreviewSerializedProperty> LoadPreviewItems()
 		{
-			var fields = new List<SerializedProperty>();
+			var fields = new List<VoicePreviewSerializedProperty>();
 			
 			for (int i = 0; i < _voices.arraySize; i++)
 			{
-				var element = _voices.GetArrayElementAtIndex(i);
+				var element = new VoicePreviewSerializedProperty(_voices.GetArrayElementAtIndex(i));
 				fields.Add(element);
 			}
 			
