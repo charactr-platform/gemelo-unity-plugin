@@ -78,7 +78,7 @@ namespace Gemelo.Voice.Editor.Library
 		{
 			// Each editor window contains a root VisualElement object
 			visualTreeAsset.CloneTree(rootVisualElement);
-			CreateList(rootVisualElement.Q<ListView>(), LoadPreviewItems(VoiceType.All));
+			UpdateList("All");
 			CreateDropdownSelection();
 		}
 		
@@ -98,9 +98,24 @@ namespace Gemelo.Voice.Editor.Library
 
 		private void UpdateList(string newValue)
 		{
-			Debug.Log("On value :"+ newValue);
 			var voiceType = Enum.Parse<VoiceType>(newValue);
-			CreateList(rootVisualElement.Q<ListView>(), LoadPreviewItems(voiceType));
+			var items = LoadPreviewItems(voiceType);
+			var listView = rootVisualElement.Q<ListView>();
+			
+			if (items.Count == 0)
+			{
+				DisplayNoItems();
+				return;
+			}
+			
+			CreateList(listView, items);
+		}
+
+		private void DisplayNoItems()
+		{
+			EditorUtility.DisplayDialog("No items found",
+				"Please use 'Tools->Gemelo.Ai->Update voice previews' menu\n" +
+				"to fetch voice previews database", "OK");
 		}
 		
 		public static List<SerializedProperty> LoadPreviewItems(VoiceType voiceType)
