@@ -19,8 +19,9 @@ namespace Gemelo.Voice.Editor.Library
 		private long _voiceItemTimestamp = -1;
 		private VoiceLibrary _targetLibrary;
 		private ListType _listType;
+		private ListView _listView;
 		
-		private static Dictionary<VoicePreview, SerializedProperty> _itemsDictionary;
+		private static Dictionary<VoicePreview, VoicePreviewSerializedProperty> _itemsDictionary;
 		
 		[MenuItem("Tools/Gemelo.ai Voice/Voices database")]
 		public static void ShowWindow()
@@ -78,6 +79,7 @@ namespace Gemelo.Voice.Editor.Library
 		{
 			// Each editor window contains a root VisualElement object
 			visualTreeAsset.CloneTree(rootVisualElement);
+			_listView = rootVisualElement.Q<ListView>();
 			UpdateList("All");
 			CreateDropdownSelection();
 		}
@@ -98,14 +100,7 @@ namespace Gemelo.Voice.Editor.Library
 
 		private void UpdateList(string newValue)
 		{
-			var voiceType = Enum.Parse<VoiceType>(newValue);
-			var items = LoadPreviewItems(voiceType);
-			var listView = rootVisualElement.Q<ListView>();
-			
-			if (items.Count == 0)
-				DisplayNoItems();
-
-			CreateList(listView, items);
+			CreateList( Enum.Parse<VoiceType>(newValue));
 		}
 
 		private void DisplayNoItems()
@@ -115,10 +110,11 @@ namespace Gemelo.Voice.Editor.Library
 				"to fetch voice previews database", "OK");
 		}
 		
-		public static List<SerializedProperty> LoadPreviewItems(VoiceType voiceType)
+		private List<VoicePreviewSerializedProperty> LoadPreviewItems(VoiceType voiceType)
 		{
-			_itemsDictionary = new Dictionary<VoicePreview, SerializedProperty>();
-			var fields = new List<SerializedProperty>();
+			_itemsDictionary = new Dictionary<VoicePreview, VoicePreviewSerializedProperty>();
+			
+			var fields = new List<VoicePreviewSerializedProperty>();
 			var database = VoicesDatabase.Load();
 			var serializedObject = new SerializedObject(database);
 			var voices = serializedObject.FindProperty("voices");
@@ -126,7 +122,7 @@ namespace Gemelo.Voice.Editor.Library
 			for (int i = 0; i < voices.arraySize; i++)
 			{
 				var element = database.Voices[i];
-				var property = voices.GetArrayElementAtIndex(i);
+				var property = new VoicePreviewSerializedProperty(voices.GetArrayElementAtIndex(i));
 
 				if (voiceType == VoiceType.All)
 				{
@@ -141,22 +137,32 @@ namespace Gemelo.Voice.Editor.Library
 					fields.Add(property);
 				}
 			}
-			return fields;
+			
+			return fields.OrderByDescending(o => o.ItemData.Rating).ToList();
 		}
 		
-		private void CreateList(ListView listView, List<SerializedProperty> items)
+		private void CreateList(VoiceType voiceType)
 		{
-			if (listView == null)
+			if (_listView == null)
 				throw new Exception("Can't find list view object");
 			
-			//TODO: To much string names here :'(
-			var orderedList = items.OrderByDescending(o => o.FindPropertyRelative("itemData").FindPropertyRelative("Rating").floatValue).ToList();
+			var items = LoadPreviewItems(voiceType);
+
+			if (items.Count == 0)
+				DisplayNoItems();
 			
-			listView.itemsSource = orderedList;
-			listView.makeItem = CreatePreviewElement;
-			listView.bindItem = (element, i) => (element as VoicePreviewElement).RegisterProperty(orderedList[i]);
+			_listView.Clear();
+			_listView.itemsSource = items;
+			_listView.makeItem = CreatePreviewElement;
+			_listView.bindItem = BindElement;
 		}
 
+		private void BindElement(VisualElement element, int index)
+		{
+			var property = (VoicePreviewSerializedProperty) _listView.itemsSource[index];
+			((VoicePreviewElement)element).RegisterProperty(property.Base);
+		}
+		
 		private VoicePreviewElement CreatePreviewElement()
 		{
 			var element = new VoicePreviewElement(_listType);

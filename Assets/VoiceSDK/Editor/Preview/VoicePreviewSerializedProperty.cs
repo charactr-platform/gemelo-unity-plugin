@@ -7,6 +7,7 @@ namespace Gemelo.Voice.Editor.Preview
 	{
 		public int Size => _property.FindPropertyRelative("previewDataSize").intValue;
 		public PreviewItemData ItemData => ItemDataFromProperty();
+		public SerializedProperty Base => _property;
 		
 		private readonly SerializedProperty _property;
 		public VoicePreviewSerializedProperty(SerializedProperty property)
